@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+/* ---- Design tokens (Museum Virtual Majapahitan) ----
+   Colors are approximations from the design mockups; tune against final assets. */
+@theme {
+  --color-ink: #17110b; /* page background: near-black brown */
+  --color-ink-2: #1e1710; /* slightly lifted dark surface */
+  --color-panel: #241b11; /* dark cards / bars */
+  --color-panel-2: #2c2115;
+
+  --color-gold: #c9a24a; /* primary accent */
+  --color-gold-soft: #d9b871;
+  --color-gold-deep: #a97f2f;
+
+  --color-maroon: #6d1414; /* primary CTA / donation */
+  --color-maroon-2: #7d1a1a;
+
+  --color-cream: #efe4cd; /* light section cards */
+  --color-cream-2: #e7d8b8;
+  --color-cream-ink: #2a2118; /* text on cream */
+
+  --color-muted: #b7a684; /* muted text on dark */
+  --color-hairline: #3a2e1e; /* dividers on dark */
+}
+
+/* Fonts come from next/font as CSS variables (see app/layout.tsx). */
+@theme inline {
+  --font-display: var(--font-cinzel);
+  --font-sans: var(--font-jakarta);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-cream);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+  letter-spacing: 0.02em;
+}
+
+/* Thin ornamental gold rule used around several section frames */
+.ring-gold-frame {
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 74, 0.35);
+}
