@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 import {
   contactInfo,
   footerLinks,
@@ -8,19 +8,15 @@ import {
 } from "@/lib/content";
 import ImageSlot from "@/components/ui/ImageSlot";
 import {
-  Facebook,
   Instagram,
-  TikTok,
   Youtube,
 } from "@/components/ui/BrandIcons";
 
 type BrandIcon = (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element;
 
 const socialIcons: Record<string, BrandIcon> = {
-  facebook: Facebook,
   instagram: Instagram,
   youtube: Youtube,
-  music: TikTok,
 };
 
 export default function Footer() {
@@ -37,7 +33,7 @@ export default function Footer() {
           </p>
           <p className="mt-1 flex items-start gap-2 text-sm text-muted">
             <MapPin className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-            {contactInfo.address}
+            {contactInfo.office}, {contactInfo.university}
           </p>
           <p className="mt-3 flex items-center gap-2 text-sm text-muted">
             <Mail className="h-4 w-4 shrink-0" aria-hidden />
@@ -45,20 +41,11 @@ export default function Footer() {
               {contactInfo.email}
             </a>
           </p>
-          <p className="mt-2 flex items-center gap-2 text-sm text-muted">
-            <Phone className="h-4 w-4 shrink-0" aria-hidden />
-            <a
-              href={`tel:${contactInfo.phone.replace(/\s/g, "")}`}
-              className="hover:text-gold"
-            >
-              {contactInfo.phone}
-            </a>
-          </p>
 
           <div className="mt-5 flex gap-3">
             {contactInfo.socials.map((s) => {
-              const Icon = socialIcons[s.icon] ?? TikTok;
-              return (
+              const Icon = socialIcons[s.icon];
+              return Icon ? (
                 <a
                   key={s.label}
                   href={s.href}
@@ -69,7 +56,7 @@ export default function Footer() {
                 >
                   <Icon className="h-4 w-4" />
                 </a>
-              );
+              ) : null;
             })}
           </div>
         </div>

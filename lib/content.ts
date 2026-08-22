@@ -294,16 +294,19 @@ export const tentang = {
 };
 
 export const contactInfo = {
-  org: "PUISBM – Universitas Negeri Surabaya",
-  address: "Kampus Unesa Lidah Wetan, Surabaya, Jawa Timur, Indonesia",
-  email: "puisbm@unesa.ac.id",
-  phone: "+62 31 9942 1234",
+  org: "PUI-PT Seni Budaya Majapahitan",
+  university: "Universitas Negeri Surabaya",
+  operatingHours: "Senin s/d Jum'at | 08.00-16.00 WIB",
+  office: "Gedung Lab Anti Doping Lt.4",
+  email: "pusenibud@unesa.ac.id",
   socials: [
-    { label: "Facebook", href: "https://facebook.com", icon: "facebook" as const },
-    { label: "Instagram", href: "https://instagram.com", icon: "instagram" as const },
-    { label: "YouTube", href: "https://youtube.com", icon: "youtube" as const },
-    { label: "TikTok", href: "https://tiktok.com", icon: "music" as const },
+    { label: "Instagram", href: "https://instagram.com/pusenibudayaunesa", handle: "@pusenibudayaunesa", icon: "instagram" as const },
+    { label: "YouTube", href: "https://youtube.com/@pusenibudunesa", handle: "@pusenibudunesa", icon: "youtube" as const },
   ],
+  googleMaps: {
+    label: "PUI Seni Budaya",
+    href: "https://maps.google.com/?q=PUI+Seni+Budaya+Universitas+Negeri+Surabaya",
+  },
 };
 
 export const footerLinks = {
