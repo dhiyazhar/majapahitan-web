@@ -11,7 +11,7 @@
 export type NavItem = {
   label: string;
   href: string;
-  children?: { label: string; href: string }[];
+  children?: NavItem[];
 };
 
 export const navItems: NavItem[] = [
@@ -29,8 +29,15 @@ export const navItems: NavItem[] = [
     label: "Galeri Karya",
     href: "/galeri",
     children: [
-      { label: "Galeri Virtual 3D", href: "/galeri/3d" },
-      { label: "Karya Kontemporer", href: "/galeri/kontemporer" },
+      { label: "Galeri Karya Publik", href: "/galeri/publik" },
+      {
+        label: "Galeri Virtual Museum",
+        href: "/galeri/museum",
+        children: [
+          { label: "Karya Otentik", href: "/galeri/museum/otentik" },
+          { label: "Karya Kontemporer", href: "/galeri/museum/kontemporer" },
+        ],
+      },
     ],
   },
   { label: "Publikasi & Penelitian", href: "/publikasi" },
@@ -334,3 +341,137 @@ export const legalLinks = [
   { label: "Kebijakan Privasi", href: "/kebijakan-privasi" },
   { label: "Syarat & Ketentuan", href: "/syarat-ketentuan" },
 ];
+
+export type TeamMember = {
+  id: string;
+  name: string;
+  role: string;
+  photo: string;
+};
+
+export type GaleriDokumentasiItem = {
+  id: string;
+  title: string;
+  category: string;
+  image: string;
+};
+
+export const tentangPage = {
+  hero: {
+    eyebrow: "TENTANG MUSEUM",
+    title: "Mengenal Museum Virtual Majapahitan",
+    subtitle:
+      "Pusat konservasi digital dan ruang apresiasi warisan kebudayaan Kerajaan Majapahit dalam kemasan teknologi modern.",
+    image: "/images/hero/slide-1.jpg",
+  },
+  visiMisi: {
+    eyebrow: "VISI & MISI",
+    title: "Arah & Dedikasi Kami",
+    visi: "Menjadi pusat konservasi digital dan rujukan utama pelestarian seni budaya Majapahit berkelas dunia yang memadukan keilmuan akademis dengan apresiasi publik.",
+    misi: [
+      "Mendokumentasikan dan mendigitalisasi peninggalan sejarah, situs, artefak, dan manuskrip era Majapahit secara komprehensif.",
+      "Mengembangkan platform museum virtual interaktif yang dapat diakses oleh masyarakat global untuk keperluan edukasi dan penelitian.",
+      "Mewadahi ruang temu dan ekspresi bagi penciptaan karya seni kontemporer bernafaskan nilai-nilai kearifan lokal Majapahitan.",
+      "Membangun kolaborasi lintas institusi dan kemitraan masyarakat dalam pelestarian warisan budaya Nusantara.",
+    ],
+  },
+  sejarah: {
+    eyebrow: "SEJARAH MUSEUM",
+    title: "Latar Belakang & Pendirian",
+    image: "/images/tentang/arca.jpg",
+    paragraphs: [
+      "Pusat Unggulan IPTEK Perguruan Tinggi (PUI-PT) Seni Budaya Majapahitan didirikan di Universitas Negeri Surabaya sebagai ikhtiar pelestarian warisan peradaban Majapahit yang kaya akan nilai historis, filosofis, dan estetika adiluhung.",
+      "Melalui pemanfaatan teknologi digital, pemindaian 3D, serta dokumentasi kuratorial mendalam, Museum Virtual Majapahitan hadir untuk menjembatani memori kolektif masa lampau dengan generasi masa kini dan masa depan.",
+      "Inisiatif ini tidak hanya berfokus pada konservasi artefak bersejarah (karya otentik), namun juga secara aktif mendorong riset akademis, publikasi ilmiah, dan ruang kreasi kontemporer bagi sivitas akademika maupun masyarakat luas.",
+    ],
+  },
+  tim: {
+    eyebrow: "STRUKTUR ORGANISASI",
+    title: "Pengelola & Tim Ahli",
+    subtitle:
+      "Didukung oleh para akademisi, kurator seni, peneliti sejarah, dan pengembang teknologi.",
+    members: [
+      {
+        id: "ketua",
+        name: "Prof. Dr. Djodjok Soepardjo, M.Hum.",
+        role: "Ketua PUI Seni Budaya Majapahitan",
+        photo: "/images/tentang/tim-1.jpg",
+      },
+      {
+        id: "kurator",
+        name: "Dr. Trisakti, M.Si.",
+        role: "Koordinator Riset & Kurasi",
+        photo: "/images/tentang/tim-2.jpg",
+      },
+      {
+        id: "arkeolog",
+        name: "Welly Suryandoko, S.Pd., M.Pd.",
+        role: "Divisi Konservasi & Sejarah",
+        photo: "/images/tentang/tim-3.jpg",
+      },
+      {
+        id: "teknologi",
+        name: "Tim Pengembang Virtual & Media",
+        role: "Teknologi Digital & Sistem Informasi",
+        photo: "/images/tentang/tim-4.jpg",
+      },
+    ] as TeamMember[],
+  },
+  mitra: {
+    eyebrow: "MITRA KERJA SAMA",
+    title: "Partner & Kolaborasi Institusi",
+    subtitle:
+      "Bekerja sama dengan berbagai institusi pendidikan, balai pelestarian kebudayaan, dan komunitas seni.",
+  },
+  kontak: {
+    eyebrow: "KONTAK & LOKASI",
+    title: "Hubungi & Kunjungi Kami",
+    description:
+      "Kami terbuka untuk kolaborasi penelitian, kunjungan edukasi, serta partisipasi aktif dalam pelestarian seni budaya Majapahitan.",
+  },
+  galeri: {
+    eyebrow: "GALERI FOTO",
+    title: "Dokumentasi Museum & Kegiatan",
+    subtitle:
+      "Dokumentasi penelusuran situs bersejarah, konservasi artefak, dan kegiatan apresiasi seni budaya.",
+    items: [
+      {
+        id: "g1",
+        title: "Gapura Wringin Lawang",
+        category: "Situs Sejarah",
+        image: "/images/koleksi/gapura.jpg",
+      },
+      {
+        id: "g2",
+        title: "Prasasti Canggu & Manuskrip",
+        category: "Artefak Kuno",
+        image: "/images/koleksi/prasasti.jpg",
+      },
+      {
+        id: "g3",
+        title: "Arsitektur Klasik Majapahit",
+        category: "Arsitektur",
+        image: "/images/pameran/arsitektur.jpg",
+      },
+      {
+        id: "g4",
+        title: "Pameran Seni Kontemporer",
+        category: "Pameran",
+        image: "/images/pameran/rupa.jpg",
+      },
+      {
+        id: "g5",
+        title: "Arca & Relik Klasik",
+        category: "Koleksi Budaya",
+        image: "/images/koleksi/ganesha.jpg",
+      },
+      {
+        id: "g6",
+        title: "Workshop Digitalisasi Budaya",
+        category: "Edukasi & Riset",
+        image: "/images/berita/workshop.jpg",
+      },
+    ] as GaleriDokumentasiItem[],
+  },
+};
+
