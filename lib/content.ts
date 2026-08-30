@@ -475,3 +475,262 @@ export const tentangPage = {
   },
 };
 
+/* ==========================================================================
+   MUSEUM KONSERVASI
+   ========================================================================== */
+
+export type KonservasiPilar = {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  href: string;
+  cta: string;
+  stat: string;
+};
+
+export type KonservasiStep = {
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+};
+
+export const konservasiPage = {
+  hero: {
+    eyebrow: "MUSEUM KONSERVASI",
+    title: "Melestarikan Warisan Peradaban Majapahit",
+    subtitle:
+      "Dokumentasi, konservasi, dan digitalisasi situs bersejarah serta artefak peninggalan Kerajaan Majapahit oleh PUI Seni Budaya Majapahitan, Universitas Negeri Surabaya.",
+    image: "/images/hero/slide-1.jpg",
+  },
+  pengantar: {
+    eyebrow: "TENTANG KONSERVASI",
+    title: "Mengapa Konservasi Digital?",
+    paragraphs: [
+      "Peninggalan Kerajaan Majapahit tersebar di berbagai wilayah Jawa Timur — dari candi dan gapura yang masih berdiri, hingga prasasti dan artefak yang tersimpan di museum-museum dan situs terbuka. Tantangan utamanya adalah aksesibilitas: tidak semua pihak dapat mengunjungi lokasi secara langsung, dan banyak peninggalan mengalami kerusakan akibat waktu dan cuaca.",
+      "Museum Konservasi hadir sebagai jawaban — sebuah ruang virtual yang mendokumentasikan, memindai, dan menyajikan peninggalan-peninggalan tersebut dalam bentuk digital beresolusi tinggi. Dengan pendekatan ini, warisan Majapahit dapat diakses, dipelajari, dan diapresiasi oleh siapa saja, di mana saja.",
+    ],
+  },
+  pilar: [
+    {
+      id: "situs",
+      title: "Situs & Arsitektur",
+      description:
+        "Candi, gapura, petirtaan, dan kompleks bangunan peninggalan era Majapahit yang telah didokumentasikan dan dikonservasi secara digital.",
+      image: "/images/koleksi/gapura.jpg",
+      href: "/konservasi/situs",
+      cta: "Jelajahi Situs",
+      stat: "12+ Situs Terdokumentasi",
+    },
+    {
+      id: "artefak",
+      title: "Artefak & Benda Budaya",
+      description:
+        "Prasasti, arca, keramik, perhiasan, dan benda-benda budaya otentik dari masa Kerajaan Majapahit yang didigitalisasi untuk kepentingan riset dan edukasi.",
+      image: "/images/koleksi/prasasti.jpg",
+      href: "/konservasi/artefak",
+      cta: "Telusuri Artefak",
+      stat: "50+ Artefak Terdigitalisasi",
+    },
+  ] as KonservasiPilar[],
+  proses: {
+    eyebrow: "PROSES KAMI",
+    title: "Tahapan Konservasi Digital",
+    steps: [
+      {
+        id: "survei",
+        number: "01",
+        title: "Identifikasi & Survei Lapangan",
+        description:
+          "Tim peneliti melakukan survei langsung ke situs dan lokasi penyimpanan artefak untuk pendataan awal.",
+      },
+      {
+        id: "dokumentasi",
+        number: "02",
+        title: "Dokumentasi & Pemindaian",
+        description:
+          "Fotografi resolusi tinggi, pemindaian 3D, dan pencatatan detail dimensi, material, serta kondisi objek.",
+      },
+      {
+        id: "digitalisasi",
+        number: "03",
+        title: "Digitalisasi & Kurasi",
+        description:
+          "Data lapangan diolah menjadi aset digital: model 3D, foto katalog, dan deskripsi ilmiah yang dikurasi oleh tim ahli.",
+      },
+      {
+        id: "publikasi",
+        number: "04",
+        title: "Publikasi & Akses Terbuka",
+        description:
+          "Hasil konservasi dipublikasikan di Museum Virtual untuk akses publik, penelitian akademis, dan keperluan edukasi.",
+      },
+    ] as KonservasiStep[],
+  },
+  cta: {
+    eyebrow: "PARTISIPASI & KOLABORASI",
+    title: "Ikut Serta dalam Pelestarian",
+    body: "Apakah Anda memiliki informasi, dokumentasi, atau akses ke peninggalan Majapahit yang belum terdata? Kami mengundang kolaborasi dari masyarakat, peneliti, dan institusi untuk memperkaya basis data konservasi ini.",
+  },
+};
+
+/* -- Situs & Arsitektur catalogue -- */
+
+export type SitusItem = {
+  id: string;
+  name: string;
+  location: string;
+  era: string;
+  description: string;
+  image: string;
+  status: "Terdokumentasi" | "Pemindaian 3D" | "Dalam Proses";
+};
+
+export const situsList: SitusItem[] = [
+  {
+    id: "gapura-wringin-lawang",
+    name: "Gapura Wringin Lawang",
+    location: "Trowulan, Mojokerto",
+    era: "Abad ke-14 Masehi",
+    description:
+      "Gapura belah (candi bentar) setinggi 15,5 meter yang menjadi salah satu ikon peninggalan arsitektur Majapahit. Dibangun dari bata merah tanpa perekat, menunjukkan keahlian teknik konstruksi tinggi pada masanya.",
+    image: "/images/koleksi/gapura.jpg",
+    status: "Terdokumentasi",
+  },
+  {
+    id: "candi-tikus",
+    name: "Candi Tikus",
+    location: "Trowulan, Mojokerto",
+    era: "Abad ke-14 Masehi",
+    description:
+      "Petirtaan (kolam pemandian suci) berbentuk unik yang ditemukan di bawah permukaan tanah. Struktur ini menggambarkan konsep kosmologi Hindu — Gunung Mahameru — dalam bentuk arsitektur miniatur.",
+    image: "/images/pameran/arsitektur.jpg",
+    status: "Pemindaian 3D",
+  },
+  {
+    id: "candi-bajang-ratu",
+    name: "Candi Bajang Ratu",
+    location: "Trowulan, Mojokerto",
+    era: "Abad ke-14 Masehi",
+    description:
+      "Gapura paduraksa (gapura beratap) yang diperkirakan berhubungan dengan penobatan Jayanegara. Memiliki relief cerita Sri Tanjung dan ornamen sulur-suluran yang sangat detail.",
+    image: "/images/tentang/arca.jpg",
+    status: "Terdokumentasi",
+  },
+  {
+    id: "candi-brahu",
+    name: "Candi Brahu",
+    location: "Trowulan, Mojokerto",
+    era: "Abad ke-14–15 Masehi",
+    description:
+      "Salah satu candi tertua di kawasan Trowulan, diduga berfungsi sebagai tempat pembakaran jenazah (kremasi) para raja atau bangsawan Majapahit. Strukturnya terbuat dari bata merah berukuran besar.",
+    image: "/images/pameran/rupa.jpg",
+    status: "Terdokumentasi",
+  },
+  {
+    id: "kolam-segaran",
+    name: "Kolam Segaran",
+    location: "Trowulan, Mojokerto",
+    era: "Abad ke-14 Masehi",
+    description:
+      "Kolam buatan berukuran raksasa (375 × 175 meter) yang diperkirakan berfungsi sebagai tempat perjamuan tamu kerajaan dan reservoar air. Temuan artefak keramik asing menunjukkan hubungan diplomatik Majapahit.",
+    image: "/images/hero/slide-2.jpg",
+    status: "Dalam Proses",
+  },
+  {
+    id: "pendopo-agung",
+    name: "Situs Pendopo Agung",
+    location: "Trowulan, Mojokerto",
+    era: "Abad ke-14 Masehi",
+    description:
+      "Situs yang diidentifikasi sebagai lokasi pusat keraton Majapahit berdasarkan deskripsi dalam Kakawin Nagarakretagama karya Mpu Prapanca. Area ini menjadi fokus ekskavasi arkeologis berkelanjutan.",
+    image: "/images/hero/slide-3.jpg",
+    status: "Terdokumentasi",
+  },
+];
+
+/* -- Artefak & Benda Budaya catalogue -- */
+
+export type ArtefakItem = {
+  id: string;
+  name: string;
+  category: "Prasasti & Inskripsi" | "Arca & Patung" | "Keramik & Gerabah" | "Perhiasan & Logam" | "Naskah & Sastra";
+  era: string;
+  material: string;
+  description: string;
+  image: string;
+};
+
+export const artefakCategories = [
+  "Semua",
+  "Prasasti & Inskripsi",
+  "Arca & Patung",
+  "Keramik & Gerabah",
+  "Perhiasan & Logam",
+  "Naskah & Sastra",
+] as const;
+
+export const artefakList: ArtefakItem[] = [
+  {
+    id: "prasasti-canggu",
+    name: "Prasasti Canggu",
+    category: "Prasasti & Inskripsi",
+    era: "1358 Masehi",
+    material: "Tembaga",
+    description:
+      "Prasasti berbahan tembaga yang mencatat penetapan sejumlah desa penyeberangan (ferry) di sepanjang sungai Brantas pada masa pemerintahan Hayam Wuruk.",
+    image: "/images/koleksi/prasasti.jpg",
+  },
+  {
+    id: "arca-ganesha",
+    name: "Arca Ganesha Trowulan",
+    category: "Arca & Patung",
+    era: "Abad ke-14 Masehi",
+    material: "Batu Andesit",
+    description:
+      "Arca Ganesha berukuran besar yang ditemukan di kawasan Trowulan. Menampilkan gaya seni pahat khas Majapahit dengan detail ornamen mahkota dan atribut dewa yang sangat halus.",
+    image: "/images/koleksi/ganesha.jpg",
+  },
+  {
+    id: "negarakretagama",
+    name: "Kitab Negarakretagama",
+    category: "Naskah & Sastra",
+    era: "1365 Masehi",
+    material: "Lontar",
+    description:
+      "Kakawin karya Mpu Prapanca yang menjadi sumber utama pengetahuan tentang struktur pemerintahan, wilayah kekuasaan, dan kehidupan istana Kerajaan Majapahit di masa jayanya.",
+    image: "/images/koleksi/kitab.jpg",
+  },
+  {
+    id: "keramik-majapahit",
+    name: "Keramik Majapahit",
+    category: "Keramik & Gerabah",
+    era: "Abad ke-14 Masehi",
+    material: "Tanah Liat",
+    description:
+      "Koleksi keramik dan gerabah produksi lokal yang ditemukan di kawasan Trowulan, mencakup wadah penyimpanan, peralatan upacara, dan benda hias yang menunjukkan tingkat kerajinan tinggi.",
+    image: "/images/koleksi/peta.jpg",
+  },
+  {
+    id: "perhiasan-emas",
+    name: "Perhiasan Emas Trowulan",
+    category: "Perhiasan & Logam",
+    era: "Abad ke-14 Masehi",
+    material: "Emas",
+    description:
+      "Koleksi perhiasan emas hasil temuan arkeologis di Trowulan, meliputi cincin, gelang, dan ornamen yang menggambarkan kemewahan serta keahlian pengrajin logam mulia pada era Majapahit.",
+    image: "/images/pameran/rupa.jpg",
+  },
+  {
+    id: "prasasti-trowulan",
+    name: "Prasasti Trowulan I",
+    category: "Prasasti & Inskripsi",
+    era: "Abad ke-14 Masehi",
+    material: "Batu",
+    description:
+      "Prasasti batu yang ditemukan di kawasan situs Trowulan, memuat inskripsi dalam aksara Jawa Kuno yang memberikan informasi tentang aktivitas keagamaan dan administratif kerajaan.",
+    image: "/images/tentang/arca.jpg",
+  },
+];
+
