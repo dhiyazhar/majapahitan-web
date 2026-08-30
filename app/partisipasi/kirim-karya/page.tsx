@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ChevronRight,
+  ChevronDown,
   CheckCircle2,
   FileCheck,
   Clock,
@@ -27,90 +28,116 @@ export default function KirimKaryaPage() {
   return (
     <>
       <Navbar />
-      <main className="flex-1 pb-16 pt-6 sm:pb-24 sm:pt-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <main className="flex-1 pb-20 pt-8 sm:pt-12">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
           {/* =========================================================================
-              BREADCRUMB RINGKAS
+              1. BREADCRUMB & HEADER TERPUSAT (CENTERED FOCUS)
           ========================================================================= */}
-          <nav className="mb-6 flex items-center gap-2 text-xs font-medium text-muted">
-            <Link href="/" className="hover:text-gold transition-colors">
-              Beranda
-            </Link>
-            <ChevronRight className="h-3 w-3 text-hairline" />
-            <span className="text-muted">Partisipasi</span>
-            <ChevronRight className="h-3 w-3 text-hairline" />
-            <span className="text-gold">Ruang Partisipasi Karya</span>
-          </nav>
+          <div className="text-center">
+            {/* Breadcrumb */}
+            <nav className="mb-4 inline-flex items-center gap-2 text-xs font-medium text-muted">
+              <Link href="/" className="hover:text-gold transition-colors">
+                Beranda
+              </Link>
+              <ChevronRight className="h-3 w-3 text-hairline" />
+              <span className="text-muted">Partisipasi</span>
+              <ChevronRight className="h-3 w-3 text-hairline" />
+              <span className="text-gold">Ruang Karya</span>
+            </nav>
+
+            {/* Eyebrow badge */}
+            <div className="flex justify-center">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
+                <Sparkles className="h-3 w-3" />
+                {hero.eyebrow}
+              </span>
+            </div>
+
+            {/* Judul Halaman */}
+            <h1 className="mt-4 font-display text-3xl font-bold uppercase tracking-wide text-cream sm:text-4xl lg:text-5xl">
+              {hero.title}
+            </h1>
+
+            {/* Deskripsi Pengantar */}
+            <p className="mx-auto mt-4 max-w-2xl text-xs leading-relaxed text-cream/80 sm:text-sm md:text-base">
+              {hero.subtitle}
+            </p>
+          </div>
 
           {/* =========================================================================
-              SPLIT-SCREEN STUDIO LAYOUT
-              Kiri: Sticky Sidecar (Identitas, Alur, & Panduan Kuratorial)
-              Kanan: Formulir Pengiriman Utama (Langsung Terlihat di Layar Pertama)
+              2. KARTU PANDUAN & ALUR KURASI (ACCORDION / DRAWER RINGKAS)
           ========================================================================= */}
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10 items-start">
-            {/* SISI KIRI — STICKY SIDECAR (5 COLS) */}
-            <aside className="lg:col-span-5 lg:sticky lg:top-24 space-y-5">
-              {/* Kartu Utama: Info & Panduan */}
-              <div className="relative overflow-hidden rounded-xl bg-panel p-6 sm:p-8 ring-gold-frame">
-                {/* Ambient glow accent */}
-                <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-gold/10 blur-2xl" />
-
-                {/* Header Judul Portal */}
-                <div>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-gold">
-                    <Sparkles className="h-3 w-3" />
-                    <span>{hero.eyebrow}</span>
+          <section className="mt-8 sm:mt-10">
+            <details
+              className="group overflow-hidden rounded-xl bg-panel ring-gold-frame transition-all duration-300"
+              open
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between p-5 sm:p-6 transition-colors hover:bg-panel-2">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold/10 text-gold ring-1 ring-gold/30">
+                    <BookOpen className="h-4 w-4" />
                   </div>
-
-                  <h1 className="mt-3 font-display text-2xl font-bold uppercase leading-tight text-cream sm:text-3xl">
-                    {hero.title}
-                  </h1>
-
-                  <p className="mt-3 text-xs leading-relaxed text-cream/75 sm:text-sm">
-                    {hero.subtitle}
-                  </p>
+                  <div>
+                    <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-cream sm:text-base">
+                      Panduan & Kriteria Kurasi Karya
+                    </h2>
+                    <p className="text-[11px] text-muted sm:text-xs">
+                      Ketentuan berkas, tahapan peninjauan kurator, dan hak cipta.
+                    </p>
+                  </div>
                 </div>
 
-                {/* 3 Langkah Alur Kurasi */}
-                <div className="mt-6 border-t border-hairline/70 pt-6">
-                  <div className="flex items-center gap-2 text-gold">
+                <div className="flex items-center gap-2 text-xs text-gold-soft">
+                  <span className="hidden sm:inline font-medium">
+                    Buka / Tutup
+                  </span>
+                  <ChevronDown className="h-4 w-4 transition-transform duration-300 group-open:rotate-180 text-gold" />
+                </div>
+              </summary>
+
+              <div className="border-t border-hairline/80 p-5 sm:p-7 space-y-6 bg-ink-2/40">
+                {/* 3 Langkah Alur */}
+                <div>
+                  <div className="flex items-center gap-2 text-gold mb-3">
                     <Clock className="h-4 w-4" />
-                    <h2 className="font-display text-sm font-semibold uppercase tracking-wide text-cream">
+                    <h3 className="font-display text-xs font-semibold uppercase tracking-wider text-cream sm:text-sm">
                       {panduan.alurTitle}
-                    </h2>
+                    </h3>
                   </div>
 
-                  <div className="mt-4 space-y-3.5">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     {panduan.alurSteps.map((step) => (
-                      <div key={step.step} className="flex items-start gap-3">
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold/15 text-[11px] font-bold text-gold ring-1 ring-gold/30">
+                      <div
+                        key={step.step}
+                        className="rounded-lg border border-hairline bg-panel p-3.5"
+                      >
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/15 text-[11px] font-bold text-gold ring-1 ring-gold/30">
                           {step.step}
                         </span>
-                        <div>
-                          <p className="text-xs font-semibold text-cream">
-                            {step.title}
-                          </p>
-                          <p className="mt-0.5 text-[11px] text-muted leading-relaxed">
-                            {step.desc}
-                          </p>
-                        </div>
+                        <p className="mt-2 text-xs font-semibold text-cream">
+                          {step.title}
+                        </p>
+                        <p className="mt-1 text-[11px] text-muted leading-relaxed">
+                          {step.desc}
+                        </p>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Panduan Ringkas & Ketentuan Berkas */}
-                <div className="mt-6 border-t border-hairline/70 pt-6 space-y-4">
+                {/* Kriteria & Ketentuan File (2 Kolom di Tablet/Desktop) */}
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 pt-2 border-t border-hairline/50">
+                  {/* Kriteria */}
                   <div>
-                    <div className="flex items-center gap-2 text-gold mb-2.5">
-                      <BookOpen className="h-4 w-4" />
-                      <h3 className="font-display text-sm font-semibold uppercase tracking-wide text-cream">
-                        {panduan.kriteriaTitle}
-                      </h3>
-                    </div>
-                    <ul className="space-y-2">
+                    <h3 className="font-display text-xs font-semibold uppercase tracking-wider text-cream sm:text-sm mb-3">
+                      {panduan.kriteriaTitle}
+                    </h3>
+                    <ul className="space-y-2.5">
                       {panduan.kriteriaList.map((item, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-xs leading-relaxed text-cream/75">
+                        <li
+                          key={idx}
+                          className="flex items-start gap-2.5 text-xs leading-relaxed text-cream/75"
+                        >
                           <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-soft" />
                           <span>{item}</span>
                         </li>
@@ -118,51 +145,53 @@ export default function KirimKaryaPage() {
                     </ul>
                   </div>
 
-                  <div className="rounded-lg border border-hairline bg-ink-2/60 p-3.5">
-                    <div className="flex items-center gap-2 text-gold mb-1.5">
-                      <FileCheck className="h-3.5 w-3.5" />
-                      <h4 className="text-xs font-semibold text-cream">
-                        {panduan.teknisTitle}
-                      </h4>
+                  {/* Ketentuan Berkas & Hak Cipta */}
+                  <div className="space-y-3.5">
+                    <div className="rounded-lg border border-hairline bg-panel p-3.5">
+                      <div className="flex items-center gap-2 text-gold mb-1.5">
+                        <FileCheck className="h-4 w-4" />
+                        <h4 className="text-xs font-semibold text-cream">
+                          {panduan.teknisTitle}
+                        </h4>
+                      </div>
+                      <p className="text-[11px] leading-relaxed text-muted">
+                        Format berkas JPG, PNG, atau WebP • Maksimal 5 MB • Resolusi disarankan minimal 1200 × 800 piksel.
+                      </p>
                     </div>
-                    <p className="text-[11px] leading-relaxed text-muted">
-                      JPG, PNG, atau WebP • Maks. 5 MB • Resolusi disarankan min. 1200×800 px.
-                    </p>
-                  </div>
 
-                  <div className="flex items-start gap-2.5 rounded-lg border border-hairline bg-ink/40 p-3.5">
-                    <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                    <p className="text-[11px] leading-relaxed text-muted">
-                      {panduan.hakCipta}
-                    </p>
+                    <div className="rounded-lg border border-hairline bg-ink/50 p-3.5 flex items-start gap-2.5">
+                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                      <p className="text-[11px] leading-relaxed text-muted">
+                        {panduan.hakCipta}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
+            </details>
+          </section>
 
-              {/* Tautan Cepat ke Galeri Publik */}
-              <div className="rounded-xl border border-hairline bg-panel p-4 ring-gold-frame flex items-center justify-between gap-3">
-                <div className="text-xs">
-                  <span className="font-semibold text-cream block">
-                    Galeri Karya Publik
-                  </span>
-                  <span className="text-muted text-[11px]">
-                    Lihat karya-karya yang sudah disetujui kurator.
-                  </span>
-                </div>
-                <Link
-                  href="/galeri/publik"
-                  className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-gold-soft hover:text-gold transition-colors"
-                >
-                  Buka Galeri
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-            </aside>
+          {/* =========================================================================
+              3. FORMULIR PENGIRIMAN UTAMA (NASKAH KURATORIAL TERPUSAT)
+          ========================================================================= */}
+          <section className="mt-8 sm:mt-10">
+            <KirimKaryaForm />
+          </section>
 
-            {/* SISI KANAN — KANVAS FORMULIR PENGIRIMAN (7 COLS) */}
-            <section className="lg:col-span-7">
-              <KirimKaryaForm />
-            </section>
+          {/* =========================================================================
+              4. FOOTER TAUTAN GALERI PUBLIK
+          ========================================================================= */}
+          <div className="mt-10 text-center">
+            <p className="text-xs text-muted">
+              Ingin melihat karya publik yang telah disetujui kurator?{" "}
+              <Link
+                href="/galeri/publik"
+                className="font-semibold text-gold-soft hover:text-gold inline-flex items-center gap-1 transition-colors underline"
+              >
+                Kunjungi Galeri Karya Publik
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </p>
           </div>
         </div>
       </main>
