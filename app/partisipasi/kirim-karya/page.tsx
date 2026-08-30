@@ -3,11 +3,6 @@ import Link from "next/link";
 import {
   ChevronRight,
   ChevronDown,
-  CheckCircle2,
-  FileCheck,
-  Clock,
-  ShieldCheck,
-  BookOpen,
   ArrowRight,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
@@ -63,100 +58,99 @@ export default function KirimKaryaPage() {
               className="group overflow-hidden rounded-xl bg-panel ring-gold-frame transition-all duration-300"
               open
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between p-5 sm:p-6 transition-colors hover:bg-panel-2">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold/10 text-gold ring-1 ring-gold/30">
-                    <BookOpen className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-cream sm:text-base">
-                      Panduan & Kriteria Kurasi Karya
-                    </h2>
-                    <p className="text-[11px] text-muted sm:text-xs">
-                      Ketentuan berkas, tahapan peninjauan kurator, dan hak cipta.
-                    </p>
-                  </div>
+              <summary className="flex cursor-pointer list-none items-center justify-between p-6 sm:p-7 transition-colors hover:bg-panel-2">
+                <div>
+                  <h2 className="font-display text-base font-semibold uppercase tracking-wider text-cream sm:text-lg">
+                    Panduan & Kriteria Kurasi
+                  </h2>
+                  <p className="mt-1 text-xs text-muted">
+                    Alur peninjauan karya, kriteria materi, dan ketentuan berkas digital.
+                  </p>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-gold-soft">
-                  <span className="hidden sm:inline font-medium">
-                    Buka / Tutup
-                  </span>
+                <div className="flex items-center gap-2 text-xs font-medium text-gold-soft">
+                  <span className="hidden sm:inline">Buka / Tutup</span>
                   <ChevronDown className="h-4 w-4 transition-transform duration-300 group-open:rotate-180 text-gold" />
                 </div>
               </summary>
 
-              <div className="border-t border-hairline/80 p-5 sm:p-7 space-y-6 bg-ink-2/40">
-                {/* 3 Langkah Alur */}
+              <div className="border-t border-hairline p-6 sm:p-8 space-y-8 bg-ink-2/30">
+                {/* 1. Alur Proses Kurasi — Horizontal Connected Timeline */}
                 <div>
-                  <div className="flex items-center gap-2 text-gold mb-3">
-                    <Clock className="h-4 w-4" />
-                    <h3 className="font-display text-xs font-semibold uppercase tracking-wider text-cream sm:text-sm">
-                      {panduan.alurTitle}
-                    </h3>
-                  </div>
+                  <h3 className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-gold sm:text-sm">
+                    {panduan.alurTitle}
+                  </h3>
 
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    {panduan.alurSteps.map((step) => (
-                      <div
-                        key={step.step}
-                        className="rounded-lg border border-hairline bg-panel p-3.5"
-                      >
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/15 text-[11px] font-bold text-gold ring-1 ring-gold/30">
-                          {step.step}
-                        </span>
-                        <p className="mt-2 text-xs font-semibold text-cream">
-                          {step.title}
-                        </p>
-                        <p className="mt-1 text-[11px] text-muted leading-relaxed">
-                          {step.desc}
-                        </p>
-                      </div>
-                    ))}
+                  <div className="relative mt-6">
+                    {/* Connecting Line Track */}
+                    <div className="absolute top-4 left-6 right-6 hidden sm:block h-[1px] bg-gradient-to-r from-gold/30 via-gold/60 to-gold/30" />
+
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-6">
+                      {panduan.alurSteps.map((step) => (
+                        <div
+                          key={step.step}
+                          className="relative z-10 flex flex-col items-start"
+                        >
+                          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink border border-gold-deep font-display text-xs font-bold text-gold ring-4 ring-panel">
+                            {step.step}
+                          </span>
+                          <h4 className="mt-3.5 font-display text-xs font-semibold uppercase tracking-wide text-cream sm:text-sm">
+                            {step.title}
+                          </h4>
+                          <p className="mt-1 text-xs text-muted leading-relaxed">
+                            {step.desc}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                {/* Kriteria & Ketentuan File (2 Kolom di Tablet/Desktop) */}
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 pt-2 border-t border-hairline/50">
-                  {/* Kriteria */}
+                {/* 2. Kriteria & Ketentuan Berkas (Editorial Clean List — Tanpa Kotak & Tanpa Ikon Checkmark) */}
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 pt-6 border-t border-hairline/60">
+                  {/* Kriteria Karya */}
                   <div>
-                    <h3 className="font-display text-xs font-semibold uppercase tracking-wider text-cream sm:text-sm mb-3">
+                    <h3 className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-gold sm:text-sm">
                       {panduan.kriteriaTitle}
                     </h3>
-                    <ul className="space-y-2.5">
+                    <ul className="mt-4 space-y-2.5">
                       {panduan.kriteriaList.map((item, idx) => (
                         <li
                           key={idx}
-                          className="flex items-start gap-2.5 text-xs leading-relaxed text-cream/75"
+                          className="flex items-start gap-3 text-xs leading-relaxed text-cream/80"
                         >
-                          <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-soft" />
+                          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-gold/70" />
                           <span>{item}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  {/* Ketentuan Berkas & Hak Cipta */}
-                  <div className="space-y-3.5">
-                    <div className="rounded-lg border border-hairline bg-panel p-3.5">
-                      <div className="flex items-center gap-2 text-gold mb-1.5">
-                        <FileCheck className="h-4 w-4" />
-                        <h4 className="text-xs font-semibold text-cream">
-                          {panduan.teknisTitle}
-                        </h4>
-                      </div>
-                      <p className="text-[11px] leading-relaxed text-muted">
-                        Format berkas JPG, PNG, atau WebP • Maksimal 5 MB • Resolusi disarankan minimal 1200 × 800 piksel.
-                      </p>
-                    </div>
-
-                    <div className="rounded-lg border border-hairline bg-ink/50 p-3.5 flex items-start gap-2.5">
-                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                      <p className="text-[11px] leading-relaxed text-muted">
-                        {panduan.hakCipta}
-                      </p>
-                    </div>
+                  {/* Ketentuan Berkas */}
+                  <div>
+                    <h3 className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-gold sm:text-sm">
+                      {panduan.teknisTitle}
+                    </h3>
+                    <ul className="mt-4 space-y-2.5">
+                      {panduan.teknisList.map((teknis, idx) => (
+                        <li
+                          key={idx}
+                          className="flex items-start gap-3 text-xs leading-relaxed text-cream/80"
+                        >
+                          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-gold/70" />
+                          <span>{teknis}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
+                </div>
+
+                {/* 3. Catatan Hak Cipta & Etika (Clean Editorial Note Tanpa Box) */}
+                <div className="pt-4 border-t border-hairline/60">
+                  <p className="text-xs text-muted leading-relaxed">
+                    <span className="font-semibold text-cream/90">Ketentuan Hak Cipta: </span>
+                    {panduan.hakCipta}
+                  </p>
                 </div>
               </div>
             </details>
