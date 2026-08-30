@@ -734,3 +734,62 @@ export const artefakList: ArtefakItem[] = [
   },
 ];
 
+/* ==========================================================================
+   PARTISIPASI PUBLIK — KIRIM KARYA
+   ========================================================================== */
+
+export const kirimKaryaPage = {
+  hero: {
+    eyebrow: "PARTISIPASI PUBLIK",
+    title: "Kirim Karya untuk Dikurasi",
+    subtitle:
+      "Ruang kontribusi bagi mahasiswa, seniman, peneliti, dan masyarakat umum untuk memamerkan karya terinspirasi warisan budaya Majapahit melalui kurasi tim ahli PUI Seni Budaya Majapahitan.",
+    image: "/images/hero/slide-3.jpg",
+  },
+  panduan: {
+    kriteriaEyebrow: "PANDUAN KONTRIBUSI",
+    kriteriaTitle: "Kriteria Karya",
+    kriteriaList: [
+      "Karya seni rupa kontemporer bertema Majapahitan (lukisan, ilustrasi, grafis digital, 3D render).",
+      "Dokumentasi fotografi situs, artefak, atau kegiatan pelestarian seni budaya Majapahit.",
+      "Karya tulis reflektif, manuskrip ulasan, atau riset visual kebudayaan Majapahit.",
+      "Karya merupakan hasil ciptaan orisinal dan tidak melanggar hak cipta pihak mana pun.",
+    ],
+    teknisTitle: "Ketentuan Teknis File",
+    teknisList: [
+      "Format berkas: JPG, PNG, atau WebP.",
+      "Ukuran maksimal berkas: 5 MB.",
+      "Resolusi visual disarankan minimal 1200 × 800 piksel agar detail kurasi terlihat jelas.",
+      "Satu berkas unggahan per satu formulir pengiriman karya.",
+    ],
+    alurTitle: "Alur Proses Kurasi",
+    alurSteps: [
+      {
+        step: "01",
+        title: "Pengiriman Formulir",
+        desc: "Kontributor melengkapi data diri dan mengunggah berkas karya digital.",
+      },
+      {
+        step: "02",
+        title: "Peninjauan Tim Kurator",
+        desc: "Tim kurator PUI meninjau kesesuaian tema, orisinalitas, dan etika karya (estimasi 3–7 hari kerja).",
+      },
+      {
+        step: "03",
+        title: "Publikasi di Galeri Publik",
+        desc: "Karya yang dinyatakan lolos kurasi akan dipublikasikan di Galeri Karya Publik Museum Virtual.",
+      },
+    ],
+    hakCipta:
+      "Hak cipta karya tetap sepenuhnya milik kontributor. Dengan mengirimkan karya, Anda memberikan izin non-eksklusif kepada PUI Seni Budaya Majapahitan UNESA untuk menampilkan karya di platform Museum Virtual demi kepentingan apresiasi seni, kebudayaan, dan edukasi publik.",
+  },
+  kategoriOptions: [
+    { value: "seni-rupa", label: "Seni Rupa Kontemporer (Lukisan / Patung)" },
+    { value: "desain-ilustrasi", label: "Desain Grafis & Ilustrasi Digital" },
+    { value: "fotografi", label: "Dokumentasi Fotografi Situs / Budaya" },
+    { value: "model-3d", label: "Karya 3D Render / Animasi Budaya" },
+    { value: "riset-visual", label: "Riset Visual & Infografis Sejarah" },
+    { value: "lainnya", label: "Karya Kreatif Lainnya" },
+  ],
+};
+
