@@ -741,7 +741,7 @@ export const artefakList: ArtefakItem[] = [
 export const kirimKaryaPage = {
   hero: {
     eyebrow: "PARTISIPASI PUBLIK",
-    title: "Kirim Karya untuk Dikurasi",
+    title: "Ruang Partisipasi Karya",
     subtitle:
       "Ruang kontribusi bagi mahasiswa, seniman, peneliti, dan masyarakat umum untuk memamerkan karya terinspirasi warisan budaya Majapahit melalui kurasi tim ahli PUI Seni Budaya Majapahitan.",
     image: "/images/hero/slide-3.jpg",

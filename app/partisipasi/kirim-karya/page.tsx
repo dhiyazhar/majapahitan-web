@@ -6,7 +6,7 @@ import {
   FileCheck,
   Clock,
   ShieldCheck,
-  Sparkles,
+  BookOpen,
   ArrowRight,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
@@ -16,7 +16,7 @@ import KirimKaryaForm from "@/components/forms/KirimKaryaForm";
 import { kirimKaryaPage } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Kirim Karya untuk Dikurasi — Museum Virtual Majapahitan",
+  title: "Ruang Partisipasi Karya — Museum Virtual Majapahitan",
   description:
     "Formulir pengiriman dan kurasi karya seni rupa, ilustrasi, fotografi, dan karya kreatif publik terinspirasi kebudayaan Majapahit oleh PUI Seni Budaya Majapahitan UNESA.",
 };
@@ -78,7 +78,7 @@ export default function KirimKaryaPage() {
                 {/* 1. Kriteria Karya */}
                 <div>
                   <div className="flex items-center gap-2 text-gold">
-                    <Sparkles className="h-4 w-4" />
+                    <BookOpen className="h-4 w-4" />
                     <p className="text-xs font-semibold uppercase tracking-[0.2em]">
                       {panduan.kriteriaEyebrow}
                     </p>
