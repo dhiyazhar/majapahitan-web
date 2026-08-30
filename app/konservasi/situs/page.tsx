@@ -4,18 +4,12 @@ import { ChevronRight, MapPin, Calendar, ArrowRight, Layers, Gem } from "lucide-
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ImageSlot from "@/components/ui/ImageSlot";
-import { situsList, type SitusItem } from "@/lib/content";
+import { situsList } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Situs & Arsitektur Majapahit — Museum Konservasi",
   description:
     "Katalog dokumentasi candi, gapura, petirtaan, dan peninggalan arsitektur Kerajaan Majapahit di Jawa Timur oleh PUI Seni Budaya Majapahitan UNESA.",
-};
-
-const statusBadgeStyles: Record<SitusItem["status"], string> = {
-  "Terdokumentasi": "bg-gold/15 text-gold border-gold/30",
-  "Pemindaian 3D": "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-  "Dalam Proses": "bg-amber-500/15 text-amber-300 border-amber-500/30",
 };
 
 export default function SitusKonservasiPage() {
@@ -96,14 +90,6 @@ export default function SitusKonservasiPage() {
                       className="inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105"
                       sizes="(max-width: 640px) 100vw, 260px"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent sm:hidden" />
-                    <span
-                      className={`absolute top-3 left-3 rounded-sm border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider backdrop-blur sm:bottom-auto ${
-                        statusBadgeStyles[situs.status]
-                      }`}
-                    >
-                      {situs.status}
-                    </span>
                   </div>
 
                   {/* Details */}
