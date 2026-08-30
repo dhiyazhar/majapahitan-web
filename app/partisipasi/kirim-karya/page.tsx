@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   BookOpen,
   ArrowRight,
-  Sparkles,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -45,16 +44,8 @@ export default function KirimKaryaPage() {
               <span className="text-gold">Ruang Karya</span>
             </nav>
 
-            {/* Eyebrow badge */}
-            <div className="flex justify-center">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
-                <Sparkles className="h-3 w-3" />
-                {hero.eyebrow}
-              </span>
-            </div>
-
             {/* Judul Halaman */}
-            <h1 className="mt-4 font-display text-3xl font-bold uppercase tracking-wide text-cream sm:text-4xl lg:text-5xl">
+            <h1 className="mt-2 font-display text-3xl font-bold uppercase tracking-wide text-cream sm:text-4xl lg:text-5xl">
               {hero.title}
             </h1>
 
