@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronRight, Landmark, ArrowRight, Sparkles, Tag } from "lucide-react";
+import { ChevronRight, ArrowRight } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ImageSlot from "@/components/ui/ImageSlot";
@@ -139,11 +139,7 @@ export default function ArtefakKonservasiPage() {
                   </div>
 
                   {/* Card footer */}
-                  <div className="border-t border-hairline/50 p-6 pt-4 flex items-center justify-between text-xs">
-                    <span className="inline-flex items-center gap-1 text-gold-soft text-[11px]">
-                      <Sparkles className="h-3 w-3" />
-                      Karya Otentik
-                    </span>
+                  <div className="border-t border-hairline/50 p-6 pt-4 flex items-center justify-end text-xs">
                     <span className="font-semibold text-gold-soft group-hover:text-gold inline-flex items-center gap-1">
                       Detail Artefak
                       <ArrowRight className="h-3.5 w-3.5" />
@@ -155,29 +151,27 @@ export default function ArtefakKonservasiPage() {
           </section>
 
           {/* =========================================================================
-              4. CROSS-LINK KE SITUS & ARSITEKTUR
+              4. CROSS-LINK KE SITUS & ARSITEKTUR (Seamless CTA Layout)
           ========================================================================= */}
-          <section className="mt-20 border-t border-hairline pt-16 sm:mt-24 sm:pt-20">
-            <div className="rounded-xl border border-hairline bg-gradient-to-r from-ink-2 to-panel p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gold/10 text-gold ring-1 ring-gold/30">
-                  <Landmark className="h-6 w-6" />
-                </div>
-                <div>
-                  <h3 className="font-display text-lg font-semibold text-cream">
-                    Jelajahi Situs & Arsitektur Majapahit
-                  </h3>
-                  <p className="text-xs text-muted sm:text-sm">
-                    Kunjungi candi-candi megah, gapura bersejarah, dan kompleks petirtaan kuno yang telah terdokumentasi.
-                  </p>
-                </div>
+          <section className="mt-16 sm:mt-24 border-t border-hairline pt-12 sm:pt-16">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div className="max-w-xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+                  Eksplorasi Lanjutan
+                </p>
+                <h3 className="mt-1.5 font-display text-2xl sm:text-3xl font-bold uppercase tracking-wide text-cream">
+                  Jelajahi Situs & Arsitektur
+                </h3>
+                <p className="mt-2 text-xs sm:text-sm text-cream/70 leading-relaxed">
+                  Kunjungi candi-candi megah, gapura bersejarah, dan kompleks petirtaan kuno yang telah terdokumentasi secara digital.
+                </p>
               </div>
               <Link
                 href="/konservasi/situs"
-                className="inline-flex shrink-0 items-center gap-2 rounded-sm border border-gold-deep px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-gold transition-colors hover:bg-gold hover:text-ink"
+                className="inline-flex shrink-0 items-center gap-2.5 rounded-sm border border-gold-deep px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-gold transition-all duration-300 hover:bg-gold hover:text-ink hover:shadow-lg hover:shadow-gold/10 group"
               >
-                Lihat Situs
-                <ArrowRight className="h-4 w-4" />
+                <span>Lihat Situs</span>
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
           </section>

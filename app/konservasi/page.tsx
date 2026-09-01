@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Landmark, Gem, CheckCircle2, MessageSquare, HandHeart } from "lucide-react";
+import { ArrowRight, MessageSquare, HandHeart } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ImageSlot from "@/components/ui/ImageSlot";
@@ -54,14 +54,14 @@ export default function KonservasiPage() {
               2. PENGANTAR MISI KONSERVASI
           ========================================================================= */}
           <section className="mt-16 sm:mt-20">
-            <div className="mx-auto max-w-3xl text-center">
+            <div className="mx-auto max-w-2xl text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
                 {pengantar.eyebrow}
               </p>
               <h2 className="mt-2 font-display text-2xl font-semibold uppercase tracking-wide text-cream sm:text-3xl">
                 {pengantar.title}
               </h2>
-              <div className="mt-6 space-y-4 text-left text-sm leading-relaxed text-cream/80 sm:text-base sm:text-center">
+              <div className="mt-6 space-y-4 text-left text-sm leading-relaxed text-cream/80 sm:text-base">
                 {pengantar.paragraphs.map((para, idx) => (
                   <p key={idx}>{para}</p>
                 ))}
@@ -86,32 +86,23 @@ export default function KonservasiPage() {
             </div>
 
             <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-10">
-              {pilar.map((item) => {
-                const isSitus = item.id === "situs";
-                const Icon = isSitus ? Landmark : Gem;
-
-                return (
-                  <div
-                    key={item.id}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-xl bg-panel p-6 ring-gold-frame transition-all duration-300 hover:bg-panel-2 sm:p-8"
-                  >
-                    <div>
-                      {/* Image preview */}
-                      <div className="relative h-60 w-full overflow-hidden rounded-lg sm:h-72">
-                        <ImageSlot
-                          src={item.image}
-                          alt={item.title}
-                          label={item.title}
-                          position="absolute"
-                          className="inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105"
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-                        <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-sm bg-black/60 px-3 py-1 text-xs font-medium text-gold backdrop-blur">
-                          <Icon className="h-3.5 w-3.5" />
-                          {item.stat}
-                        </span>
-                      </div>
+              {pilar.map((item) => (
+                <div
+                  key={item.id}
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-xl bg-panel p-6 ring-gold-frame transition-all duration-300 hover:bg-panel-2 sm:p-8"
+                >
+                  <div>
+                    {/* Image preview */}
+                    <div className="relative h-60 w-full overflow-hidden rounded-lg sm:h-72">
+                      <ImageSlot
+                        src={item.image}
+                        alt={item.title}
+                        label={item.title}
+                        position="absolute"
+                        className="inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                    </div>
 
                       {/* Content */}
                       <h3 className="mt-6 font-display text-2xl font-semibold text-gold transition-colors group-hover:text-gold-soft">
@@ -133,9 +124,8 @@ export default function KonservasiPage() {
                       </Link>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
           </section>
 
           {/* =========================================================================
@@ -154,28 +144,25 @@ export default function KonservasiPage() {
               </p>
             </div>
 
-            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {proses.steps.map((step) => (
+            <div className="mt-14 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
+              {proses.steps.map((step, idx) => (
                 <div
                   key={step.id}
-                  className="relative flex flex-col justify-between rounded-xl bg-panel p-6 ring-gold-frame transition-all hover:bg-panel-2"
+                  className={`flex flex-col justify-start lg:px-8 first:lg:pl-0 last:lg:pr-0 ${
+                    idx !== proses.steps.length - 1
+                      ? "lg:border-r lg:border-hairline/70"
+                      : ""
+                  }`}
                 >
-                  <div>
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gold/10 font-display text-base font-bold text-gold ring-1 ring-gold/30">
-                      {step.number}
-                    </span>
-                    <h3 className="mt-5 font-display text-lg font-semibold text-cream">
-                      {step.title}
-                    </h3>
-                    <p className="mt-3 text-xs leading-relaxed text-cream/75 sm:text-sm">
-                      {step.description}
-                    </p>
-                  </div>
-
-                  <div className="mt-6 flex items-center gap-1.5 text-[11px] font-medium text-gold-soft">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                    <span>Terverifikasi Kurator</span>
-                  </div>
+                  <span className="font-display text-4xl sm:text-5xl font-bold text-gold select-none">
+                    {step.number}
+                  </span>
+                  <h3 className="mt-4 font-display text-lg sm:text-xl font-bold text-cream">
+                    {step.title}
+                  </h3>
+                  <p className="mt-3 text-xs leading-relaxed text-cream/70 sm:text-sm">
+                    {step.description}
+                  </p>
                 </div>
               ))}
             </div>

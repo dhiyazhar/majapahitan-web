@@ -311,8 +311,8 @@ export const contactInfo = {
     { label: "YouTube", href: "https://youtube.com/@pusenibudunesa", handle: "@pusenibudunesa", icon: "youtube" as const },
   ],
   googleMaps: {
-    label: "PUI Seni Budaya",
-    href: "https://maps.google.com/?q=PUI+Seni+Budaya+Universitas+Negeri+Surabaya",
+    label: "Gedung Laboratorium Anti Doping UNESA",
+    href: "https://maps.app.goo.gl/GqpisKzQERkrwvKz9",
   },
 };
 
@@ -486,7 +486,7 @@ export type KonservasiPilar = {
   image: string;
   href: string;
   cta: string;
-  stat: string;
+  stat?: string;
 };
 
 export type KonservasiStep = {
