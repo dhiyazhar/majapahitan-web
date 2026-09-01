@@ -61,7 +61,7 @@ Dokumen spesifikasi teknis dan panduan serah-terima (*handover specification*) u
           │
           ▼
 [FASE 3] Payload CMS 3+ Setup & Backend Database      [🎯 TARGET CMS]
-   ├── Target 1: Instalasi Payload 3, adapter PostgreSQL, admin panel (/admin)
+   ├── Target 1: Setup Payload 3, PostgreSQL, /admin, Multilingual [✅ SELESAI]
    ├── Target 2: Koleksi `Posts` & migrasi data listing/detail ke CMS
    ├── Target 3: Koleksi `KaryaMuseum` & workflow submission `KaryaPublik`
    └── Target 4: Integrasi Cloudflare R2 untuk penyimpanan aset media upload
