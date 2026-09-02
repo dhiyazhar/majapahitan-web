@@ -67,6 +67,12 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    posts: Post;
+    situs: Situs;
+    artefak: Artefak;
+    'karya-museum': KaryaMuseum;
+    'karya-publik': KaryaPublik;
+    pages: Page;
     users: User;
     media: Media;
     'payload-kv': PayloadKv;
@@ -76,6 +82,12 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    posts: PostsSelect<false> | PostsSelect<true>;
+    situs: SitusSelect<false> | SitusSelect<true>;
+    artefak: ArtefakSelect<false> | ArtefakSelect<true>;
+    'karya-museum': KaryaMuseumSelect<false> | KaryaMuseumSelect<true>;
+    'karya-publik': KaryaPublikSelect<false> | KaryaPublikSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -87,8 +99,20 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('id' | 'en') | ('id' | 'en')[];
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    navigation: Navigation;
+    'site-settings': SiteSetting;
+    'page-beranda': PageBeranda;
+    'page-tentang': PageTentang;
+    'page-konservasi': PageKonservasi;
+  };
+  globalsSelect: {
+    navigation: NavigationSelect<false> | NavigationSelect<true>;
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    'page-beranda': PageBerandaSelect<false> | PageBerandaSelect<true>;
+    'page-tentang': PageTentangSelect<false> | PageTentangSelect<true>;
+    'page-konservasi': PageKonservasiSelect<false> | PageKonservasiSelect<true>;
+  };
   locale: 'id' | 'en';
   widgets: {
     collections: CollectionsWidget;
@@ -119,29 +143,44 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "posts".
  */
-export interface User {
+export interface Post {
   id: number;
-  name?: string | null;
+  title: string;
+  /**
+   * URL slug untuk artikel (contoh: peluncuran-galeri-3d)
+   */
+  slug: string;
+  /**
+   * Kategori warta untuk menentukan penempatan halaman publik
+   */
+  category: 'berita' | 'publikasi' | 'program';
+  coverImage?: (number | null) | Media;
+  /**
+   * Ringkasan singkat artikel yang muncul pada kartu preview (maksimal 2–3 kalimat)
+   */
+  excerpt: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  author?: string | null;
+  publishedAt?: string | null;
+  status?: ('draft' | 'published') | null;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -190,6 +229,163 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "situs".
+ */
+export interface Situs {
+  id: number;
+  name: string;
+  slug: string;
+  location: string;
+  era: string;
+  status?: ('Terdokumentasi' | 'Pemindaian 3D' | 'Dalam Proses') | null;
+  image?: (number | null) | Media;
+  description: string;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "artefak".
+ */
+export interface Artefak {
+  id: number;
+  name: string;
+  slug: string;
+  category: 'Prasasti & Inskripsi' | 'Arca & Patung' | 'Keramik & Gerabah' | 'Perhiasan & Logam' | 'Naskah & Sastra';
+  era: string;
+  material: string;
+  image?: (number | null) | Media;
+  description: string;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "karya-museum".
+ */
+export interface KaryaMuseum {
+  id: number;
+  title: string;
+  slug: string;
+  type: 'otentik' | 'kontemporer';
+  image: number | Media;
+  creator?: string | null;
+  era?: string | null;
+  material?: string | null;
+  description?: string | null;
+  status?: ('draft' | 'published') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "karya-publik".
+ */
+export interface KaryaPublik {
+  id: number;
+  title: string;
+  contributorName: string;
+  contributorEmail: string;
+  contributorAffiliation?: string | null;
+  category: 'seni-rupa' | 'desain-ilustrasi' | 'fotografi' | 'model-3d' | 'riset-visual' | 'lainnya';
+  description: string;
+  image: number | Media;
+  status?: ('pending' | 'published' | 'rejected') | null;
+  /**
+   * Hanya dapat dilihat oleh pengelola / tim kurator PUI
+   */
+  moderationNotes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  /**
+   * URL slug untuk halaman ini (misal: faq, kemitraan, panduan)
+   */
+  slug: string;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  status?: ('draft' | 'published') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -212,6 +408,30 @@ export interface PayloadKv {
 export interface PayloadLockedDocument {
   id: number;
   document?:
+    | ({
+        relationTo: 'posts';
+        value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'situs';
+        value: number | Situs;
+      } | null)
+    | ({
+        relationTo: 'artefak';
+        value: number | Artefak;
+      } | null)
+    | ({
+        relationTo: 'karya-museum';
+        value: number | KaryaMuseum;
+      } | null)
+    | ({
+        relationTo: 'karya-publik';
+        value: number | KaryaPublik;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
     | ({
         relationTo: 'users';
         value: number | User;
@@ -261,6 +481,101 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  category?: T;
+  coverImage?: T;
+  excerpt?: T;
+  content?: T;
+  author?: T;
+  publishedAt?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "situs_select".
+ */
+export interface SitusSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  location?: T;
+  era?: T;
+  status?: T;
+  image?: T;
+  description?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "artefak_select".
+ */
+export interface ArtefakSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  category?: T;
+  era?: T;
+  material?: T;
+  image?: T;
+  description?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "karya-museum_select".
+ */
+export interface KaryaMuseumSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  type?: T;
+  image?: T;
+  creator?: T;
+  era?: T;
+  material?: T;
+  description?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "karya-publik_select".
+ */
+export interface KaryaPublikSelect<T extends boolean = true> {
+  title?: T;
+  contributorName?: T;
+  contributorEmail?: T;
+  contributorAffiliation?: T;
+  category?: T;
+  description?: T;
+  image?: T;
+  status?: T;
+  moderationNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  content?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -376,6 +691,236 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation".
+ */
+export interface Navigation {
+  id: number;
+  items?:
+    | {
+        label: string;
+        href: string;
+        children?:
+          | {
+              label: string;
+              href: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  org: string;
+  university: string;
+  operatingHours?: string | null;
+  office?: string | null;
+  email?: string | null;
+  googleMapsUrl?: string | null;
+  socials?:
+    | {
+        label: string;
+        href: string;
+        handle: string;
+        icon: 'instagram' | 'youtube' | 'twitter' | 'facebook';
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Pengaturan konten dinamis untuk Landing Page Beranda (/)
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-beranda".
+ */
+export interface PageBeranda {
+  id: number;
+  heroSlides?:
+    | {
+        title: string;
+        subtitle: string;
+        image?: (number | null) | Media;
+        primaryLabel?: string | null;
+        primaryHref?: string | null;
+        secondaryLabel?: string | null;
+        secondaryHref?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  tentangEyebrow?: string | null;
+  tentangTitle?: string | null;
+  tentangBody?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Pengaturan konten untuk Halaman Tentang Museum (/tentang)
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-tentang".
+ */
+export interface PageTentang {
+  id: number;
+  heroTitle?: string | null;
+  heroSubtitle?: string | null;
+  visi?: string | null;
+  misi?:
+    | {
+        point: string;
+        id?: string | null;
+      }[]
+    | null;
+  sejarahParagraphs?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Pengaturan konten untuk Halaman Indeks Museum Konservasi (/konservasi)
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-konservasi".
+ */
+export interface PageKonservasi {
+  id: number;
+  heroTitle?: string | null;
+  heroSubtitle?: string | null;
+  pengantarParagraphs?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation_select".
+ */
+export interface NavigationSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        children?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  org?: T;
+  university?: T;
+  operatingHours?: T;
+  office?: T;
+  email?: T;
+  googleMapsUrl?: T;
+  socials?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        handle?: T;
+        icon?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-beranda_select".
+ */
+export interface PageBerandaSelect<T extends boolean = true> {
+  heroSlides?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+        image?: T;
+        primaryLabel?: T;
+        primaryHref?: T;
+        secondaryLabel?: T;
+        secondaryHref?: T;
+        id?: T;
+      };
+  tentangEyebrow?: T;
+  tentangTitle?: T;
+  tentangBody?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-tentang_select".
+ */
+export interface PageTentangSelect<T extends boolean = true> {
+  heroTitle?: T;
+  heroSubtitle?: T;
+  visi?: T;
+  misi?:
+    | T
+    | {
+        point?: T;
+        id?: T;
+      };
+  sejarahParagraphs?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-konservasi_select".
+ */
+export interface PageKonservasiSelect<T extends boolean = true> {
+  heroTitle?: T;
+  heroSubtitle?: T;
+  pengantarParagraphs?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
