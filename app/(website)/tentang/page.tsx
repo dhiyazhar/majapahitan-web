@@ -291,19 +291,19 @@ export default function TentangPage() {
                   </div>
                 </div>
 
-                {/* Google Maps / Location Box */}
-                <div className="flex flex-col justify-between rounded-lg border border-cream-ink/15 bg-cream-2/80 p-5 lg:col-span-6">
+                {/* Google Maps / Location Box (No inner card box, matching skeleton) */}
+                <div className="flex flex-col justify-between lg:col-span-6 lg:border-l lg:border-cream-ink/20 lg:pl-10">
                   <div>
-                    <h3 className="font-display text-lg font-semibold uppercase tracking-wide text-maroon">
+                    <h3 className="font-display text-xs font-bold uppercase tracking-[0.2em] text-maroon">
                       Peta Lokasi Kantor
                     </h3>
-                    <p className="mt-1 text-xs text-cream-ink/70">
+                    <p className="mt-1 text-xs text-cream-ink/75">
                       Gedung Laboratorium Anti Doping Lt. 4, UNESA Kampus Lidah Wetan
                     </p>
                   </div>
 
                   {/* Maps placeholder / iframe container */}
-                  <div className="relative mt-4 h-64 w-full overflow-hidden rounded-md border border-cream-ink/20 bg-cream-ink/5">
+                  <div className="relative mt-4 h-64 w-full overflow-hidden rounded-lg border border-cream-ink/20 bg-cream-ink/5">
                     <iframe
                       title="Lokasi PUI Seni Budaya Majapahitan - Gedung Laboratorium Anti Doping UNESA"
                       src="https://maps.google.com/maps?q=Gedung+Laboratorium+Anti+Doping+Universitas+Negeri+Surabaya&t=&z=16&ie=UTF8&iwloc=&output=embed"

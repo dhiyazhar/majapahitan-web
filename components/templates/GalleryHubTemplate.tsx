@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { ChevronRight, Sparkles, ArrowRight, Upload, Layers } from "lucide-react";
+import { ChevronRight, ArrowRight, Upload } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ImageSlot from "@/components/ui/ImageSlot";
@@ -205,12 +205,9 @@ export default function GalleryHubTemplate({ items }: Props) {
           <section className="mt-20 sm:mt-28">
             <div className="flex flex-col items-start justify-between gap-4 border-b border-hairline pb-6 md:flex-row md:items-end">
               <div>
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-gold" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-                    PRATINJAU INTERAKTIF
-                  </p>
-                </div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+                  PRATINJAU INTERAKTIF
+                </p>
                 <h2 className="mt-1 font-display text-2xl font-bold uppercase tracking-wide text-cream sm:text-3xl">
                   Koleksi Visual Pilihan
                 </h2>

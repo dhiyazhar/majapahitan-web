@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { ChevronRight, Search, X, Upload, Sparkles, ArrowRight } from "lucide-react";
+import { ChevronRight, Search, X, Upload, ArrowRight } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ImageSlot from "@/components/ui/ImageSlot";

@@ -1057,6 +1057,8 @@ export function getFeaturedKarya(): KaryaItem[] {
   return karyaList.filter((k) => k.featured);
 }
 
+
+
 /* Backward compatibility for landing page BeritaTerbaru */
 export type Berita = {
   id: string;
@@ -1118,7 +1120,7 @@ export const partisipasis: Partisipasi[] = [
     id: "donasi",
     title: "Donasi",
     subtitle: "Konservasi",
-    href: "/donasi",
+    href: "#",
     icon: "heart-handshake",
   },
 ];
