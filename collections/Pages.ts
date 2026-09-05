@@ -1,14 +1,23 @@
 import type { CollectionConfig } from 'payload'
+import { isAdmin, isAdminOrStaff } from '../access'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
+  labels: {
+    singular: 'Halaman Dinamis',
+    plural: 'Halaman Dinamis',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'status'],
-    group: 'Halaman Dinamis',
+    group: 'Halaman & Menu',
+    description: 'Kelola konten halaman khusus dan laman statis tambahan.',
   },
   access: {
     read: () => true,
+    create: isAdmin, // Hanya Admin yang dapat menambah entri halaman baru
+    update: isAdminOrStaff, // Admin & Staff dapat memperbarui isi konten
+    delete: isAdmin, // Hanya Admin yang dapat menghapus halaman
   },
   fields: [
     {

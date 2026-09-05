@@ -1,14 +1,23 @@
 import type { CollectionConfig } from 'payload'
+import { isAdmin, isAdminOrStaff } from '../access'
 
 export const Situs: CollectionConfig = {
   slug: 'situs',
+  labels: {
+    singular: 'Situs Sejarah',
+    plural: 'Situs & Arsitektur',
+  },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'location', 'era', 'status'],
-    group: 'Konservasi',
+    group: 'Warisan & Konservasi',
+    description: 'Pusat data dokumentasi situs dan arsitektur peninggalan era Majapahit.',
   },
   access: {
     read: () => true,
+    create: isAdminOrStaff,
+    update: isAdminOrStaff,
+    delete: isAdmin,
   },
   fields: [
     {

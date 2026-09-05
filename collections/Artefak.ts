@@ -1,14 +1,23 @@
 import type { CollectionConfig } from 'payload'
+import { isAdmin, isAdminOrStaff } from '../access'
 
 export const Artefak: CollectionConfig = {
   slug: 'artefak',
+  labels: {
+    singular: 'Artefak',
+    plural: 'Artefak & Benda Budaya',
+  },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'category', 'era', 'material'],
-    group: 'Konservasi',
+    group: 'Warisan & Konservasi',
+    description: 'Inventarisasi artefak, arca, tosan aji, dan benda cagar budaya.',
   },
   access: {
     read: () => true,
+    create: isAdminOrStaff,
+    update: isAdminOrStaff,
+    delete: isAdmin,
   },
   fields: [
     {

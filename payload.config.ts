@@ -31,6 +31,9 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    avatar: {
+      Component: './components/admin/UserAvatar#UserAvatar',
+    },
   },
   collections: [
     // Warta & Publikasi

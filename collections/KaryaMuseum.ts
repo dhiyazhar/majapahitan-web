@@ -1,14 +1,23 @@
 import type { CollectionConfig } from 'payload'
+import { isAdmin, isAdminOrStaff } from '../access'
 
 export const KaryaMuseum: CollectionConfig = {
   slug: 'karya-museum',
+  labels: {
+    singular: 'Koleksi Museum',
+    plural: 'Galeri Virtual Museum',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'creator', 'status'],
-    group: 'Galeri Seni',
+    group: 'Partisipasi & Galeri',
+    description: 'Katalog pameran karya museum: koleksi otentik dan karya kontemporer.',
   },
   access: {
     read: () => true,
+    create: isAdminOrStaff,
+    update: isAdminOrStaff,
+    delete: isAdmin,
   },
   fields: [
     {

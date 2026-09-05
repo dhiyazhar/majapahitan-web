@@ -1,13 +1,16 @@
 import type { GlobalConfig } from 'payload'
+import { isAdminOrStaff } from '../access'
 
 export const PageBeranda: GlobalConfig = {
   slug: 'page-beranda',
+  label: 'Halaman: Beranda',
   admin: {
-    group: 'Halaman Statis',
+    group: 'Halaman & Menu',
     description: 'Pengaturan konten dinamis untuk Landing Page Beranda (/)',
   },
   access: {
     read: () => true,
+    update: isAdminOrStaff,
   },
   fields: [
     {

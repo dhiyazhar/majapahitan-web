@@ -142,6 +142,8 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Kelola warta berita, publikasi ilmiah, dan agenda kegiatan kebudayaan.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts".
  */
@@ -149,16 +151,19 @@ export interface Post {
   id: number;
   title: string;
   /**
-   * URL slug untuk artikel (contoh: peluncuran-galeri-3d)
+   * Tautan URL artikel. Otomatis terisi dari judul jika dikosongkan.
    */
   slug: string;
   /**
-   * Kategori warta untuk menentukan penempatan halaman publik
+   * Menentukan penempatan warta pada kanal website yang sesuai.
    */
   category: 'berita' | 'publikasi' | 'program';
+  /**
+   * Disarankan foto landscape beresolusi baik dengan rasio 16:9.
+   */
   coverImage?: (number | null) | Media;
   /**
-   * Ringkasan singkat artikel yang muncul pada kartu preview (maksimal 2–3 kalimat)
+   * Ringkasan singkat (2–3 kalimat) yang muncul pada kartu pratinjau halaman beranda.
    */
   excerpt: string;
   content: {
@@ -176,6 +181,9 @@ export interface Post {
     };
     [k: string]: unknown;
   };
+  /**
+   * Otomatis terisi dengan nama akun Anda saat diterbitkan.
+   */
   author?: string | null;
   publishedAt?: string | null;
   status?: ('draft' | 'published') | null;
@@ -183,11 +191,16 @@ export interface Post {
   createdAt: string;
 }
 /**
+ * Pusat penyimpanan foto, gambar koleksi, dan aset visual situs.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
   id: number;
+  /**
+   * Deskripsi gambar untuk aksesibilitas pembaca layar dan optimasi SEO.
+   */
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -228,6 +241,8 @@ export interface Media {
   };
 }
 /**
+ * Pusat data dokumentasi situs dan arsitektur peninggalan era Majapahit.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "situs".
  */
@@ -259,6 +274,8 @@ export interface Situs {
   createdAt: string;
 }
 /**
+ * Inventarisasi artefak, arca, tosan aji, dan benda cagar budaya.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "artefak".
  */
@@ -290,6 +307,8 @@ export interface Artefak {
   createdAt: string;
 }
 /**
+ * Katalog pameran karya museum: koleksi otentik dan karya kontemporer.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "karya-museum".
  */
@@ -308,6 +327,8 @@ export interface KaryaMuseum {
   createdAt: string;
 }
 /**
+ * Tinjau dan kurasi kiriman karya seni dari masyarakat dan sivitas akademika.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "karya-publik".
  */
@@ -329,6 +350,8 @@ export interface KaryaPublik {
   createdAt: string;
 }
 /**
+ * Kelola konten halaman khusus dan laman statis tambahan.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
@@ -359,12 +382,30 @@ export interface Page {
   createdAt: string;
 }
 /**
+ * Kelola akun pengguna dan hak akses sistem.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
-  name?: string | null;
+  /**
+   * Nama yang dicantumkan sebagai identitas dan atribusi penulis.
+   */
+  name: string;
+  role: 'admin' | 'staff';
+  /**
+   * Jabatan resmi atau spesialisasi di lingkungan PUI Seni Budaya Majapahitan.
+   */
+  title?: string | null;
+  /**
+   * Foto identitas profil pengguna (disarankan foto portrait rasio 1:1).
+   */
+  avatar?: (number | null) | Media;
+  /**
+   * Biografi atau profil singkat pengelola untuk kebutuhan pengenalan penulis.
+   */
+  bio?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -583,6 +624,10 @@ export interface PagesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  role?: T;
+  title?: T;
+  avatar?: T;
+  bio?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -693,6 +738,8 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Kelola hierarki dan tautan menu navigasi utama website.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "navigation".
  */
@@ -716,6 +763,8 @@ export interface Navigation {
   createdAt?: string | null;
 }
 /**
+ * Identitas institusi, kontak resmi, alamat, jam operasional, dan akun media sosial.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings".
  */

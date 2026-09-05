@@ -1,15 +1,23 @@
 import type { CollectionConfig } from 'payload'
+import { isAdmin, isAdminOrStaff } from '../access'
 
 export const KaryaPublik: CollectionConfig = {
   slug: 'karya-publik',
+  labels: {
+    singular: 'Karya Publik',
+    plural: 'Galeri Karya Publik',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'contributorName', 'category', 'status'],
-    group: 'Partisipasi',
+    group: 'Partisipasi & Galeri',
+    description: 'Tinjau dan kurasi kiriman karya seni dari masyarakat dan sivitas akademika.',
   },
   access: {
     read: () => true,
-    create: () => true, // Publik bisa submit karya via API / Form
+    create: () => true, // Publik dapat mengirim karya melalui form partisipasi
+    update: isAdminOrStaff, // Admin atau Staff dapat melakukan kurasi / approval
+    delete: isAdmin, // Hanya Admin yang dapat menghapus data karya
   },
   fields: [
     {

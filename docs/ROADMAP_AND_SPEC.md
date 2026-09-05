@@ -1,205 +1,104 @@
 # Museum Virtual Majapahitan — Roadmap & Technical Handover Spec
 
-Dokumen spesifikasi teknis dan panduan serah-terima (*handover specification*) untuk agen AI atau pengembang berikutnya yang melanjutkan pengembangan website **Museum Virtual Majapahitan** (PUISBM – Universitas Negeri Surabaya).
+Dokumen spesifikasi teknis dan panduan serah-terima (*handover specification*) untuk pengembang dan agen AI dalam pengembangan website **Museum Virtual Majapahitan** (PUISBM – Universitas Negeri Surabaya).
 
 ---
 
 ## 📌 1. Ringkasan Proyek & Tech Stack
 
 - **Lokasi Workspace**: `C:\Users\Lenovo LOQ\Code\sbm-majapahitan`
-- **Dokumentasi & Brainstorming**: `C:\Users\Lenovo LOQ\Code\brainstorming-sbm`
-- **Framework Frontend**: Next.js 16.2 (App Router, Turbopack) + React 19 + TypeScript 5
+- **Framework Frontend**: Next.js 16.2.11 (App Router, Turbopack) + React 19 + TypeScript 5
 - **Styling**: Tailwind CSS v4 (`@theme` tokens di `app/globals.css`, panduan di `docs/UI_GUIDE.md`)
-- **Icons**: Lucide React + Custom Brand SVG (`components/ui/BrandIcons.tsx`)
-- **Target CMS**: Payload CMS 3+ (self-hosted, terintegrasi langsung di dalam Next.js, database PostgreSQL, media Cloudflare R2 — sesuai `brainstorming-sbm/docs/adr/0001-payload-cms-over-headless-wordpress.md`)
-- **Bahasa Copywriting**: Bahasa Indonesia baku, formal, dan berorientasi edukasi/kebudayaan.
+- **Icons**: Lucide React + Custom Brand SVG
+- **Tipografi**:
+  - **Cinzel (`font-display`)**: Judul pameran, heading seksi, dan teks *eyebrow*.
+  - **Plus Jakarta Sans (`font-sans`)**: Semua judul berita/publikasi/karya, teks narasi, dan antarmuka artikel.
+- **Content Management**: Payload CMS 3+ (Integrated Next.js App Router, PostgreSQL / Local API, Cloudflare R2 untuk media)
+- **Status Kompilasi**: **36 Rute Statis & SSG Aktif** (`npm run build` sukses kode 0).
 
 ---
 
-## ✅ 2. Checkpoint Saat Ini (Yang Sudah Selesai)
+## ✅ 2. Matriks Status Implementasi Fitur
 
-| Fitur / Halaman | Status | Lokasi File | Catatan |
+| Modul / Rute | Status | Komponen & Template Terkait | Fitur Kunci & Keputusan Desain |
 |---|---|---|---|
-| **Landing Page** (`/`) | Selesai | `app/page.tsx` | Hero slider, Akses Cepat, Pameran, Koleksi, Tentang preview, Berita, Partisipasi, Berlangganan |
-| **Tentang Museum** (`/tentang`) | Selesai | `app/tentang/page.tsx` | Hero, Visi & Misi (tanpa card, dead-center line, align-left), Sejarah, Tim Ahli (floating portraits), Mitra (clean logo cloud), Kontak & Google Maps resmi UNESA, Galeri |
-| **Museum Konservasi Index** (`/konservasi`) | Selesai | `app/konservasi/page.tsx` | Hero banner, Pengantar misi (lebar optimal `max-w-2xl` align-left), Dua Pilar preservasi, Tahapan proses ilmiah (angka emas `01–04`, vertical dividers, tanpa card), CTA Kerjasama |
-| **Situs & Arsitektur** (`/konservasi/situs`) | Selesai | `app/konservasi/situs/page.tsx` | Breadcrumb hero, katalog 6 situs Majapahit dengan lokasi & era, peta sebaran, seamless CTA ke Artefak |
-| **Artefak & Benda Budaya** (`/konservasi/artefak`) | Selesai | `app/konservasi/artefak/page.tsx` | Breadcrumb hero, kategori filter pills, katalog 6 artefak dengan material & era, seamless CTA ke Situs |
-| **Ruang Partisipasi Karya** (`/partisipasi/kirim-karya`) | Selesai | `app/partisipasi/kirim-karya/page.tsx`<br>`components/forms/KirimKaryaForm.tsx` | Layout Centered Focus, accordion panduan kuratorial (timeline terhubung dengan garis horizontal, tanpa card dalam card, tanpa ikon checklist), formulir kurasi interaktif dengan drag-drop preview & success state |
-| **Navigasi Navbar** | Selesai | `components/layout/Navbar.tsx` | Dropdown 3-level flyout desktop (`group/sub`), drawer mobile berjenjang, `usePathname` active route |
-| **Footer Informasi** | Selesai | `components/layout/Footer.tsx` | Detail alamat resmi Lab Anti Doping UNESA, tautan media sosial, navigasi legal & sitemap |
-| **Data Mock Seam** | Selesai | `lib/content.ts` | Single source of truth untuk semua data statis sebelum Payload CMS aktif |
-| **UI Design Guide** | Selesai | `docs/UI_GUIDE.md` | Panduan token warna, tipografi Cinzel + Plus Jakarta Sans, tombol, dan komponen UI |
-| **Build Status** | Verified | — | Seluruh 7 rute ter-prerender statis sempurna (`npm run build` sukses tanpa error) |
+| **Beranda** (`/`) | Selesai | `app/(website)/page.tsx`<br>`components/sections/*` | Hero Carousel, Akses Cepat, Pameran Slider, Koleksi, Warta Terbaru, Partisipasi Publik, Newsletter. |
+| **Tentang Museum** (`/tentang`) | Selesai | `app/(website)/tentang/page.tsx` | Visi & Misi (garis tengah dead-center), Sejarah, Tim Ahli, Mitra, Kontak & Peta 2-kolom tanpa kartu bertumpuk (*no nested card*). |
+| **Konservasi Index** (`/konservasi`) | Selesai | `app/(website)/konservasi/page.tsx` | Dua Pilar Konservasi, 4 Tahapan Ilmiah dengan angka emas `01–04` & vertical dividers. |
+| **Situs & Arsitektur** (`/konservasi/situs`) | Selesai | `app/(website)/konservasi/situs/page.tsx` | Katalog 6 situs sejarah dengan metadata era, peta sebaran, dan CTA seamless. |
+| **Artefak & Benda Budaya** (`/konservasi/artefak`) | Selesai | `app/(website)/konservasi/artefak/page.tsx` | Filter kategori bahan/material, katalog 6 artefak dengan era & material. |
+| **Warta Berita** (`/berita` & `/berita/[slug]`) | Selesai | `components/templates/PostListingTemplate.tsx`<br>`components/templates/PostDetailTemplate.tsx` | Hero warta utama (Plus Jakarta Sans), filter kategori, pagination, body artikel uniform AAA contrast, tombol share. |
+| **Publikasi Ilmiah** (`/publikasi` & `/publikasi/[slug]`) | Selesai | `components/templates/PublicationListingTemplate.tsx`<br>`components/templates/PublicationDetailTemplate.tsx`<br>`components/posts/PublicationCard.tsx` | Gateway E-Library eksternal, badge SINTA putih, DOI, generator sitasi otomatis APA 7th, pencarian naskah. |
+| **Program & Kegiatan** (`/program` & `/program/[slug]`) | Selesai | `app/(website)/program/page.tsx`<br>`app/(website)/program/[slug]/page.tsx` | Agenda pameran virtual, lokakarya, seminar, dan webinar kebudayaan. |
+| **Portal Hub Galeri** (`/galeri`) | Selesai | `components/templates/GalleryHubTemplate.tsx` | 3 Gerbang galeri visual, filter tab kategori, sorotan karya pilihan dengan **Modal Lightbox Interaktif**. |
+| **Galeri Karya Publik** (`/galeri/publik`) | Selesai | `components/templates/PublicGalleryTemplate.tsx` | Ruang apresiasi karya kiriman masyarakat, filter sub-kategori, alur kurasi 2-kolom rapi, modal Lightbox. |
+| **Galeri Virtual Museum** (`/galeri/museum`) | Selesai | `components/templates/MuseumGalleryTemplate.tsx` | Portal koleksi internal PUI dengan gerbang sayap Otentik & Kontemporer, pencarian real-time, dan banner 3D tour. |
+| **Koleksi Otentik** (`/galeri/museum/otentik`) | Selesai | `app/(website)/galeri/museum/otentik/page.tsx` | Arsip foto pusaka tosan aji, arca andesit, makro relief Kala, terakota kuno, dan pemodelan 3D. |
+| **Karya Kontemporer** (`/galeri/museum/kontemporer`) | Selesai | `app/(website)/galeri/museum/kontemporer/page.tsx` | Pameran seni rupa modern: relief Surya emas, kain modern motif candi Penataran, instalasi digital Kawi. |
+| **Form Submisi Karya** (`/partisipasi/kirim-karya`) | Selesai | `components/forms/KirimKaryaForm.tsx` | Form pengiriman karya publik dengan validasi client-side, drag-and-drop preview, dan accordion panduan kuratorial. |
+| **Komponen Lightbox** | Selesai | `components/gallery/ArtworkLightbox.tsx` | Penampil layar penuh (*accessible modal*), metadata kuratorial, keyboard nav (<kbd>←</kbd> <kbd>→</kbd> <kbd>ESC</kbd>), body scroll lock. |
+| **Payload CMS Schema** | Selesai | `payload.config.ts`<br>`collections/*`<br>`globals/*` | 6 Collections (`Posts`, `KaryaMuseum`, `KaryaPublik`, `Situs`, `Artefak`, `Pages`), 5 Globals, `importMap.js` (53 entries). |
 
 ---
 
-## 🎯 3. Target Roadmap & Milestone Berikutnya
+## 🗺️ 3. Roadmap Milestone & Rencana Tahapan
 
 ```
 [FASE 1] Fondasi Desain & Landing Page               [✅ SELESAI]
-   ├── Design System, Token Tailwind v4, ImageSlot
-   └── Landing Page lengkap (/), Navbar & Footer
+   ├── Design Tokens Tailwind v4 (@theme di globals.css)
+   ├── Komponen Dasar: ImageSlot, Navbar 3-Level, Footer
+   └── Halaman Beranda (/) lengkap 8 section
 
-[FASE 2A] Halaman Statis & Formulir Unik             [✅ SELESAI]
-   ├── /tentang (Visi-Misi, Tim Ahli, Mitra, Maps)
-   ├── /konservasi (Index Museum Konservasi)
-   ├── /konservasi/situs (Katalog Situs & Arsitektur)
-   ├── /konservasi/artefak (Katalog Artefak & Benda Budaya)
-   └── /partisipasi/kirim-karya (Form Pengiriman Karya Publik)
+[FASE 2A] Halaman Statis Inti & Form Kurasi           [✅ SELESAI]
+   ├── /tentang (Visi-Misi, Tim Ahli, Kontak 2-kolom)
+   ├── /konservasi, /konservasi/situs, /konservasi/artefak
+   └── /partisipasi/kirim-karya (Formulir Kurasi Terbuka)
+
+[FASE 2B] Modul Artikel, Publikasi & Program         [✅ SELESAI]
+   ├── /berita & 6 dynamic routes /berita/[slug]
+   ├── /publikasi & 6 dynamic routes /publikasi/[slug] (E-Library & APA 7)
+   └── /program & 6 dynamic routes /program/[slug]
+
+[FASE 2C] Modul Galeri & Lightbox Showcase           [✅ SELESAI]
+   ├── /galeri (Portal Hub Galeri Virtual)
+   ├── /galeri/publik (Galeri Karya Publik)
+   ├── /galeri/museum (Galeri Virtual Museum)
+   ├── /galeri/museum/otentik & /galeri/museum/kontemporer
+   └── ArtworkLightbox (Navigasi Keyboard, Metadata Kurator, Scroll Lock)
+
+[FASE 2D] Modul Partisipasi Publik Lanjutan          [⏳ TAHAP SEKARANG]
+   ├── /partisipasi/relawan (Formulir Pendaftaran Relawan Virtual)
+   ├── /partisipasi/buku-tamu (Buku Tamu Digital Pengunjung)
+   └── /partisipasi/testimoni (Kesan & Testimoni Apresiasi Pengunjung)
           │
           ▼
-[FASE 2B] Template Reusable Listing & Detail          [⏳ BERIKUTNYA]
-   ├── Template Warta & Artikel (PostListingTemplate & PostDetailTemplate)
-   │     ├── /berita & /berita/[slug]
-   │     ├── /publikasi & /publikasi/[slug]
-   │     └── /program & /program/[slug]
-   └── Template Galeri Visual (GalleryTemplate)
-         ├── /galeri/publik (Showcase Karya Masyarakat Terkurasi)
-         ├── /galeri/museum/otentik (Showcase Benda Bersejarah)
-         └── /galeri/museum/kontemporer (Showcase Seni Kontemporer)
-          │
-          ▼
-[FASE 3] Payload CMS 3+ Setup & Backend Database      [🎯 TARGET CMS]
-   ├── Target 1: Setup Payload 3, PostgreSQL, /admin, Multilingual [✅ SELESAI]
-   ├── Target 2: Koleksi `Posts` & migrasi data listing/detail ke CMS
-   ├── Target 3: Koleksi `KaryaMuseum` & workflow submission `KaryaPublik`
-   └── Target 4: Integrasi Cloudflare R2 untuk penyimpanan aset media upload
+[FASE 3] Integrasi Payload CMS 3+ Local API          [🎯 TARGET BACKEND]
+   ├── Fase 3A: Skema Collections & Globals          [✅ SELESAI]
+   ├── Fase 3B: Migrasi Data & Database PostgreSQL Seed
+   ├── Fase 3C: Local API Wire-up (Mengganti lib/content.ts seam ke getPayload())
+   └── Fase 3D: Cloudflare R2 Media Storage Adapter untuk Upload Foto Karya
+
+[FASE 4] Fitur Interaktif Lanjutan & Multibahasa     [🚀 FINALISASI]
+   ├── Tur Virtual 3D / 360° Interactive Canvas Viewer
+   └── Sakelar Bahasa ID / EN (i18n Localization)
 ```
 
 ---
 
-## 📋 4. Spesifikasi Teknis Rinci Per Target
+## 🛠️ 4. Panduan & Aturan Desain Penting (*User Rules*)
 
-### 🎯 TARGET 1: Payload CMS 3+ Integration
-
-#### 1.1 Kebutuhan Package
-```bash
-npm install payload @payloadcms/next @payloadcms/db-postgres @payloadcms/richtext-lexical
-npm install graphql # jika diperlukan oleh dependencies payload
-```
-
-#### 1.2 Konfigurasi Environment (`.env.local`)
-```env
-DATABASE_URI=postgresql://postgres:password@localhost:5432/majapahitan_db
-PAYLOAD_SECRET=YOUR_SECRET_KEY_MIN_32_CHARS
-NEXT_PUBLIC_SERVER_URL=http://localhost:3000
-```
-
-#### 1.3 Struktur File Payload 3 di Next.js
-- `payload.config.ts` di root `sbm-majapahitan/`
-- `app/(payload)/admin/[[...segments]]/page.tsx`
-- `app/(payload)/api/[...slug]/route.ts`
-- Koleksi disimpan di folder `collections/` (e.g. `collections/Posts.ts`, `collections/Media.ts`, `collections/Users.ts`).
+1. **Aturan Hirarki Tipografi**:
+   - **Cinzel (`font-display`)**: Khusus untuk *Hero Title*, *Section Heading*, dan *Eyebrow*.
+   - **Plus Jakarta Sans (`font-sans font-bold`)**: Untuk semua judul berita, judul publikasi, dan judul karya seni agar mudah dibaca.
+   - **Ukuran Body Paragraf**: Wajib 100% seragam (`text-base sm:text-lg sm:leading-8 text-cream/95`), tanpa *lead paragraph* berukuran raksasa.
+2. **Aturan Tata Letak Kartu (*No Nested Cards*)**:
+   - Hindari membuat kotak kartu di dalam kotak kartu (*card inside a card*). Gunakan tata letak 2-kolom bersih dengan garis vertikal pemisah (`lg:border-l lg:border-hairline/80 lg:pl-10`).
+3. **Pemberian Lencana (*Badges*)**:
+   - Jangan menambahkan lencana/tag berlebihan yang menutupi gambar sampul karya.
+   - Badge SINTA pada kartu publikasi wajib menggunakan warna putih bersih (`text-white`).
+4. **Data Seam Pattern**:
+   - `lib/content.ts` adalah satu-satunya mock data seam. Saat Payload Local API dihubungkan di Fase 3B, komponen tidak perlu diubah struktur props-nya.
 
 ---
 
-### 🎯 TARGET 2: Unified `Posts` Collection & Templates
-
-Sesuai konsep di `CONTEXT.md`, jenis konten warta disatukan dalam satu entitas `Post`:
-
-#### 2.1 Schema `collections/Posts.ts`
-```typescript
-import { CollectionConfig } from 'payload';
-
-export const Posts: CollectionConfig = {
-  slug: 'posts',
-  admin: {
-    useAsTitle: 'title',
-    defaultColumns: ['title', 'category', 'status', 'publishedAt'],
-  },
-  access: {
-    read: () => true, // Publik bisa membaca post yang berstatus published
-  },
-  fields: [
-    { name: 'title', type: 'text', required: true },
-    { name: 'slug', type: 'text', required: true, unique: true, index: true },
-    {
-      name: 'category',
-      type: 'select',
-      required: true,
-      options: [
-        { label: 'Berita', value: 'berita' },
-        { label: 'Publikasi & Penelitian', value: 'publikasi' },
-        { label: 'Program & Kegiatan', value: 'program' },
-      ],
-    },
-    { name: 'coverImage', type: 'upload', relationTo: 'media', required: false },
-    { name: 'excerpt', type: 'textarea', required: true },
-    { name: 'content', type: 'richText', required: true },
-    { name: 'publishedAt', type: 'date', defaultValue: () => new Date().toISOString() },
-    {
-      name: 'status',
-      type: 'select',
-      defaultValue: 'published',
-      options: [
-        { label: 'Draft', value: 'draft' },
-        { label: 'Published', value: 'published' },
-      ],
-    },
-  ],
-};
-```
-
-#### 2.2 Template Halaman Listing & Detail
-Buat komponen template yang dapat dipakai ulang:
-- **`components/templates/PostListingTemplate.tsx`**: Menampilkan hero/header kategori, filter tahun/kategori, grid kartu post (`PostCard`), dan pagination.
-- **`components/templates/PostDetailTemplate.tsx`**: Menampilkan breadcrumb, judul (Cinzel), metadata tanggal/kategori, cover image, rich text body renderer, dan seksi "Berita/Artikel Terkait".
-
-Routing yang menggunakan template ini:
-- `app/berita/page.tsx` & `app/berita/[slug]/page.tsx`
-- `app/publikasi/page.tsx` & `app/publikasi/[slug]/page.tsx`
-- `app/program/page.tsx` & `app/program/[slug]/page.tsx`
-
----
-
-### 🎯 TARGET 3: Galeri Karya & Submission Workflow
-
-Sesuai arahan mentor dan hasil interview:
-
-#### 3.1 Schema `collections/KaryaMuseum.ts` (Kurasi Internal PUI)
-- `title` (text, required)
-- `slug` (text, required, unique)
-- `category` (select: `otentik` / `kontemporer`)
-- `image` (upload relationTo: `media`, required)
-- `description` (richText / textarea)
-- `era` / `tahun` (text, e.g. "Abad ke-14 Masehi" / "2024")
-- `dimensi` / `material` (text)
-- `status` (draft / published)
-
-#### 3.2 Schema `collections/KaryaPublik.ts` (Kontribusi Masyarakat)
-- `contributorName` (text, required)
-- `contributorEmail` (email, required)
-- `contributorAffiliation` (text, e.g. "Mahasiswa / Umum")
-- `title` (text, required)
-- `description` (textarea, required)
-- `image` (upload relationTo: `media`, required)
-- `status` (select: `pending` [default saat submit], `approved`, `published`, `rejected`)
-- `moderationNotes` (textarea, catatan internal reviewer)
-
-#### 3.3 Halaman & Alur Partisipasi Publik (`/partisipasi/kirim-karya`)
-1. Pengunjung mengisi form: Nama, Email, Institusi, Judul Karya, Deskripsi, Unggah Foto Karya.
-2. Form mengirim data ke Next.js Server Action / API Route yang memanggil Payload Local API untuk membuat dokumen di `KaryaPublik` dengan `status: 'pending'`.
-3. Notifikasi sukses muncul: *"Karya Anda berhasil dikirim dan sedang dalam proses kurasi oleh tim kurator PUI Seni Budaya Majapahitan."*
-4. Content Maintainer membuka `/admin` -> `KaryaPublik` -> meninjau karya -> mengubah status ke `published`.
-5. Halaman `/galeri/publik` otomatis menampilkan karya yang berstatus `published`.
-
----
-
-## 🛠️ 5. Checklist Instruksi untuk Agen / Developer Pengembang
-
-1. **Persiapan Database**:
-   - Pastikan database PostgreSQL aktif atau buat connection string di `.env.local`.
-2. **Inisialisasi Payload 3**:
-   - Install dependencies.
-   - Buat `payload.config.ts`.
-   - Setup folder `app/(payload)`.
-   - Verifikasi akses ke `http://localhost:3000/admin`.
-3. **Migrasi Data**:
-   - Pindahkan data mock dari `lib/content.ts` ke Payload database via seeder script atau admin panel.
-   - Update server components untuk mengambil data langsung dari Payload Local API (`getPayload({ config })`).
-4. **Verifikasi Build**:
-   - Selalu jalankan `npm run build` sebelum menyelesaikan tugas untuk memastikan kompatibilitas TypeScript dan Turbopack.
-
----
-*Dokumen ini dibuat otomatis sebagai checkpoint handover resmi proyek Museum Virtual Majapahitan.*
+*Dokumen ini telah diperbarui per 3 September 2026 sebagai acuan resmi kelanjutan proyek Museum Virtual Majapahitan.*

@@ -1,13 +1,16 @@
 import type { GlobalConfig } from 'payload'
+import { isAdminOrStaff } from '../access'
 
 export const PageKonservasi: GlobalConfig = {
   slug: 'page-konservasi',
+  label: 'Halaman: Konservasi',
   admin: {
-    group: 'Halaman Statis',
+    group: 'Halaman & Menu',
     description: 'Pengaturan konten untuk Halaman Indeks Museum Konservasi (/konservasi)',
   },
   access: {
     read: () => true,
+    update: isAdminOrStaff,
   },
   fields: [
     {

@@ -1,12 +1,17 @@
 import type { GlobalConfig } from 'payload'
+import { isAdmin, isNotAdmin } from '../access'
 
 export const Navigation: GlobalConfig = {
   slug: 'navigation',
+  label: 'Navigasi Menu Utama',
   admin: {
-    group: 'Pengaturan',
+    group: 'Pengaturan Sistem',
+    hidden: isNotAdmin,
+    description: 'Kelola hierarki dan tautan menu navigasi utama website.',
   },
   access: {
     read: () => true,
+    update: isAdmin,
   },
   fields: [
     {

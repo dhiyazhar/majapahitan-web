@@ -1,12 +1,17 @@
 import type { GlobalConfig } from 'payload'
+import { isAdmin, isNotAdmin } from '../access'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
+  label: 'Pengaturan Situs & Kontak',
   admin: {
-    group: 'Pengaturan',
+    group: 'Pengaturan Sistem',
+    hidden: isNotAdmin,
+    description: 'Identitas institusi, kontak resmi, alamat, jam operasional, dan akun media sosial.',
   },
   access: {
     read: () => true,
+    update: isAdmin,
   },
   fields: [
     {

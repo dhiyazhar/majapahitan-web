@@ -1,13 +1,16 @@
 import type { GlobalConfig } from 'payload'
+import { isAdminOrStaff } from '../access'
 
 export const PageTentang: GlobalConfig = {
   slug: 'page-tentang',
+  label: 'Halaman: Tentang Museum',
   admin: {
-    group: 'Halaman Statis',
+    group: 'Halaman & Menu',
     description: 'Pengaturan konten untuk Halaman Tentang Museum (/tentang)',
   },
   access: {
     read: () => true,
+    update: isAdminOrStaff,
   },
   fields: [
     {

@@ -1,15 +1,32 @@
 import type { CollectionConfig } from 'payload'
+import { isAdminOrStaff } from '../access'
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  labels: {
+    singular: 'Berkas Media',
+    plural: 'Pustaka Media',
+  },
+  admin: {
+    group: 'Sistem & Pengguna',
+    description: 'Pusat penyimpanan foto, gambar koleksi, dan aset visual situs.',
+  },
   access: {
     read: () => true,
+    create: isAdminOrStaff,
+    update: isAdminOrStaff,
+    delete: isAdminOrStaff,
   },
   fields: [
     {
       name: 'alt',
       type: 'text',
       required: true,
+      label: 'Teks Alternatif (Alt Text)',
+      admin: {
+        description: 'Deskripsi gambar untuk aksesibilitas pembaca layar dan optimasi SEO.',
+        placeholder: 'contoh: Foto relief Candi Penataran pada sudut barat',
+      },
     },
   ],
   upload: {
