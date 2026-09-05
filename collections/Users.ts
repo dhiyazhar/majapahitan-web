@@ -4,6 +4,7 @@ import {
   isAdminOrSelf,
   canUpdateUserRole,
   canSetRoleOnCreate,
+  canCreateUser,
   isNotAdmin,
 } from '../access'
 
@@ -27,10 +28,30 @@ export const Users: CollectionConfig = {
   },
   access: {
     admin: ({ req: { user } }) => Boolean(user),
-    create: isAdmin,
+    create: canCreateUser,
     read: isAdminOrSelf,
     update: isAdminOrSelf,
     delete: isAdmin,
+  },
+  hooks: {
+    beforeChange: [
+      async ({ req, operation, data }) => {
+        if (operation === 'create') {
+          try {
+            const { totalDocs } = await req.payload.count({
+              collection: 'users',
+            })
+            // Jika sistem belum memiliki pengguna sama sekali (first boot), pengguna pertama otomatis menjadi Admin
+            if (totalDocs === 0 && data) {
+              data.role = 'admin'
+            }
+          } catch {
+            // Abaikan kegagalan count jika ada
+          }
+        }
+        return data
+      },
+    ],
   },
   fields: [
     {

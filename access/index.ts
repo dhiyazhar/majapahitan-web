@@ -92,6 +92,25 @@ export const canSetRoleOnCreate: FieldAccess = ({ req: { user } }) => {
 }
 
 /**
+ * Hak akses pembuatan akun pengguna baru:
+ * - Admin yang telah login dapat membuat akun pengguna baru.
+ * - Jika sistem belum memiliki pengguna sama sekali (first boot / initial setup),
+ *   siapapun diizinkan membuat akun admin pertama.
+ */
+export const canCreateUser: Access = async ({ req }) => {
+  if (req.user && (req.user as UserWithRole).role === 'admin') {
+    return true
+  }
+
+  try {
+    const { totalDocs } = await req.payload.count({ collection: 'users' })
+    return totalDocs === 0
+  } catch {
+    return false
+  }
+}
+
+/**
  * Helper untuk menyembunyikan navigasi sidebar admin jika bukan admin.
  * Sangat penting untuk menjaga tampilan admin staf redaksi tetap bersih dan fokus.
  */
