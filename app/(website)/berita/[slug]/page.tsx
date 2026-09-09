@@ -1,51 +1,53 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import PostDetailTemplate from "@/components/templates/PostDetailTemplate";
-import { getPostsByCategory, getPostBySlug, getRelatedPosts } from "@/lib/content";
+import BeritaDetailTemplate from "@/components/templates/BeritaDetailTemplate";
+import {
+  getAllBeritaSlugs,
+  getBeritaBySlug,
+  getRelatedBerita,
+} from "@/lib/payload";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateStaticParams() {
-  const posts = getPostsByCategory("berita");
-  return posts.map((p) => ({
-    slug: p.slug,
+  const slugs = await getAllBeritaSlugs();
+  return slugs.map((slug) => ({
+    slug,
   }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const berita = await getBeritaBySlug(slug);
 
-  if (!post) {
+  if (!berita) {
     return {
       title: "Warta Tidak Ditemukan — Museum Virtual Majapahitan",
     };
   }
 
   return {
-    title: `${post.title} — Museum Virtual Majapahitan`,
-    description: post.excerpt,
+    title: `${berita.title} — Museum Virtual Majapahitan`,
+    description: berita.excerpt,
   };
 }
 
 export default async function BeritaDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const berita = await getBeritaBySlug(slug);
 
-  if (!post || post.category !== "berita") {
+  if (!berita) {
     notFound();
   }
 
-  const relatedPosts = getRelatedPosts(slug, "berita", 3);
+  const relatedBerita = await getRelatedBerita(slug, 3);
 
   return (
-    <PostDetailTemplate
-      post={post}
-      categoryLabel="Berita"
-      categoryHref="/berita"
-      relatedPosts={relatedPosts}
+    <BeritaDetailTemplate
+      berita={berita}
+      relatedBerita={relatedBerita}
     />
   );
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import PostListingTemplate from "@/components/templates/PostListingTemplate";
-import { getPostsByCategory } from "@/lib/content";
+import BeritaListingTemplate from "@/components/templates/BeritaListingTemplate";
+import { getBeritaPosts } from "@/lib/payload";
 
 export const metadata: Metadata = {
   title: "Warta & Berita — Museum Virtual Majapahitan",
@@ -8,18 +8,38 @@ export const metadata: Metadata = {
     "Kabar terkini dokumentasi kegiatan riset, survei konservasi lapangan, pameran seni rupa, dan agenda pelestarian kebudayaan Majapahit oleh PUI Seni Budaya Majapahitan UNESA.",
 };
 
-export default function BeritaPage() {
-  const posts = getPostsByCategory("berita");
+type Props = {
+  searchParams: Promise<{
+    q?: string;
+    page?: string;
+  }>;
+};
+
+export default async function BeritaPage({ searchParams }: Props) {
+  const { q, page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || "1", 10) || 1);
+
+  const paginatedResult = await getBeritaPosts({
+    q,
+    page: currentPage,
+    limit: 9,
+  });
 
   return (
-    <PostListingTemplate
-      category="berita"
-      eyebrow="WARTA & PUBLIKASI"
-      title="Kabar & Warta Terkini"
-      description="Dokumentasi kegiatan riset, survei konservasi lapangan, pameran seni rupa, dan agenda pelestarian warisan budaya Majapahit oleh PUI Seni Budaya Majapahitan UNESA."
-      breadcrumbCurrent="Berita"
-      posts={posts}
-      heroImage="/images/berita/galeri-3d.jpg"
+    <BeritaListingTemplate
+      beritaList={paginatedResult.docs}
+      pagination={{
+        totalDocs: paginatedResult.totalDocs,
+        totalPages: paginatedResult.totalPages,
+        page: paginatedResult.page,
+        hasNextPage: paginatedResult.hasNextPage,
+        hasPrevPage: paginatedResult.hasPrevPage,
+        limit: paginatedResult.limit,
+        prevPage: paginatedResult.prevPage,
+        nextPage: paginatedResult.nextPage,
+      }}
+      isFallback={paginatedResult.isFallback}
+      fallbackReason={paginatedResult.fallbackReason}
     />
   );
 }

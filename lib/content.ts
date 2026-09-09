@@ -633,6 +633,9 @@ export type PublikasiItem = {
   title: string;
   authors: string[];
   publicationName: string;
+  volume?: string;
+  issue?: string;
+  pages?: string;
   year: string;
   typeBadge: string;
   sintaBadge?: string;
@@ -641,7 +644,7 @@ export type PublikasiItem = {
   pdfUrl?: string; // Tautan unduh PDF jika ada
   abstract: string;
   keywords: string[];
-  citation: string; // Format sitasi standar APA 7th
+  citation?: string; // Format sitasi (opsional)
 };
 
 export const publikasiList: PublikasiItem[] = [
@@ -1078,6 +1081,8 @@ export const beritas: Berita[] = postsList
     image: p.image,
     href: `/berita/${p.slug}`,
   }));
+
+
 
 export type Partisipasi = {
   id: string;

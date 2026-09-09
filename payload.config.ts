@@ -1,6 +1,6 @@
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
@@ -8,7 +8,9 @@ import sharp from 'sharp'
 // Collections
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
-import { Posts } from './collections/Posts'
+import { Berita } from './collections/Berita'
+import { Programs } from './collections/Programs'
+import { Publikasi } from './collections/Publikasi'
 import { Situs } from './collections/Situs'
 import { Artefak } from './collections/Artefak'
 import { KaryaMuseum } from './collections/KaryaMuseum'
@@ -36,8 +38,10 @@ export default buildConfig({
     },
   },
   collections: [
-    // Warta & Publikasi
-    Posts,
+    // Warta, Agenda Program, & Publikasi Ilmiah
+    Berita,
+    Programs,
+    Publikasi,
     // Konservasi Warisan
     Situs,
     Artefak,
@@ -59,7 +63,9 @@ export default buildConfig({
     PageTentang,
     PageKonservasi,
   ],
-  editor: lexicalEditor(),
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [...defaultFeatures, FixedToolbarFeature()],
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

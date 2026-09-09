@@ -1,51 +1,53 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import PostDetailTemplate from "@/components/templates/PostDetailTemplate";
-import { getPostsByCategory, getPostBySlug, getRelatedPosts } from "@/lib/content";
+import ProgramDetailTemplate from "@/components/templates/ProgramDetailTemplate";
+import {
+  getAllProgramSlugs,
+  getProgramBySlug,
+  getRelatedProgram,
+} from "@/lib/payload";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateStaticParams() {
-  const posts = getPostsByCategory("program");
-  return posts.map((p) => ({
-    slug: p.slug,
+  const slugs = await getAllProgramSlugs();
+  return slugs.map((slug) => ({
+    slug,
   }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const program = await getProgramBySlug(slug);
 
-  if (!post) {
+  if (!program) {
     return {
       title: "Program Tidak Ditemukan — Museum Virtual Majapahitan",
     };
   }
 
   return {
-    title: `${post.title} — Program Museum Virtual`,
-    description: post.excerpt,
+    title: `${program.title} — Museum Virtual Majapahitan`,
+    description: program.excerpt,
   };
 }
 
 export default async function ProgramDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const program = await getProgramBySlug(slug);
 
-  if (!post || post.category !== "program") {
+  if (!program) {
     notFound();
   }
 
-  const relatedPosts = getRelatedPosts(slug, "program", 3);
+  const relatedPrograms = await getRelatedProgram(slug, 3);
 
   return (
-    <PostDetailTemplate
-      post={post}
-      categoryLabel="Program & Kegiatan"
-      categoryHref="/program"
-      relatedPosts={relatedPosts}
+    <ProgramDetailTemplate
+      program={program}
+      relatedPrograms={relatedPrograms}
     />
   );
 }

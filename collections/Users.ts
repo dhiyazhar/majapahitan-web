@@ -3,7 +3,6 @@ import {
   isAdmin,
   isAdminOrSelf,
   canUpdateUserRole,
-  canSetRoleOnCreate,
   canCreateUser,
   isNotAdmin,
 } from '../access'
@@ -34,20 +33,18 @@ export const Users: CollectionConfig = {
     delete: isAdmin,
   },
   hooks: {
+    beforeValidate: [
+      ({ operation, data }) => {
+        if (operation === 'create' && data) {
+          data.role = 'admin'
+        }
+        return data
+      },
+    ],
     beforeChange: [
-      async ({ req, operation, data }) => {
-        if (operation === 'create') {
-          try {
-            const { totalDocs } = await req.payload.count({
-              collection: 'users',
-            })
-            // Jika sistem belum memiliki pengguna sama sekali (first boot), pengguna pertama otomatis menjadi Admin
-            if (totalDocs === 0 && data) {
-              data.role = 'admin'
-            }
-          } catch {
-            // Abaikan kegagalan count jika ada
-          }
+      ({ operation, data }) => {
+        if (operation === 'create' && data) {
+          data.role = 'admin'
         }
         return data
       },
@@ -73,8 +70,7 @@ export const Users: CollectionConfig = {
       name: 'role',
       type: 'select',
       required: true,
-      defaultValue: 'staff',
-      label: 'Role',
+      defaultValue: 'admin',
       options: [
         {
           label: 'Admin',
@@ -85,8 +81,10 @@ export const Users: CollectionConfig = {
           value: 'staff',
         },
       ],
+      admin: {
+        hidden: true,
+      },
       access: {
-        create: canSetRoleOnCreate,
         update: canUpdateUserRole,
       },
     },

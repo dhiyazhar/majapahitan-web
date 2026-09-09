@@ -1,22 +1,26 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PublicationDetailTemplate from "@/components/templates/PublicationDetailTemplate";
-import { getAllPublikasi, getPublikasiBySlug } from "@/lib/content";
+import {
+  getAllPublikasiSlugs,
+  getPublikasiBySlug,
+  getRelatedPublikasi,
+} from "@/lib/payload";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateStaticParams() {
-  const items = getAllPublikasi();
-  return items.map((item) => ({
-    slug: item.slug,
+  const slugs = await getAllPublikasiSlugs();
+  return slugs.map((slug) => ({
+    slug,
   }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const item = getPublikasiBySlug(slug);
+  const item = await getPublikasiBySlug(slug);
 
   if (!item) {
     return {
@@ -32,14 +36,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PublikasiDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const item = getPublikasiBySlug(slug);
+  const item = await getPublikasiBySlug(slug);
 
   if (!item) {
     notFound();
   }
 
-  const allItems = getAllPublikasi();
-  const relatedItems = allItems.filter((i) => i.slug !== slug).slice(0, 2);
+  const relatedItems = await getRelatedPublikasi(slug, 2);
 
   return <PublicationDetailTemplate item={item} relatedItems={relatedItems} />;
 }

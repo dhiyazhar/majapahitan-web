@@ -83,11 +83,12 @@ export const canUpdateUserRole: FieldAccess = ({ req: { user }, id, doc }) => {
 
 /**
  * Field-level access saat pembuatan akun (create):
- * Mengizinkan pengisian role ketika inisialisasi awal (belum ada sesi login)
- * atau jika pembuat akun adalah seorang admin.
+ * Hanya Admin yang sudah login yang berhak menentukan role pengguna baru.
+ * Ketika inisialisasi akun pertama (belum ada sesi login), role dikunci (tidak dapat diubah)
+ * dan otomatis ditetapkan sebagai Admin.
  */
 export const canSetRoleOnCreate: FieldAccess = ({ req: { user } }) => {
-  if (!user) return true
+  if (!user) return false
   return (user as UserWithRole).role === 'admin'
 }
 

@@ -67,7 +67,9 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    posts: Post;
+    berita: Berita;
+    programs: Program;
+    publikasi: Publikasi;
     situs: Situs;
     artefak: Artefak;
     'karya-museum': KaryaMuseum;
@@ -82,7 +84,9 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    posts: PostsSelect<false> | PostsSelect<true>;
+    berita: BeritaSelect<false> | BeritaSelect<true>;
+    programs: ProgramsSelect<false> | ProgramsSelect<true>;
+    publikasi: PublikasiSelect<false> | PublikasiSelect<true>;
     situs: SitusSelect<false> | SitusSelect<true>;
     artefak: ArtefakSelect<false> | ArtefakSelect<true>;
     'karya-museum': KaryaMuseumSelect<false> | KaryaMuseumSelect<true>;
@@ -142,22 +146,14 @@ export interface UserAuthOperations {
   };
 }
 /**
- * Kelola warta berita, publikasi ilmiah, dan agenda kegiatan kebudayaan.
+ * Kelola warta berita, liputan lapangan, dan kabar kebudayaan Majapahit.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts".
+ * via the `definition` "berita".
  */
-export interface Post {
+export interface Berita {
   id: number;
   title: string;
-  /**
-   * Tautan URL artikel. Otomatis terisi dari judul jika dikosongkan.
-   */
-  slug: string;
-  /**
-   * Menentukan penempatan warta pada kanal website yang sesuai.
-   */
-  category: 'berita' | 'publikasi' | 'program';
   /**
    * Disarankan foto landscape beresolusi baik dengan rasio 16:9.
    */
@@ -181,12 +177,13 @@ export interface Post {
     };
     [k: string]: unknown;
   };
+  status?: ('draft' | 'published') | null;
+  publishedAt?: string | null;
   /**
-   * Otomatis terisi dengan nama akun Anda saat diterbitkan.
+   * Otomatis terisi akun kurator saat diterbitkan.
    */
   author?: string | null;
-  publishedAt?: string | null;
-  status?: ('draft' | 'published') | null;
+  slug: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -239,6 +236,112 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * Kelola pameran virtual 3D, workshop, webinar, pertunjukan, dan simposium kebudayaan.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "programs".
+ */
+export interface Program {
+  id: number;
+  title: string;
+  /**
+   * Poster atau foto representasi kegiatan beresolusi baik.
+   */
+  coverImage?: (number | null) | Media;
+  /**
+   * Ringkasan singkat acara yang tampil pada kartu pratinjau dan beranda.
+   */
+  excerpt: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  status?: ('draft' | 'published') | null;
+  /**
+   * Menentukan jenis dan klasifikasi agenda museum.
+   */
+  programType:
+    | 'Pameran Virtual'
+    | 'Pameran Karya'
+    | 'Program Edukasi'
+    | 'Pertunjukan Budaya'
+    | 'Workshop & Pelatihan'
+    | 'Seminar & Simposium';
+  /**
+   * Kosongkan jika jadwal belum ditentukan (Segera Hadir).
+   */
+  eventDate?: string | null;
+  /**
+   * Diisi jika acara berlangsung beberapa hari/bulan (periode pameran).
+   */
+  eventEndDate?: string | null;
+  location?: string | null;
+  ctaLabel?: string | null;
+  /**
+   * Jika diisi (misal: link Zoom/Google Form), tombol akan membuka tautan ini.
+   */
+  ctaUrl?: string | null;
+  publishedAt?: string | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Kelola repositori jurnal penelitian, buku monograf, dan prosiding ilmiah Majapahit.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "publikasi".
+ */
+export interface Publikasi {
+  id: number;
+  title: string;
+  abstract: string;
+  status?: ('draft' | 'published') | null;
+  year: string;
+  publicationName: string;
+  volume?: string | null;
+  issue?: string | null;
+  pages?: string | null;
+  typeBadge:
+    | 'Jurnal Ilmiah Nasional'
+    | 'Jurnal Terakreditasi'
+    | 'Jurnal Internasional'
+    | 'Prosiding Simposium'
+    | 'Buku & Monograf'
+    | 'Laporan Arkeologis';
+  sintaBadge?: ('SINTA 1' | 'SINTA 2' | 'SINTA 3' | 'SINTA 4' | 'Scopus' | 'Non-SINTA') | null;
+  doi?: string | null;
+  externalUrl: string;
+  pdfUrl?: string | null;
+  authors?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  keywords?:
+    | {
+        keyword: string;
+        id?: string | null;
+      }[]
+    | null;
+  publishedAt?: string | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * Pusat data dokumentasi situs dan arsitektur peninggalan era Majapahit.
@@ -450,8 +553,16 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'posts';
-        value: number | Post;
+        relationTo: 'berita';
+        value: number | Berita;
+      } | null)
+    | ({
+        relationTo: 'programs';
+        value: number | Program;
+      } | null)
+    | ({
+        relationTo: 'publikasi';
+        value: number | Publikasi;
       } | null)
     | ({
         relationTo: 'situs';
@@ -525,18 +636,73 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts_select".
+ * via the `definition` "berita_select".
  */
-export interface PostsSelect<T extends boolean = true> {
+export interface BeritaSelect<T extends boolean = true> {
   title?: T;
-  slug?: T;
-  category?: T;
   coverImage?: T;
   excerpt?: T;
   content?: T;
-  author?: T;
-  publishedAt?: T;
   status?: T;
+  publishedAt?: T;
+  author?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "programs_select".
+ */
+export interface ProgramsSelect<T extends boolean = true> {
+  title?: T;
+  coverImage?: T;
+  excerpt?: T;
+  content?: T;
+  status?: T;
+  programType?: T;
+  eventDate?: T;
+  eventEndDate?: T;
+  location?: T;
+  ctaLabel?: T;
+  ctaUrl?: T;
+  publishedAt?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "publikasi_select".
+ */
+export interface PublikasiSelect<T extends boolean = true> {
+  title?: T;
+  abstract?: T;
+  status?: T;
+  year?: T;
+  publicationName?: T;
+  volume?: T;
+  issue?: T;
+  pages?: T;
+  typeBadge?: T;
+  sintaBadge?: T;
+  doi?: T;
+  externalUrl?: T;
+  pdfUrl?: T;
+  authors?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  keywords?:
+    | T
+    | {
+        keyword?: T;
+        id?: T;
+      };
+  publishedAt?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }

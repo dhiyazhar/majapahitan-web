@@ -1,8 +1,5 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { ChevronRight, ExternalLink, BookOpen, Users, Copy, Check, ArrowLeft, Award, FileText } from "lucide-react";
+import { ChevronRight, ExternalLink, BookOpen, Users, ArrowLeft, Award, FileText } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PublicationCard from "@/components/posts/PublicationCard";
@@ -14,19 +11,6 @@ type Props = {
 };
 
 export default function PublicationDetailTemplate({ item, relatedItems }: Props) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopyCitation = async () => {
-    try {
-      if (typeof window !== "undefined") {
-        await navigator.clipboard.writeText(item.citation);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2500);
-      }
-    } catch {
-      // Fallback
-    }
-  };
 
   return (
     <>
@@ -166,36 +150,7 @@ export default function PublicationDetailTemplate({ item, relatedItems }: Props)
             ) : null}
           </section>
 
-          {/* =========================================================================
-              4. CITATION BOX (APA 7th Format)
-          ========================================================================= */}
-          <section className="mt-12 rounded-xl border border-hairline bg-panel p-6 sm:p-7">
-            <div className="flex items-center justify-between gap-4 mb-3">
-              <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-gold">
-                Format Sitasi Akademis (APA 7th Edition)
-              </h3>
-              <button
-                type="button"
-                onClick={handleCopyCitation}
-                className="inline-flex items-center gap-1.5 rounded-sm border border-hairline bg-ink px-3 py-1.5 text-xs font-medium text-cream transition-colors hover:border-gold hover:text-gold"
-              >
-                {copied ? (
-                  <>
-                    <Check className="h-3.5 w-3.5 text-emerald-400" />
-                    <span className="text-emerald-400 font-semibold">Tersalin!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3.5 w-3.5 text-muted" />
-                    <span>Salin Sitasi</span>
-                  </>
-                )}
-              </button>
-            </div>
-            <p className="rounded-md border border-hairline/60 bg-ink/70 p-4 font-mono text-xs leading-relaxed text-cream/90 select-all sm:text-sm">
-              {item.citation}
-            </p>
-          </section>
+
 
           {/* =========================================================================
               5. BACK LINK CTA
