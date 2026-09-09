@@ -3,8 +3,12 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
    CREATE TYPE "public"."_locales" AS ENUM('id', 'en');
-  CREATE TYPE "public"."enum_posts_category" AS ENUM('berita', 'publikasi', 'program');
-  CREATE TYPE "public"."enum_posts_status" AS ENUM('draft', 'published');
+  CREATE TYPE "public"."enum_berita_status" AS ENUM('draft', 'published');
+  CREATE TYPE "public"."enum_programs_status" AS ENUM('draft', 'published');
+  CREATE TYPE "public"."enum_programs_program_type" AS ENUM('Pameran Virtual', 'Pameran Karya', 'Program Edukasi', 'Pertunjukan Budaya', 'Workshop & Pelatihan', 'Seminar & Simposium');
+  CREATE TYPE "public"."enum_publikasi_status" AS ENUM('draft', 'published');
+  CREATE TYPE "public"."enum_publikasi_type_badge" AS ENUM('Jurnal Ilmiah Nasional', 'Jurnal Terakreditasi', 'Jurnal Internasional', 'Prosiding Simposium', 'Buku & Monograf', 'Laporan Arkeologis');
+  CREATE TYPE "public"."enum_publikasi_sinta_badge" AS ENUM('SINTA 1', 'SINTA 2', 'SINTA 3', 'SINTA 4', 'Scopus', 'Non-SINTA');
   CREATE TYPE "public"."enum_situs_status" AS ENUM('Terdokumentasi', 'Pemindaian 3D', 'Dalam Proses');
   CREATE TYPE "public"."enum_artefak_category" AS ENUM('Prasasti & Inskripsi', 'Arca & Patung', 'Keramik & Gerabah', 'Perhiasan & Logam', 'Naskah & Sastra');
   CREATE TYPE "public"."enum_karya_museum_type" AS ENUM('otentik', 'kontemporer');
@@ -14,17 +18,70 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TYPE "public"."enum_pages_status" AS ENUM('draft', 'published');
   CREATE TYPE "public"."enum_users_role" AS ENUM('admin', 'staff');
   CREATE TYPE "public"."enum_site_settings_socials_icon" AS ENUM('instagram', 'youtube', 'twitter', 'facebook');
-  CREATE TABLE "posts" (
+  CREATE TABLE "berita" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"title" varchar NOT NULL,
-  	"slug" varchar NOT NULL,
-  	"category" "enum_posts_category" NOT NULL,
   	"cover_image_id" integer,
   	"excerpt" varchar NOT NULL,
   	"content" jsonb NOT NULL,
-  	"author" varchar DEFAULT 'PUI Seni Budaya Majapahitan',
+  	"status" "enum_berita_status" DEFAULT 'published',
   	"published_at" timestamp(3) with time zone,
-  	"status" "enum_posts_status" DEFAULT 'published',
+  	"author" varchar DEFAULT 'PUI Seni Budaya Majapahitan',
+  	"slug" varchar NOT NULL,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+  );
+  
+  CREATE TABLE "programs" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"title" varchar NOT NULL,
+  	"cover_image_id" integer,
+  	"excerpt" varchar NOT NULL,
+  	"content" jsonb NOT NULL,
+  	"status" "enum_programs_status" DEFAULT 'published',
+  	"program_type" "enum_programs_program_type" DEFAULT 'Pameran Virtual' NOT NULL,
+  	"event_date" timestamp(3) with time zone,
+  	"event_end_date" timestamp(3) with time zone,
+  	"location" varchar DEFAULT 'Museum Virtual (Daring)',
+  	"cta_label" varchar DEFAULT 'Masuk Galeri',
+  	"cta_url" varchar,
+  	"published_at" timestamp(3) with time zone,
+  	"slug" varchar NOT NULL,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+  );
+  
+  CREATE TABLE "publikasi_authors" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"name" varchar NOT NULL
+  );
+  
+  CREATE TABLE "publikasi_keywords" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"keyword" varchar NOT NULL
+  );
+  
+  CREATE TABLE "publikasi" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"title" varchar NOT NULL,
+  	"abstract" varchar NOT NULL,
+  	"status" "enum_publikasi_status" DEFAULT 'published',
+  	"year" varchar NOT NULL,
+  	"publication_name" varchar NOT NULL,
+  	"volume" varchar,
+  	"issue" varchar,
+  	"pages" varchar,
+  	"type_badge" "enum_publikasi_type_badge" DEFAULT 'Jurnal Ilmiah Nasional' NOT NULL,
+  	"sinta_badge" "enum_publikasi_sinta_badge" DEFAULT 'SINTA 2',
+  	"doi" varchar,
+  	"external_url" varchar DEFAULT 'https://ejournal.unesa.ac.id' NOT NULL,
+  	"pdf_url" varchar,
+  	"published_at" timestamp(3) with time zone,
+  	"slug" varchar NOT NULL,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
@@ -108,7 +165,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TABLE "users" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"name" varchar NOT NULL,
-  	"role" "enum_users_role" DEFAULT 'staff' NOT NULL,
+  	"role" "enum_users_role" DEFAULT 'admin' NOT NULL,
   	"title" varchar,
   	"avatar_id" integer,
   	"bio" varchar,
@@ -175,7 +232,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"order" integer,
   	"parent_id" integer NOT NULL,
   	"path" varchar NOT NULL,
-  	"posts_id" integer,
+  	"berita_id" integer,
+  	"programs_id" integer,
+  	"publikasi_id" integer,
   	"situs_id" integer,
   	"artefak_id" integer,
   	"karya_museum_id" integer,
@@ -313,7 +372,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"created_at" timestamp(3) with time zone
   );
   
-  ALTER TABLE "posts" ADD CONSTRAINT "posts_cover_image_id_media_id_fk" FOREIGN KEY ("cover_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "berita" ADD CONSTRAINT "berita_cover_image_id_media_id_fk" FOREIGN KEY ("cover_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "programs" ADD CONSTRAINT "programs_cover_image_id_media_id_fk" FOREIGN KEY ("cover_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "publikasi_authors" ADD CONSTRAINT "publikasi_authors_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."publikasi"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "publikasi_keywords" ADD CONSTRAINT "publikasi_keywords_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."publikasi"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "situs" ADD CONSTRAINT "situs_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "artefak" ADD CONSTRAINT "artefak_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "karya_museum" ADD CONSTRAINT "karya_museum_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
@@ -321,7 +383,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "users_sessions" ADD CONSTRAINT "users_sessions_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "users" ADD CONSTRAINT "users_avatar_id_media_id_fk" FOREIGN KEY ("avatar_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."payload_locked_documents"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_posts_fk" FOREIGN KEY ("posts_id") REFERENCES "public"."posts"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_berita_fk" FOREIGN KEY ("berita_id") REFERENCES "public"."berita"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_programs_fk" FOREIGN KEY ("programs_id") REFERENCES "public"."programs"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_publikasi_fk" FOREIGN KEY ("publikasi_id") REFERENCES "public"."publikasi"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_situs_fk" FOREIGN KEY ("situs_id") REFERENCES "public"."situs"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_artefak_fk" FOREIGN KEY ("artefak_id") REFERENCES "public"."artefak"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_karya_museum_fk" FOREIGN KEY ("karya_museum_id") REFERENCES "public"."karya_museum"("id") ON DELETE cascade ON UPDATE no action;
@@ -339,10 +403,21 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "page_tentang_misi" ADD CONSTRAINT "page_tentang_misi_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."page_tentang"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "page_tentang_sejarah_paragraphs" ADD CONSTRAINT "page_tentang_sejarah_paragraphs_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."page_tentang"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "page_konservasi_pengantar_paragraphs" ADD CONSTRAINT "page_konservasi_pengantar_paragraphs_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."page_konservasi"("id") ON DELETE cascade ON UPDATE no action;
-  CREATE UNIQUE INDEX "posts_slug_idx" ON "posts" USING btree ("slug");
-  CREATE INDEX "posts_cover_image_idx" ON "posts" USING btree ("cover_image_id");
-  CREATE INDEX "posts_updated_at_idx" ON "posts" USING btree ("updated_at");
-  CREATE INDEX "posts_created_at_idx" ON "posts" USING btree ("created_at");
+  CREATE INDEX "berita_cover_image_idx" ON "berita" USING btree ("cover_image_id");
+  CREATE UNIQUE INDEX "berita_slug_idx" ON "berita" USING btree ("slug");
+  CREATE INDEX "berita_updated_at_idx" ON "berita" USING btree ("updated_at");
+  CREATE INDEX "berita_created_at_idx" ON "berita" USING btree ("created_at");
+  CREATE INDEX "programs_cover_image_idx" ON "programs" USING btree ("cover_image_id");
+  CREATE UNIQUE INDEX "programs_slug_idx" ON "programs" USING btree ("slug");
+  CREATE INDEX "programs_updated_at_idx" ON "programs" USING btree ("updated_at");
+  CREATE INDEX "programs_created_at_idx" ON "programs" USING btree ("created_at");
+  CREATE INDEX "publikasi_authors_order_idx" ON "publikasi_authors" USING btree ("_order");
+  CREATE INDEX "publikasi_authors_parent_id_idx" ON "publikasi_authors" USING btree ("_parent_id");
+  CREATE INDEX "publikasi_keywords_order_idx" ON "publikasi_keywords" USING btree ("_order");
+  CREATE INDEX "publikasi_keywords_parent_id_idx" ON "publikasi_keywords" USING btree ("_parent_id");
+  CREATE UNIQUE INDEX "publikasi_slug_idx" ON "publikasi" USING btree ("slug");
+  CREATE INDEX "publikasi_updated_at_idx" ON "publikasi" USING btree ("updated_at");
+  CREATE INDEX "publikasi_created_at_idx" ON "publikasi" USING btree ("created_at");
   CREATE UNIQUE INDEX "situs_slug_idx" ON "situs" USING btree ("slug");
   CREATE INDEX "situs_image_idx" ON "situs" USING btree ("image_id");
   CREATE INDEX "situs_updated_at_idx" ON "situs" USING btree ("updated_at");
@@ -380,7 +455,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "payload_locked_documents_rels_order_idx" ON "payload_locked_documents_rels" USING btree ("order");
   CREATE INDEX "payload_locked_documents_rels_parent_idx" ON "payload_locked_documents_rels" USING btree ("parent_id");
   CREATE INDEX "payload_locked_documents_rels_path_idx" ON "payload_locked_documents_rels" USING btree ("path");
-  CREATE INDEX "payload_locked_documents_rels_posts_id_idx" ON "payload_locked_documents_rels" USING btree ("posts_id");
+  CREATE INDEX "payload_locked_documents_rels_berita_id_idx" ON "payload_locked_documents_rels" USING btree ("berita_id");
+  CREATE INDEX "payload_locked_documents_rels_programs_id_idx" ON "payload_locked_documents_rels" USING btree ("programs_id");
+  CREATE INDEX "payload_locked_documents_rels_publikasi_id_idx" ON "payload_locked_documents_rels" USING btree ("publikasi_id");
   CREATE INDEX "payload_locked_documents_rels_situs_id_idx" ON "payload_locked_documents_rels" USING btree ("situs_id");
   CREATE INDEX "payload_locked_documents_rels_artefak_id_idx" ON "payload_locked_documents_rels" USING btree ("artefak_id");
   CREATE INDEX "payload_locked_documents_rels_karya_museum_id_idx" ON "payload_locked_documents_rels" USING btree ("karya_museum_id");
@@ -416,7 +493,11 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
-   DROP TABLE "posts" CASCADE;
+   DROP TABLE "berita" CASCADE;
+  DROP TABLE "programs" CASCADE;
+  DROP TABLE "publikasi_authors" CASCADE;
+  DROP TABLE "publikasi_keywords" CASCADE;
+  DROP TABLE "publikasi" CASCADE;
   DROP TABLE "situs" CASCADE;
   DROP TABLE "artefak" CASCADE;
   DROP TABLE "karya_museum" CASCADE;
@@ -444,8 +525,12 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "page_konservasi_pengantar_paragraphs" CASCADE;
   DROP TABLE "page_konservasi" CASCADE;
   DROP TYPE "public"."_locales";
-  DROP TYPE "public"."enum_posts_category";
-  DROP TYPE "public"."enum_posts_status";
+  DROP TYPE "public"."enum_berita_status";
+  DROP TYPE "public"."enum_programs_status";
+  DROP TYPE "public"."enum_programs_program_type";
+  DROP TYPE "public"."enum_publikasi_status";
+  DROP TYPE "public"."enum_publikasi_type_badge";
+  DROP TYPE "public"."enum_publikasi_sinta_badge";
   DROP TYPE "public"."enum_situs_status";
   DROP TYPE "public"."enum_artefak_category";
   DROP TYPE "public"."enum_karya_museum_type";
