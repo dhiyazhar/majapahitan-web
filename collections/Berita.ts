@@ -18,7 +18,8 @@ export const Berita: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'status', 'publishedAt', 'author'],
+    defaultColumns: ['coverImage', 'title', 'status', 'publishedAt', 'author'],
+    listSearchableFields: ['title', 'excerpt', 'author'],
     group: 'Warta & Publikasi',
     description: 'Kelola warta berita, liputan lapangan, dan kabar kebudayaan Majapahit.',
   },

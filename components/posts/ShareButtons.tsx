@@ -5,9 +5,11 @@ import { Share2, Check, Copy } from "lucide-react";
 
 type Props = {
   title: string;
+  /** Lead-in text, e.g. "Bagikan program ini". */
+  label?: string;
 };
 
-export default function ShareButtons({ title }: Props) {
+export default function ShareButtons({ title, label = "Bagikan Warta Ini" }: Props) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -45,7 +47,7 @@ export default function ShareButtons({ title }: Props) {
     <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-hairline bg-panel p-4 sm:p-5">
       <div className="flex items-center gap-2.5 text-xs text-muted sm:text-sm">
         <Share2 className="h-4 w-4 text-gold" />
-        <span className="font-semibold text-cream">Bagikan Warta Ini:</span>
+        <span className="font-semibold text-cream">{label}:</span>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -53,7 +55,7 @@ export default function ShareButtons({ title }: Props) {
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 rounded-sm border border-hairline bg-ink px-3 py-1.5 text-xs font-medium text-cream transition-colors hover:border-gold/50 hover:text-gold"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-sm border border-hairline bg-ink px-4 py-1.5 text-xs font-medium text-cream transition-colors hover:border-gold/50 hover:text-gold"
         >
           {copied ? (
             <>
@@ -72,7 +74,7 @@ export default function ShareButtons({ title }: Props) {
         <button
           type="button"
           onClick={() => handleShare("wa")}
-          className="inline-flex items-center gap-1.5 rounded-sm border border-hairline bg-ink px-3 py-1.5 text-xs font-medium text-cream transition-colors hover:border-emerald-500/50 hover:text-emerald-400"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-sm border border-hairline bg-ink px-4 py-1.5 text-xs font-medium text-cream transition-colors hover:border-emerald-500/50 hover:text-emerald-400"
         >
           <span>WhatsApp</span>
         </button>
@@ -81,7 +83,7 @@ export default function ShareButtons({ title }: Props) {
         <button
           type="button"
           onClick={() => handleShare("x")}
-          className="inline-flex items-center gap-1.5 rounded-sm border border-hairline bg-ink px-3 py-1.5 text-xs font-medium text-cream transition-colors hover:border-sky-500/50 hover:text-sky-400"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-sm border border-hairline bg-ink px-4 py-1.5 text-xs font-medium text-cream transition-colors hover:border-sky-500/50 hover:text-sky-400"
         >
           <span>X (Twitter)</span>
         </button>
@@ -90,7 +92,7 @@ export default function ShareButtons({ title }: Props) {
         <button
           type="button"
           onClick={() => handleShare("fb")}
-          className="inline-flex items-center gap-1.5 rounded-sm border border-hairline bg-ink px-3 py-1.5 text-xs font-medium text-cream transition-colors hover:border-blue-500/50 hover:text-blue-400"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-sm border border-hairline bg-ink px-4 py-1.5 text-xs font-medium text-cream transition-colors hover:border-blue-500/50 hover:text-blue-400"
         >
           <span>Facebook</span>
         </button>

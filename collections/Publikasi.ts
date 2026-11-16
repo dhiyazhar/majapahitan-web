@@ -18,7 +18,8 @@ export const Publikasi: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'year', 'typeBadge', 'status'],
+    defaultColumns: ['title', 'year', 'typeBadge', 'sintaBadge', 'status'],
+    listSearchableFields: ['title', 'abstract', 'publicationName', 'authors.name'],
     group: 'Warta & Publikasi',
     description: 'Kelola repositori jurnal penelitian, buku monograf, dan prosiding ilmiah Majapahit.',
   },

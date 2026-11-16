@@ -27,11 +27,17 @@ export default function BeritaDetailTemplate({
         <section className="relative overflow-hidden border-b border-hairline bg-ink-2 py-12 sm:py-16">
           <div className="mx-auto max-w-4xl px-4 sm:px-6">
             <nav className="mb-6 flex flex-wrap items-center gap-2 text-xs font-medium text-muted">
-              <Link href="/" className="transition-colors hover:text-gold">
+              <Link
+                href="/"
+                className="inline-flex min-h-11 items-center transition-colors hover:text-gold"
+              >
                 Beranda
               </Link>
               <ChevronRight className="h-3 w-3 text-hairline" />
-              <Link href="/berita" className="transition-colors hover:text-gold">
+              <Link
+                href="/berita"
+                className="inline-flex min-h-11 items-center transition-colors hover:text-gold"
+              >
                 Warta & Berita
               </Link>
               <ChevronRight className="h-3 w-3 text-hairline" />
@@ -132,7 +138,7 @@ export default function BeritaDetailTemplate({
           <div className="mt-10 flex items-center justify-between border-t border-hairline pt-6">
             <Link
               href="/berita"
-              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gold transition-colors hover:text-gold-soft"
+              className="inline-flex min-h-11 items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gold transition-colors hover:text-gold-soft"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Kembali ke Indeks Berita</span>
@@ -150,17 +156,19 @@ export default function BeritaDetailTemplate({
                 </h3>
                 <Link
                   href="/berita"
-                  className="text-xs font-semibold text-gold transition-colors hover:text-gold-soft"
+                  className="inline-flex min-h-11 items-center text-xs font-semibold text-gold transition-colors hover:text-gold-soft"
                 >
                   Lihat Semua
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <ul className="divide-y divide-hairline border-y border-hairline">
                 {relatedBerita.map((relBerita) => (
-                  <BeritaCard key={relBerita.id} berita={relBerita} />
+                  <li key={relBerita.id}>
+                    <BeritaCard berita={relBerita} />
+                  </li>
                 ))}
-              </div>
+              </ul>
             </section>
           ) : null}
         </div>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ExternalLink, BookOpen, Users, ArrowRight, Award } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 import type { PublikasiItem } from "@/lib/content";
 
 type Props = {
@@ -7,79 +7,87 @@ type Props = {
   className?: string;
 };
 
+/**
+ * One bibliography entry: a text row, not a boxed card. Meant to sit in a
+ * `divide-y` list. Year and type on the left, citation details on the right.
+ */
 export default function PublicationCard({ item, className = "" }: Props) {
+  const issue = [
+    item.volume ? `Vol. ${item.volume}` : null,
+    item.issue ? `No. ${item.issue}` : null,
+    item.pages ? `hlm. ${item.pages}` : null,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
   return (
-    <article
-      className={`group flex flex-col justify-between overflow-hidden rounded-xl bg-panel p-6 ring-gold-frame transition-all duration-300 hover:bg-panel-2 hover:-translate-y-1 sm:p-7 ${className}`}
-    >
-      <div>
-        {/* Header Badge (SINTA) & Year */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-hairline pb-4">
-          <div>
-            {item.sintaBadge ? (
-              <span className="inline-flex items-center gap-1.5 rounded-sm bg-maroon px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-                <Award className="h-3.5 w-3.5 text-white" aria-hidden />
-                {item.sintaBadge}
-              </span>
-            ) : null}
-          </div>
-          <span className="text-xs font-semibold text-gold-soft">
-            Tahun {item.year}
-          </span>
-        </div>
-
-        {/* Title */}
-        <h3 className="mt-4 font-sans text-base font-bold leading-snug text-cream transition-colors group-hover:text-gold sm:text-lg">
-          <Link href={`/publikasi/${item.slug}`}>{item.title}</Link>
-        </h3>
-
-        {/* Authors & Publisher Meta */}
-        <div className="mt-3.5 space-y-1.5 text-xs text-muted">
-          <div className="flex items-start gap-2">
-            <Users className="h-3.5 w-3.5 shrink-0 text-gold pt-0.5" />
-            <span className="text-cream/90 font-medium">
-              {item.authors.join(", ")}
-            </span>
-          </div>
-          <div className="flex items-start gap-2">
-            <BookOpen className="h-3.5 w-3.5 shrink-0 text-gold pt-0.5" />
-            <span className="text-cream/75">{item.publicationName}</span>
-          </div>
-          {item.doi ? (
-            <div className="text-[11px] text-muted">
-              <span>DOI: </span>
-              <span className="font-mono text-gold-soft">{item.doi}</span>
-            </div>
-          ) : null}
-        </div>
-
-        {/* Abstract */}
-        <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-cream/85">
-          {item.abstract}
-        </p>
+    <article className={`grid gap-3 py-8 sm:grid-cols-[7rem_1fr] sm:gap-8 ${className}`}>
+      <div className="flex items-baseline gap-3 sm:block">
+        <p className="font-display text-2xl font-semibold text-gold">{item.year}</p>
+        <p className="text-sm text-muted sm:mt-1">{item.typeBadge}</p>
       </div>
 
-      {/* Action Buttons Row */}
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-hairline/60 pt-4">
-        {/* Direct Link to E-Library */}
-        <a
-          href={item.externalUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-sm bg-gold px-4 py-2 text-xs font-bold uppercase tracking-wider text-ink transition-all hover:bg-gold-soft hover:shadow-md"
-        >
-          <span>Buka di E-Library</span>
-          <ExternalLink className="h-3.5 w-3.5" />
-        </a>
+      <div className="min-w-0">
+        <h3 className="text-lg font-bold leading-snug text-cream">
+          <Link
+            href={`/publikasi/${item.slug}`}
+            className="transition-colors hover:text-gold"
+          >
+            {item.title}
+          </Link>
+        </h3>
 
-        {/* View Details Link */}
-        <Link
-          href={`/publikasi/${item.slug}`}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-gold-soft hover:text-gold transition-colors"
-        >
-          <span>Detail Naskah</span>
-          <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
+        <p className="mt-2 text-sm text-cream/90">{item.authors.join(", ")}</p>
+        <p className="mt-1 text-sm text-muted">
+          <span className="italic">{item.publicationName}</span>
+          {issue ? `, ${issue}` : null}
+          {item.sintaBadge ? (
+            <span className="ml-2 rounded-sm border border-gold/40 px-1.5 py-0.5 text-xs font-semibold text-gold-soft">
+              {item.sintaBadge}
+            </span>
+          ) : null}
+        </p>
+        {item.doi ? (
+          <p className="mt-1 text-sm text-muted">
+            DOI:{" "}
+            <a
+              href={`https://doi.org/${item.doi}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="break-all text-gold-soft underline decoration-gold/40 underline-offset-4 hover:decoration-gold"
+            >
+              {item.doi}
+            </a>
+          </p>
+        ) : null}
+
+        <p className="mt-4 line-clamp-2 max-w-prose text-sm leading-relaxed text-cream/80">
+          {item.abstract}
+        </p>
+
+        <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <a
+            href={item.externalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center gap-2 rounded-sm border border-gold-deep px-5 py-2.5 text-sm font-semibold text-gold transition-colors hover:bg-gold hover:text-ink"
+          >
+            Buka di E-Library
+            <ExternalLink className="h-4 w-4" aria-hidden />
+            <span className="sr-only">(membuka tab baru)</span>
+          </a>
+          <Link
+            href={`/publikasi/${item.slug}`}
+            className="group inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-gold-soft transition-colors hover:text-gold"
+          >
+            Detail naskah
+            <ArrowRight
+              className="h-4 w-4 motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
+              aria-hidden
+            />
+            <span className="sr-only">: {item.title}</span>
+          </Link>
+        </div>
       </div>
     </article>
   );

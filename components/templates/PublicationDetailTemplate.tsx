@@ -23,11 +23,17 @@ export default function PublicationDetailTemplate({ item, relatedItems }: Props)
           <div className="mx-auto max-w-4xl px-4 sm:px-6">
             {/* Breadcrumb */}
             <nav className="mb-6 flex flex-wrap items-center gap-2 text-xs font-medium text-muted">
-              <Link href="/" className="transition-colors hover:text-gold">
+              <Link
+                href="/"
+                className="inline-flex min-h-11 items-center transition-colors hover:text-gold"
+              >
                 Beranda
               </Link>
               <ChevronRight className="h-3 w-3 text-hairline" />
-              <Link href="/publikasi" className="transition-colors hover:text-gold">
+              <Link
+                href="/publikasi"
+                className="inline-flex min-h-11 items-center transition-colors hover:text-gold"
+              >
                 Publikasi & Penelitian
               </Link>
               <ChevronRight className="h-3 w-3 text-hairline" />
@@ -91,7 +97,7 @@ export default function PublicationDetailTemplate({ item, relatedItems }: Props)
           {/* =========================================================================
               2. PRIMARY E-LIBRARY ACTION BOX (Direct Hyperlink Callout)
           ========================================================================= */}
-          <section className="mt-8 rounded-xl border border-gold/40 bg-panel p-6 shadow-lg ring-gold-frame sm:p-8">
+          <section className="mt-8 rounded-xl bg-panel p-6 ring-gold-frame sm:p-8">
             <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-gold">
@@ -110,7 +116,7 @@ export default function PublicationDetailTemplate({ item, relatedItems }: Props)
                   href={item.externalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-sm bg-gold px-5 py-3 text-xs font-bold uppercase tracking-wider text-ink transition-all hover:bg-gold-soft hover:shadow-lg hover:shadow-gold/10"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-sm bg-gold px-5 py-3 text-xs font-bold uppercase tracking-wider text-ink transition-colors hover:bg-gold-soft"
                 >
                   <span>Buka di E-Library</span>
                   <ExternalLink className="h-4 w-4" />
@@ -158,7 +164,7 @@ export default function PublicationDetailTemplate({ item, relatedItems }: Props)
           <div className="mt-12 flex items-center justify-between border-t border-hairline pt-6">
             <Link
               href="/publikasi"
-              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gold transition-colors hover:text-gold-soft"
+              className="inline-flex min-h-11 items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gold transition-colors hover:text-gold-soft"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Kembali ke Semua Publikasi</span>
@@ -170,7 +176,7 @@ export default function PublicationDetailTemplate({ item, relatedItems }: Props)
             6. RELATED PUBLICATIONS
         ========================================================================= */}
         {relatedItems.length > 0 ? (
-          <section className="mx-auto mt-20 max-w-7xl border-t border-hairline px-4 pt-16 sm:mt-24 sm:px-6 sm:pt-20">
+          <section className="mx-auto mt-16 max-w-7xl border-t border-hairline px-4 pt-12 sm:mt-20 sm:px-6 sm:pt-16">
             <div className="flex items-end justify-between gap-4 mb-8">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
@@ -182,18 +188,20 @@ export default function PublicationDetailTemplate({ item, relatedItems }: Props)
               </div>
               <Link
                 href="/publikasi"
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-gold-soft transition-colors hover:text-gold"
+                className="hidden min-h-11 sm:inline-flex items-center gap-1.5 text-xs font-semibold text-gold-soft transition-colors hover:text-gold"
               >
                 <span>Lihat Semua</span>
                 <ChevronRight className="h-4 w-4" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <ul className="divide-y divide-hairline border-y border-hairline">
               {relatedItems.map((relItem) => (
-                <PublicationCard key={relItem.id} item={relItem} />
+                <li key={relItem.id}>
+                  <PublicationCard item={relItem} />
+                </li>
               ))}
-            </div>
+            </ul>
           </section>
         ) : null}
       </main>

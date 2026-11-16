@@ -11,6 +11,9 @@ type Props = {
   onSearchSubmit?: () => void;
   totalCount: number;
   filteredCount: number;
+  /** What is being counted, e.g. "warta" or "program". */
+  noun?: string;
+  searchPlaceholder?: string;
 };
 
 export default function PostFilterBar({
@@ -22,56 +25,57 @@ export default function PostFilterBar({
   onSearchSubmit,
   totalCount,
   filteredCount,
+  noun = "warta",
+  searchPlaceholder = "Cari judul atau topik warta...",
 }: Props) {
   return (
-    <div className="flex flex-col gap-5 border-b border-hairline pb-6">
-      <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-        {/* Search Bar */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSearchSubmit?.();
-          }}
-          className="relative w-full md:w-80 lg:w-96"
-        >
-          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Cari judul atau topik warta..."
-            className="w-full rounded-md border border-hairline bg-panel py-2.5 pl-10 pr-9 text-xs text-cream placeholder:text-muted/60 transition-colors focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold sm:text-sm"
-          />
-          {searchQuery ? (
-            <button
-              type="button"
-              onClick={() => onSearchChange("")}
-              aria-label="Bersihkan pencarian"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-cream"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          ) : null}
-        </form>
+    <div>
+      <form
+        role="search"
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSearchSubmit?.();
+        }}
+        className="relative w-full md:w-96 lg:w-[420px]"
+      >
+        <label htmlFor={`cari-${noun}`} className="sr-only">
+          Cari {noun}
+        </label>
+        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden />
+        <input
+          id={`cari-${noun}`}
+          type="search"
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          placeholder={searchPlaceholder}
+          className="min-h-11 w-full rounded-sm border border-muted/60 bg-panel py-2.5 pl-10 pr-11 text-base text-cream placeholder:text-muted transition-colors focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold sm:text-sm"
+        />
+        {searchQuery ? (
+          <button
+            type="button"
+            onClick={() => onSearchChange("")}
+            aria-label="Bersihkan pencarian"
+            className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-muted hover:text-cream"
+          >
+            <X className="h-4 w-4" aria-hidden />
+          </button>
+        ) : null}
+      </form>
 
-        {/* Counter Info */}
-        <p className="text-xs text-muted">
-          Menampilkan <span className="font-semibold text-gold">{filteredCount}</span> dari {totalCount} warta
-        </p>
-      </div>
-
-      {/* Category Pills */}
-      <div className="flex flex-wrap items-center gap-2 pt-1">
+      {/* Below sm the filters scroll sideways in one row instead of wrapping. */}
+      {categories.length > 1 ? (
+      <div className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {categories.map((cat) => {
           const isActive = activeCategory === cat;
           return (
             <button
               key={cat}
               type="button"
+              aria-pressed={isActive}
               onClick={() => onSelectCategory(cat)}
-              className={`cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
+              className={`inline-flex min-h-11 shrink-0 items-center rounded-sm px-3.5 text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-gold text-ink font-semibold shadow-sm"
+                  ? "bg-gold font-semibold text-ink"
                   : "border border-hairline bg-panel text-cream/80 hover:border-gold/50 hover:text-gold"
               }`}
             >
@@ -80,6 +84,11 @@ export default function PostFilterBar({
           );
         })}
       </div>
+      ) : null}
+
+      <p aria-live="polite" className="mt-4 text-sm text-muted">
+        Menampilkan {filteredCount} dari {totalCount} {noun}.
+      </p>
     </div>
   );
 }
