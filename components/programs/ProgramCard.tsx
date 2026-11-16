@@ -1,83 +1,80 @@
 import Link from "next/link";
-import { Calendar, MapPin, ArrowRight } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import ImageSlot from "@/components/ui/ImageSlot";
 import type { ProgramItem } from "@/lib/payload";
+import { ProgramStatusBadge, programAction } from "@/components/programs/ProgramStatusBadge";
 
 type Props = {
   program: ProgramItem;
   className?: string;
 };
 
+/**
+ * Event card on the dark page, following the home page's PameranProgram card:
+ * bare image with the type chip, title, when and where, then the action.
+ */
 export default function ProgramCard({ program, className = "" }: Props) {
   const programHref = `/program/${program.slug}`;
-  const actionHref = program.ctaUrl && program.ctaUrl.startsWith("http") ? program.ctaUrl : programHref;
-  const isExternal = program.ctaUrl && program.ctaUrl.startsWith("http");
+  const action = programAction(program);
 
   return (
-    <article
-      className={`group flex flex-col justify-between overflow-hidden rounded-xl bg-panel ring-gold-frame transition-all duration-300 hover:bg-panel-2 hover:-translate-y-1 ${className}`}
-    >
-      <div>
-        {/* Cover Image */}
-        <Link href={programHref} className="relative block h-52 w-full overflow-hidden bg-ink sm:h-56">
-          <ImageSlot
-            src={program.coverImage || program.image}
-            alt={program.title}
-            label={program.title}
-            position="absolute"
-            className="inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-panel via-transparent to-transparent opacity-80" />
+    <article className={`flex h-full flex-col ${className}`}>
+      <Link
+        href={programHref}
+        tabIndex={-1}
+        aria-hidden
+        className="group relative block aspect-[4/3] overflow-hidden rounded-md ring-1 ring-hairline"
+      >
+        <ImageSlot
+          src={program.coverImage || program.image}
+          alt=""
+          label={program.title}
+          position="absolute"
+          className="inset-0 h-full w-full transition-transform duration-500 motion-safe:group-hover:scale-[1.03]"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
+        {program.programType ? (
+          <span className="absolute bottom-2 left-2 rounded-sm bg-maroon px-2.5 py-1 text-xs font-semibold text-cream">
+            {program.programType}
+          </span>
+        ) : null}
+      </Link>
 
-          {/* Program Type Badge */}
-          {program.programType ? (
-            <span className="absolute top-3 left-3 rounded-sm bg-black/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-gold backdrop-blur">
-              {program.programType}
-            </span>
-          ) : null}
+      <h3 className="mt-4 text-lg font-bold leading-snug text-cream">
+        <Link href={programHref} className="transition-colors hover:text-gold">
+          {program.title}
         </Link>
+      </h3>
 
-        {/* Content Body */}
-        <div className="p-5 sm:p-6">
-          {/* Metadata Row: Date & Venue */}
-          <div className="flex flex-col gap-1.5 text-xs text-muted">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="h-3.5 w-3.5 text-gold shrink-0" />
-              <span className="font-medium text-cream/90">{program.eventDate}</span>
-            </div>
-            {program.location ? (
-              <div className="flex items-center gap-1.5 truncate">
-                <MapPin className="h-3.5 w-3.5 text-gold shrink-0" />
-                <span className="truncate text-cream/80">{program.location}</span>
-              </div>
-            ) : null}
-          </div>
-
-          {/* Title */}
-          <h3 className="mt-3 font-sans text-base font-bold leading-snug text-cream transition-colors group-hover:text-gold sm:text-lg">
-            <Link href={programHref}>{program.title}</Link>
-          </h3>
-
-          {/* Excerpt */}
-          <p className="mt-2.5 line-clamp-3 text-sm leading-relaxed text-cream/85">
-            {program.excerpt}
+      <div className="mt-2 space-y-1 text-sm">
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-medium text-cream/90">
+          <ProgramStatusBadge status={program.status} />
+          <span>{program.eventDate}</span>
+          {program.eventTime ? <span className="text-muted">· {program.eventTime}</span> : null}
+        </p>
+        {program.location ? (
+          <p className="flex items-start gap-1.5 text-muted">
+            <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold" aria-hidden />
+            <span>{program.location}</span>
           </p>
-        </div>
+        ) : null}
       </div>
 
-      {/* Card Footer Link */}
-      <div className="border-t border-hairline/50 p-5 pt-3 sm:p-6 sm:pt-3 flex items-center justify-between">
-        <Link
-          href={actionHref}
-          target={isExternal ? "_blank" : undefined}
-          rel={isExternal ? "noopener noreferrer" : undefined}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-soft transition-colors group-hover:text-gold"
-        >
-          <span>{program.ctaLabel || "Lihat Detail Program"}</span>
-          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-        </Link>
-      </div>
+      <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-cream/75">{program.excerpt}</p>
+
+      <Link
+        href={action.href}
+        target={action.external ? "_blank" : undefined}
+        rel={action.external ? "noopener noreferrer" : undefined}
+        className="group mt-auto inline-flex min-h-11 items-center gap-1.5 self-start pt-3 text-sm font-semibold text-gold transition-colors hover:text-gold-soft"
+      >
+        {action.label}
+        <ArrowRight
+          className="h-4 w-4 motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
+          aria-hidden
+        />
+        {action.external ? <span className="sr-only">(membuka tab baru)</span> : null}
+      </Link>
     </article>
   );
 }

@@ -12,15 +12,17 @@ type Props = {
   searchParams: Promise<{
     q?: string;
     page?: string;
+    kategori?: string;
   }>;
 };
 
 export default async function ProgramPage({ searchParams }: Props) {
-  const { q, page } = await searchParams;
+  const { q, page, kategori } = await searchParams;
   const currentPage = Math.max(1, parseInt(page || "1", 10) || 1);
 
   const paginatedResult = await getProgramPosts({
     q,
+    type: kategori || undefined,
     page: currentPage,
     limit: 9,
   });
@@ -28,6 +30,7 @@ export default async function ProgramPage({ searchParams }: Props) {
   return (
     <ProgramListingTemplate
       programs={paginatedResult.docs}
+      activeType={kategori || "Semua"}
       pagination={{
         totalDocs: paginatedResult.totalDocs,
         totalPages: paginatedResult.totalPages,

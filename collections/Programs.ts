@@ -18,7 +18,8 @@ export const Programs: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'programType', 'eventDate', 'status'],
+    defaultColumns: ['coverImage', 'title', 'programType', 'eventDate', 'status'],
+    listSearchableFields: ['title', 'excerpt', 'location', 'programType'],
     group: 'Warta & Publikasi',
     description: 'Kelola pameran virtual 3D, workshop, webinar, pertunjukan, dan simposium kebudayaan.',
   },
@@ -125,27 +126,33 @@ export const Programs: CollectionConfig = {
         {
           name: 'eventDate',
           type: 'date',
-          label: 'Tanggal Mulai',
+          label: 'Mulai',
           admin: {
             width: '50%',
             date: {
-              pickerAppearance: 'dayOnly',
-              displayFormat: 'd MMM yyyy',
+              pickerAppearance: 'dayAndTime',
+              displayFormat: 'd MMM yyyy, HH:mm',
+              timeFormat: 'HH:mm',
+              timeIntervals: 15,
             },
-            description: 'Kosongkan jika jadwal belum ditentukan (Segera Hadir).',
+            description:
+              'Tanggal dan jam mulai (WIB). Biarkan jam 00:00 untuk acara sepanjang hari. Kosongkan jika jadwal belum ditentukan.',
           },
         },
         {
           name: 'eventEndDate',
           type: 'date',
-          label: 'Tanggal Selesai (Opsional)',
+          label: 'Selesai (Opsional)',
           admin: {
             width: '50%',
             date: {
-              pickerAppearance: 'dayOnly',
-              displayFormat: 'd MMM yyyy',
+              pickerAppearance: 'dayAndTime',
+              displayFormat: 'd MMM yyyy, HH:mm',
+              timeFormat: 'HH:mm',
+              timeIntervals: 15,
             },
-            description: 'Diisi jika acara berlangsung beberapa hari/bulan (periode pameran).',
+            description:
+              'Tanggal dan jam selesai (WIB). Status acara (akan datang, berlangsung, selesai) dihitung otomatis dari tanggal mulai dan selesai.',
           },
         },
       ],
@@ -161,13 +168,44 @@ export const Programs: CollectionConfig = {
       },
     },
     {
-      name: 'ctaLabel',
+      name: 'registrationUrl',
       type: 'text',
-      label: 'Label Tombol Aksi (CTA)',
-      defaultValue: 'Masuk Galeri',
+      label: 'Tautan Pendaftaran (Opsional)',
       admin: {
         position: 'sidebar',
-        placeholder: 'Contoh: Masuk Galeri / Daftar Sekarang / Tonton Live',
+        placeholder: 'https://forms.gle/...',
+        description:
+          'Formulir pendaftaran peserta. Tombol "Daftar" hanya tampil selama acara belum selesai dan batas pendaftaran belum lewat.',
+      },
+      validate: (value: string | null | undefined) => {
+        if (!value) return true
+        return /^https?:\/\//.test(value) || 'Tautan harus diawali http:// atau https://'
+      },
+    },
+    {
+      name: 'registrationDeadline',
+      type: 'date',
+      label: 'Batas Pendaftaran (Opsional)',
+      admin: {
+        position: 'sidebar',
+        date: {
+          pickerAppearance: 'dayAndTime',
+          displayFormat: 'd MMM yyyy, HH:mm',
+          timeFormat: 'HH:mm',
+          timeIntervals: 15,
+        },
+        description: 'Jika kosong, pendaftaran dibuka sampai acara dimulai.',
+      },
+    },
+    {
+      name: 'ctaLabel',
+      type: 'text',
+      label: 'Label Tombol Aksi (Opsional)',
+      admin: {
+        position: 'sidebar',
+        placeholder: 'Contoh: Tonton Live / Kunjungi Pameran',
+        description:
+          'Kosongkan agar label dipilih otomatis dari status dan kategori acara (misalnya "Daftar sekarang" atau "Lihat dokumentasi").',
       },
     },
     {
