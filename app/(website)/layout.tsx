@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Cinzel, Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Spectral_SC } from "next/font/google";
 import "@/app/globals.css";
 
-const cinzel = Cinzel({
-  variable: "--font-cinzel",
+const spectral = Spectral_SC({
+  variable: "--font-spectral",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${cinzel.variable} ${jakarta.variable} h-full antialiased`}
+      className={`${spectral.variable} ${jakarta.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-ink text-cream">
         {children}

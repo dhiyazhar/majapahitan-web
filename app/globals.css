@@ -23,14 +23,20 @@
   --color-hairline: #3a2e1e; /* dividers on dark */
 }
 
-/* Fonts come from next/font as CSS variables (see app/layout.tsx). */
+/* Fonts come from next/font as CSS variables (see app/(website)/layout.tsx). */
 @theme inline {
-  --font-display: var(--font-cinzel);
+  --font-display: var(--font-spectral);
   --font-sans: var(--font-jakarta);
 }
 
 html {
-  scroll-behavior: smooth;
+  scrollbar-color: var(--color-hairline) var(--color-ink);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -42,6 +48,16 @@ body {
 .font-display {
   font-family: var(--font-display), Georgia, serif;
   letter-spacing: 0.02em;
+}
+
+::selection {
+  background-color: var(--color-gold);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
 }
 
 /* Thin ornamental gold rule used around several section frames */

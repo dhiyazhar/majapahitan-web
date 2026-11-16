@@ -41,7 +41,7 @@ export default function ImageSlot({
   const showPlaceholder = !src || failed;
 
   return (
-    <div className={`${position} overflow-hidden ${className}`}>
+    <div className={`${position} overflow-hidden bg-ink-2 ${className}`}>
       {showPlaceholder ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-panel-2 to-ink-2 text-muted">
           <ImageIcon className="h-6 w-6 opacity-50" aria-hidden />

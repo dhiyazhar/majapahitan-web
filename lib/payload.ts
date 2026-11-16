@@ -1,12 +1,25 @@
 import 'server-only'
+import {
+  formatProgramDateRange,
+  formatProgramTime,
+  getProgramStatus,
+  isRegistrationOpen,
+  resolveProgramCtaLabel,
+  type ProgramStatus,
+} from '@/lib/program-status'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import type { Where } from 'payload'
 import type { Berita, Program, Publikasi, Media } from '@/payload-types'
 import {
+  programSeedSchedule,
   type PostItem,
   type PostContent,
   type PublikasiItem,
+  type TeamMember,
+  tentangPage,
+  kerjasamaLogos,
+  contactInfo,
   getPostsByCategory,
   getPostBySlug,
   getRelatedPosts,
@@ -91,7 +104,10 @@ export type GetPostOptions = {
 }
 
 export type GetBeritaOptions = GetPostOptions
-export type GetProgramOptions = GetPostOptions
+export type GetProgramOptions = GetPostOptions & {
+  /** Exact `programType` value (one of the CMS select options). */
+  type?: string
+}
 
 export type PaginatedPostsResult = {
   docs: PostItem[]
@@ -144,47 +160,45 @@ export function formatIndonesianDate(isoDate?: string | null): string {
   }
 }
 
-export function formatProgramEventDate(startDate?: string | null, endDate?: string | null): string {
-  if (!startDate) return 'Segera Hadir'
-  try {
-    const start = new Date(startDate)
-    if (isNaN(start.getTime())) {
-      return String(startDate)
-    }
-
-    const startDay = start.getDate()
-    const startMonth = INDO_MONTHS[start.getMonth()]
-    const startYear = start.getFullYear()
-
-    if (!endDate) {
-      return `${startDay} ${startMonth} ${startYear}`
-    }
-
-    const end = new Date(endDate)
-    if (isNaN(end.getTime())) {
-      return `${startDay} ${startMonth} ${startYear}`
-    }
-
-    const endDay = end.getDate()
-    const endMonth = INDO_MONTHS[end.getMonth()]
-    const endYear = end.getFullYear()
-
-    if (start.getTime() === end.getTime() || (startDay === endDay && startMonth === endMonth && startYear === endYear)) {
-      return `${startDay} ${startMonth} ${startYear}`
-    }
-
-    if (startMonth === endMonth && startYear === endYear) {
-      return `${startDay} – ${endDay} ${startMonth} ${startYear}`
-    }
-
-    if (startYear === endYear) {
-      return `${startDay} ${startMonth} – ${endDay} ${endMonth} ${startYear}`
-    }
-
-    return `${startDay} ${startMonth} ${startYear} – ${endDay} ${endMonth} ${endYear}`
-  } catch {
-    return String(startDate)
+/**
+ * Timing fields for a program, derived at render time from its schedule.
+ * Used by the CMS mapper and by the seed fallbacks (which have no schedule).
+ */
+function programSchedule(input: {
+  startsAt?: string | null
+  endsAt?: string | null
+  registrationUrl?: string | null
+  registrationDeadline?: string | null
+  ctaLabel?: string | null
+  programType?: string | null
+}) {
+  const status = getProgramStatus(input.startsAt, input.endsAt)
+  const registrationOpen = isRegistrationOpen(
+    input.registrationUrl,
+    input.startsAt,
+    input.endsAt,
+    input.registrationDeadline,
+  )
+  return {
+    eventDate: formatProgramDateRange(input.startsAt, input.endsAt),
+    eventTime: formatProgramTime(input.startsAt, input.endsAt),
+    startsAt: input.startsAt || undefined,
+    endsAt: input.endsAt || undefined,
+    status,
+    registrationUrl: input.registrationUrl || undefined,
+    registrationDeadline: input.registrationDeadline || undefined,
+    registrationOpen,
+    ctaLabel: resolveProgramCtaLabel({
+      ctaLabel: input.ctaLabel,
+      programType: input.programType,
+      status,
+      registrationOpen,
+    }),
   }
+}
+
+export function formatProgramEventDate(startDate?: string | null, endDate?: string | null): string {
+  return formatProgramDateRange(startDate, endDate)
 }
 
 export function resolveMediaUrl(
@@ -292,8 +306,21 @@ export type ProgramItem = {
   slug: string
   title: string
   programType: string
+  /** Formatted date range in WIB, or "Segera Hadir". */
   eventDate: string
+  /** "09.00–12.00 WIB"; undefined for all-day events or when unscheduled. */
+  eventTime?: string
+  /** Raw ISO timestamps from the CMS; absent for unscheduled or seed items. */
+  startsAt?: string
+  endsAt?: string
+  /** Derived from startsAt/endsAt when the page renders. Undefined = no schedule. */
+  status?: ProgramStatus
+  registrationUrl?: string
+  registrationDeadline?: string
+  /** True while the registration link should be offered. */
+  registrationOpen: boolean
   location: string
+  /** Editor's label, or one chosen from status and type when left empty. */
   ctaLabel: string
   ctaUrl?: string
   publishedAt: string
@@ -392,9 +419,15 @@ export function mapPayloadProgramToProgramItem(doc: Partial<Program>): ProgramIt
     slug: doc.slug || '',
     title: doc.title || 'Tanpa Judul',
     programType: doc.programType || 'Program Edukasi',
-    eventDate: formatProgramEventDate(doc.eventDate, (doc as any).eventEndDate),
+    ...programSchedule({
+      startsAt: doc.eventDate,
+      endsAt: doc.eventEndDate,
+      registrationUrl: doc.registrationUrl,
+      registrationDeadline: doc.registrationDeadline,
+      ctaLabel: doc.ctaLabel,
+      programType: doc.programType,
+    }),
     location: doc.location || 'Museum Virtual (Daring)',
-    ctaLabel: doc.ctaLabel || 'Daftar / Ikuti Program',
     ctaUrl: doc.ctaUrl || undefined,
     publishedAt: formatIndonesianDate(doc.publishedAt),
     readingTime: calculateReadingTime(doc.content, doc.excerpt),
@@ -523,14 +556,17 @@ function getFallbackProgramResult(
   const page = Math.max(1, options.page || 1)
   const limit = Math.min(50, Math.max(1, options.limit || 9))
 
+  const byType = options.type
+    ? allPrograms.filter((p) => p.subcategory === options.type)
+    : allPrograms
   const filtered = q
-    ? allPrograms.filter(
+    ? byType.filter(
         (p) =>
           p.title.toLowerCase().includes(q) ||
           p.excerpt.toLowerCase().includes(q) ||
           p.tags.some((t) => t.toLowerCase().includes(q))
       )
-    : allPrograms
+    : byType
 
   const totalDocs = filtered.length
   const totalPages = Math.max(1, Math.ceil(totalDocs / limit))
@@ -540,9 +576,8 @@ function getFallbackProgramResult(
     slug: p.slug,
     title: p.title,
     programType: p.subcategory || 'Pameran Virtual',
-    eventDate: p.publishedAt || 'Segera Hadir',
+    ...programSchedule({ ...programSeedSchedule[p.slug], programType: p.subcategory, ctaLabel: null }),
     location: 'Museum Virtual (Daring)',
-    ctaLabel: 'Masuk Galeri',
     ctaUrl: `/program/${p.slug}`,
     publishedAt: p.publishedAt,
     readingTime: p.readingTime,
@@ -828,6 +863,10 @@ export async function getProgramPosts(
       })
     }
 
+    if (options.type) {
+      extraClauses.push({ programType: { equals: options.type } })
+    }
+
     const where = getPublishedProgramWhere(extraClauses)
 
     const result = await payload.find({
@@ -850,10 +889,20 @@ export async function getProgramPosts(
         location: true,
         ctaLabel: true,
         ctaUrl: true,
+        registrationUrl: true,
+        registrationDeadline: true,
       },
     })
 
-    if (result.totalDocs > 0 || (options.q && options.q.trim())) {
+    // An empty filtered result is a real answer only if the collection has programs at all;
+    // an empty collection still falls back to the seed data below.
+    const hasFilter = Boolean((options.q && options.q.trim()) || options.type)
+    const collectionHasDocs =
+      result.totalDocs > 0 ||
+      (hasFilter &&
+        (await payload.count({ collection: 'programs', where: getPublishedProgramWhere() })).totalDocs > 0)
+
+    if (collectionHasDocs) {
       return {
         docs: result.docs.map(mapPayloadProgramToProgramItem),
         totalDocs: result.totalDocs,
@@ -910,9 +959,8 @@ export async function getProgramBySlug(slug: string): Promise<ProgramItem | unde
       slug: fallback.slug,
       title: fallback.title,
       programType: fallback.subcategory || 'Program & Kegiatan',
-      eventDate: fallback.publishedAt || 'Segera Hadir',
+      ...programSchedule({ ...programSeedSchedule[fallback.slug], programType: fallback.subcategory, ctaLabel: null }),
       location: 'Museum Virtual (Daring)',
-      ctaLabel: 'Masuk Galeri',
       ctaUrl: `/program/${fallback.slug}`,
       publishedAt: fallback.publishedAt,
       readingTime: fallback.readingTime,
@@ -954,6 +1002,8 @@ export async function getRelatedProgram(
         location: true,
         ctaLabel: true,
         ctaUrl: true,
+        registrationUrl: true,
+        registrationDeadline: true,
       },
     })
 
@@ -971,9 +1021,8 @@ export async function getRelatedProgram(
     slug: p.slug,
     title: p.title,
     programType: p.subcategory || 'Program & Kegiatan',
-    eventDate: p.publishedAt || 'Segera Hadir',
+    ...programSchedule({ ...programSeedSchedule[p.slug], programType: p.subcategory, ctaLabel: null }),
     location: 'Museum Virtual (Daring)',
-    ctaLabel: 'Masuk Galeri',
     ctaUrl: `/program/${p.slug}`,
     publishedAt: p.publishedAt,
     readingTime: p.readingTime,
@@ -1186,3 +1235,175 @@ export async function getAllPublikasiSlugs(): Promise<string[]> {
 
   return getAllPublikasi().map((p) => p.slug)
 }
+
+export type PageTentangData = {
+  hero: {
+    title: string
+    subtitle: string
+    image: string
+  }
+  visiMisi: {
+    title: string
+    visi: string
+    misi: string[]
+  }
+  sejarah: {
+    title: string
+    image: string
+    caption: string
+    paragraphs: string[]
+  }
+  tim: {
+    title: string
+    subtitle: string
+    members: TeamMember[]
+  }
+  mitra: {
+    title: string
+    subtitle: string
+    items: Array<{ id: string; name: string; logo: string; url?: string }>
+  }
+  kontak: {
+    title: string
+    description: string
+    office: string
+    operatingHours: string
+    email: string
+    mapsUrl: string
+    mapsEmbedUrl: string
+  }
+}
+
+export async function getPageTentangData(): Promise<PageTentangData> {
+  const fallback: PageTentangData = {
+    hero: {
+      title: tentangPage.hero.title,
+      subtitle: tentangPage.hero.subtitle,
+      image: tentangPage.hero.image,
+    },
+    visiMisi: {
+      title: tentangPage.visiMisi.title,
+      visi: tentangPage.visiMisi.visi,
+      misi: tentangPage.visiMisi.misi,
+    },
+    sejarah: {
+      title: tentangPage.sejarah.title,
+      image: tentangPage.sejarah.image,
+      caption: 'Artefak Koleksi PUI Seni Budaya Majapahitan',
+      paragraphs: tentangPage.sejarah.paragraphs,
+    },
+    tim: {
+      title: tentangPage.tim.title,
+      subtitle: tentangPage.tim.subtitle,
+      members: tentangPage.tim.members,
+    },
+    mitra: {
+      title: tentangPage.mitra.title,
+      subtitle: tentangPage.mitra.subtitle,
+      items: kerjasamaLogos,
+    },
+    kontak: {
+      title: tentangPage.kontak.title,
+      description: tentangPage.kontak.description,
+      office: `${contactInfo.office}, ${contactInfo.university}`,
+      operatingHours: contactInfo.operatingHours,
+      email: contactInfo.email,
+      mapsUrl: contactInfo.googleMaps.href,
+      mapsEmbedUrl:
+        'https://maps.google.com/maps?q=Gedung+Laboratorium+Anti+Doping+Universitas+Negeri+Surabaya&t=&z=16&ie=UTF8&iwloc=&output=embed',
+    },
+  }
+
+  try {
+    const payload = await getPayloadClient()
+    const doc = await payload.findGlobal({
+      slug: 'page-tentang',
+      depth: 1,
+    })
+
+    if (!doc) return fallback
+
+    const heroImage = doc.heroImage
+      ? resolveMediaUrl(doc.heroImage as any, fallback.hero.image)
+      : fallback.hero.image
+    const sejarahImage = doc.sejarahImage
+      ? resolveMediaUrl(doc.sejarahImage as any, fallback.sejarah.image)
+      : fallback.sejarah.image
+
+    const misi =
+      Array.isArray(doc.misi) && doc.misi.length > 0
+        ? doc.misi.map((m: any) => m.point).filter(Boolean)
+        : fallback.visiMisi.misi
+
+    const paragraphs =
+      Array.isArray(doc.sejarahParagraphs) && doc.sejarahParagraphs.length > 0
+        ? doc.sejarahParagraphs.map((p: any) => p.text).filter(Boolean)
+        : fallback.sejarah.paragraphs
+
+    const members: TeamMember[] =
+      Array.isArray(doc.timMembers) && doc.timMembers.length > 0
+        ? doc.timMembers.map((m: any, idx: number) => ({
+            id: m.id || `member-${idx}`,
+            name: m.name || '',
+            role: m.role || '',
+            photo: m.photo
+              ? resolveMediaUrl(m.photo, '/images/tentang/tim-1.jpg')
+              : '/images/tentang/tim-1.jpg',
+          }))
+        : fallback.tim.members
+
+    const mitraItems =
+      Array.isArray(doc.mitraList) && doc.mitraList.length > 0
+        ? doc.mitraList.map((m: any, idx: number) => ({
+            id: m.id || `mitra-${idx}`,
+            name: m.name || '',
+            logo: m.logo
+              ? resolveMediaUrl(m.logo, '/images/logos/unesa.png')
+              : '/images/logos/unesa.png',
+            url: m.url || undefined,
+          }))
+        : fallback.mitra.items
+
+    return {
+      hero: {
+        title: doc.heroTitle || fallback.hero.title,
+        subtitle: doc.heroSubtitle || fallback.hero.subtitle,
+        image: heroImage,
+      },
+      visiMisi: {
+        title: doc.visiTitle || fallback.visiMisi.title,
+        visi: doc.visi || fallback.visiMisi.visi,
+        misi,
+      },
+      sejarah: {
+        title: doc.sejarahTitle || fallback.sejarah.title,
+        image: sejarahImage,
+        caption: doc.sejarahCaption || fallback.sejarah.caption,
+        paragraphs,
+      },
+      tim: {
+        title: doc.timTitle || fallback.tim.title,
+        subtitle: doc.timSubtitle || fallback.tim.subtitle,
+        members,
+      },
+      mitra: {
+        title: doc.mitraTitle || fallback.mitra.title,
+        subtitle: doc.mitraSubtitle || fallback.mitra.subtitle,
+        items: mitraItems,
+      },
+      kontak: {
+        title: doc.kontakTitle || fallback.kontak.title,
+        description: doc.kontakDescription || fallback.kontak.description,
+        office: doc.kontakAddress || fallback.kontak.office,
+        operatingHours: doc.kontakOperatingHours || fallback.kontak.operatingHours,
+        email: doc.kontakEmail || fallback.kontak.email,
+        mapsUrl: doc.kontakMapsUrl || fallback.kontak.mapsUrl,
+        mapsEmbedUrl: doc.kontakMapsEmbedUrl || fallback.kontak.mapsEmbedUrl,
+      },
+    }
+  } catch (err: any) {
+    console.warn(`[CMS_FALLBACK_ACTIVE] Global: PageTentang | Error: ${err?.message || err}`)
+    return fallback
+  }
+}
+

@@ -30,14 +30,7 @@ export const navItems: NavItem[] = [
     href: "/galeri",
     children: [
       { label: "Galeri Karya Publik", href: "/galeri/publik" },
-      {
-        label: "Galeri Virtual Museum",
-        href: "/galeri/museum",
-        children: [
-          { label: "Karya Otentik", href: "/galeri/museum/otentik" },
-          { label: "Karya Kontemporer", href: "/galeri/museum/kontemporer" },
-        ],
-      },
+      { label: "Galeri Virtual Museum", href: "/galeri/museum" },
     ],
   },
   { label: "Publikasi & Penelitian", href: "/publikasi" },
@@ -89,8 +82,6 @@ export type QuickAccess = {
   title: string;
   subtitle: string;
   href: string;
-  /** lucide-react icon name resolved in the component */
-  icon: "cube" | "images" | "newspaper" | "map";
 };
 
 export const aksesCepat: QuickAccess[] = [
@@ -99,28 +90,24 @@ export const aksesCepat: QuickAccess[] = [
     title: "Galeri Virtual 3D",
     subtitle: "Jelajahi ruang pamer secara interaktif",
     href: "/galeri/3d",
-    icon: "cube",
   },
   {
     id: "digital",
     title: "Koleksi Digital",
     subtitle: "Telusuri ribuan koleksi Majapahit",
     href: "/koleksi",
-    icon: "images",
   },
   {
     id: "berita",
     title: "Berita & Program",
     subtitle: "Informasi terbaru kegiatan museum",
     href: "/berita",
-    icon: "newspaper",
   },
   {
     id: "peta",
     title: "Peta Virtual",
     subtitle: "Eksplorasi wilayah Kerajaan Majapahit",
     href: "/peta",
-    icon: "map",
   },
 ];
 
@@ -1231,19 +1218,20 @@ export const tentangPage = {
     members: [
       {
         id: "ketua",
-        name: "Prof. Dr. Djodjok Soepardjo, M.Hum.",
+        // Placeholder until the team is confirmed; do not put real names here without consent.
+        name: "Nama Anggota Tim",
         role: "Ketua PUI Seni Budaya Majapahitan",
         photo: "/images/tentang/tim-1.jpg",
       },
       {
         id: "kurator",
-        name: "Dr. Trisakti, M.Si.",
+        name: "Nama Anggota Tim",
         role: "Koordinator Riset & Kurasi",
         photo: "/images/tentang/tim-2.jpg",
       },
       {
         id: "arkeolog",
-        name: "Welly Suryandoko, S.Pd., M.Pd.",
+        name: "Nama Anggota Tim",
         role: "Divisi Konservasi & Sejarah",
         photo: "/images/tentang/tim-3.jpg",
       },
@@ -1324,7 +1312,6 @@ export type KonservasiPilar = {
   image: string;
   href: string;
   cta: string;
-  stat?: string;
 };
 
 export type KonservasiStep = {
@@ -1347,7 +1334,7 @@ export const konservasiPage = {
     title: "Mengapa Konservasi Digital?",
     paragraphs: [
       "Peninggalan Kerajaan Majapahit tersebar di berbagai wilayah Jawa Timur — dari candi dan gapura yang masih berdiri, hingga prasasti dan artefak yang tersimpan di museum-museum dan situs terbuka. Tantangan utamanya adalah aksesibilitas: tidak semua pihak dapat mengunjungi lokasi secara langsung, dan banyak peninggalan mengalami kerusakan akibat waktu dan cuaca.",
-      "Museum Konservasi hadir sebagai jawaban — sebuah ruang virtual yang mendokumentasikan, memindai, dan menyajikan peninggalan-peninggalan tersebut dalam bentuk digital beresolusi tinggi. Dengan pendekatan ini, warisan Majapahit dapat diakses, dipelajari, dan diapresiasi oleh siapa saja, di mana saja.",
+      "Museum Konservasi dirancang sebagai ruang virtual untuk mendokumentasikan dan menyajikan peninggalan-peninggalan tersebut dalam bentuk digital. Dengan pendekatan ini, warisan Majapahit dapat diakses, dipelajari, dan diapresiasi oleh siapa saja, di mana saja.",
     ],
   },
   pilar: [
@@ -1355,26 +1342,25 @@ export const konservasiPage = {
       id: "situs",
       title: "Situs & Arsitektur",
       description:
-        "Candi, gapura, petirtaan, dan kompleks bangunan peninggalan era Majapahit yang telah didokumentasikan dan dikonservasi secara digital.",
+        "Candi, gapura, petirtaan, dan kompleks bangunan peninggalan era Majapahit yang sedang didokumentasikan secara digital.",
       image: "/images/koleksi/gapura.jpg",
       href: "/konservasi/situs",
       cta: "Jelajahi Situs",
-      stat: "12+ Situs Terdokumentasi",
     },
     {
       id: "artefak",
       title: "Artefak & Benda Budaya",
       description:
-        "Prasasti, arca, keramik, perhiasan, dan benda-benda budaya otentik dari masa Kerajaan Majapahit yang didigitalisasi untuk kepentingan riset dan edukasi.",
+        "Prasasti, arca, keramik, perhiasan, dan benda-benda budaya dari masa Kerajaan Majapahit yang didokumentasikan untuk kepentingan riset dan edukasi.",
       image: "/images/koleksi/prasasti.jpg",
       href: "/konservasi/artefak",
       cta: "Telusuri Artefak",
-      stat: "50+ Artefak Terdigitalisasi",
     },
   ] as KonservasiPilar[],
   proses: {
     eyebrow: "PROSES KAMI",
     title: "Tahapan Konservasi Digital",
+    subtitle: "Urutan kerja yang kami ikuti, dari survei lapangan sampai akses publik.",
     steps: [
       {
         id: "survei",
@@ -1388,14 +1374,14 @@ export const konservasiPage = {
         number: "02",
         title: "Dokumentasi & Pemindaian",
         description:
-          "Fotografi resolusi tinggi, pemindaian 3D, dan pencatatan detail dimensi, material, serta kondisi objek.",
+          "Fotografi dan pencatatan detail dimensi, material, serta kondisi objek. Pemindaian 3D direncanakan untuk tahap berikutnya.",
       },
       {
         id: "digitalisasi",
         number: "03",
         title: "Digitalisasi & Kurasi",
         description:
-          "Data lapangan diolah menjadi aset digital: model 3D, foto katalog, dan deskripsi ilmiah yang dikurasi oleh tim ahli.",
+          "Data lapangan diolah menjadi aset digital: foto katalog dan deskripsi ilmiah yang dikurasi oleh tim ahli.",
       },
       {
         id: "publikasi",
@@ -1631,3 +1617,26 @@ export const kirimKaryaPage = {
   ],
 };
 
+/* -- Seed schedule for placeholder programs --
+   Dummy dates so event status, time and registration can be seen while the
+   CMS is offline. Spread around October 2026: upcoming, ongoing and past. */
+export const programSeedSchedule: Record<
+  string,
+  { startsAt: string; endsAt?: string; registrationUrl?: string; registrationDeadline?: string }
+> = {
+  "majapahit-dalam-arsitektur": { startsAt: "2026-09-01T00:00:00+07:00", endsAt: "2026-11-30T00:00:00+07:00" },
+  "rupa-kontemporer-majapahitan": { startsAt: "2026-11-14T00:00:00+07:00", endsAt: "2026-12-20T00:00:00+07:00" },
+  "webinar-naskah-kuno": {
+    startsAt: "2026-10-18T09:00:00+07:00",
+    endsAt: "2026-10-18T12:00:00+07:00",
+    registrationUrl: "https://forms.gle/contoh-pendaftaran",
+    registrationDeadline: "2026-10-16T23:59:00+07:00",
+  },
+  "pertunjukan-tari-musik-majapahit": { startsAt: "2026-08-17T19:00:00+07:00", endsAt: "2026-08-17T21:30:00+07:00" },
+  "workshop-fotogrametri-3d-artefak": {
+    startsAt: "2026-10-25T08:30:00+07:00",
+    endsAt: "2026-10-26T15:00:00+07:00",
+    registrationUrl: "https://forms.gle/contoh-pendaftaran",
+  },
+  "simposium-internasional-kebudayaan": { startsAt: "2026-06-10T08:00:00+07:00", endsAt: "2026-06-11T16:00:00+07:00" },
+};

@@ -119,6 +119,7 @@ export interface Config {
   };
   locale: 'id' | 'en';
   widgets: {
+    overview: OverviewWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -281,14 +282,25 @@ export interface Program {
     | 'Workshop & Pelatihan'
     | 'Seminar & Simposium';
   /**
-   * Kosongkan jika jadwal belum ditentukan (Segera Hadir).
+   * Tanggal dan jam mulai (WIB). Biarkan jam 00:00 untuk acara sepanjang hari. Kosongkan jika jadwal belum ditentukan.
    */
   eventDate?: string | null;
   /**
-   * Diisi jika acara berlangsung beberapa hari/bulan (periode pameran).
+   * Tanggal dan jam selesai (WIB). Status acara (akan datang, berlangsung, selesai) dihitung otomatis dari tanggal mulai dan selesai.
    */
   eventEndDate?: string | null;
   location?: string | null;
+  /**
+   * Formulir pendaftaran peserta. Tombol "Daftar" hanya tampil selama acara belum selesai dan batas pendaftaran belum lewat.
+   */
+  registrationUrl?: string | null;
+  /**
+   * Jika kosong, pendaftaran dibuka sampai acara dimulai.
+   */
+  registrationDeadline?: string | null;
+  /**
+   * Kosongkan agar label dipilih otomatis dari status dan kategori acara (misalnya "Daftar sekarang" atau "Lihat dokumentasi").
+   */
   ctaLabel?: string | null;
   /**
    * Jika diisi (misal: link Zoom/Google Form), tombol akan membuka tautan ini.
@@ -664,6 +676,8 @@ export interface ProgramsSelect<T extends boolean = true> {
   eventDate?: T;
   eventEndDate?: T;
   location?: T;
+  registrationUrl?: T;
+  registrationDeadline?: T;
   ctaLabel?: T;
   ctaUrl?: T;
   publishedAt?: T;
@@ -990,6 +1004,17 @@ export interface PageTentang {
   id: number;
   heroTitle?: string | null;
   heroSubtitle?: string | null;
+  heroImage?: (number | null) | Media;
+  sejarahTitle?: string | null;
+  sejarahImage?: (number | null) | Media;
+  sejarahCaption?: string | null;
+  sejarahParagraphs?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  visiTitle?: string | null;
   visi?: string | null;
   misi?:
     | {
@@ -997,12 +1022,33 @@ export interface PageTentang {
         id?: string | null;
       }[]
     | null;
-  sejarahParagraphs?:
+  timTitle?: string | null;
+  timSubtitle?: string | null;
+  timMembers?:
     | {
-        text: string;
+        name: string;
+        role: string;
+        photo?: (number | null) | Media;
         id?: string | null;
       }[]
     | null;
+  mitraTitle?: string | null;
+  mitraSubtitle?: string | null;
+  mitraList?:
+    | {
+        name: string;
+        logo?: (number | null) | Media;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  kontakTitle?: string | null;
+  kontakDescription?: string | null;
+  kontakAddress?: string | null;
+  kontakOperatingHours?: string | null;
+  kontakEmail?: string | null;
+  kontakMapsUrl?: string | null;
+  kontakMapsEmbedUrl?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1103,6 +1149,17 @@ export interface PageBerandaSelect<T extends boolean = true> {
 export interface PageTentangSelect<T extends boolean = true> {
   heroTitle?: T;
   heroSubtitle?: T;
+  heroImage?: T;
+  sejarahTitle?: T;
+  sejarahImage?: T;
+  sejarahCaption?: T;
+  sejarahParagraphs?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  visiTitle?: T;
   visi?: T;
   misi?:
     | T
@@ -1110,12 +1167,33 @@ export interface PageTentangSelect<T extends boolean = true> {
         point?: T;
         id?: T;
       };
-  sejarahParagraphs?:
+  timTitle?: T;
+  timSubtitle?: T;
+  timMembers?:
     | T
     | {
-        text?: T;
+        name?: T;
+        role?: T;
+        photo?: T;
         id?: T;
       };
+  mitraTitle?: T;
+  mitraSubtitle?: T;
+  mitraList?:
+    | T
+    | {
+        name?: T;
+        logo?: T;
+        url?: T;
+        id?: T;
+      };
+  kontakTitle?: T;
+  kontakDescription?: T;
+  kontakAddress?: T;
+  kontakOperatingHours?: T;
+  kontakEmail?: T;
+  kontakMapsUrl?: T;
+  kontakMapsEmbedUrl?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1136,6 +1214,16 @@ export interface PageKonservasiSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "overview_widget".
+ */
+export interface OverviewWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

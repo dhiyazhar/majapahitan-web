@@ -20,7 +20,8 @@ export default function PameranProgramClient({ posts }: Props) {
     if (!el) return;
     const card = el.querySelector<HTMLElement>("[data-card]");
     const amount = card ? card.offsetWidth + 20 : el.clientWidth * 0.8;
-    el.scrollBy({ left: dir * amount, behavior: "smooth" });
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollBy({ left: dir * amount, behavior: reduce ? "auto" : "smooth" });
   };
 
   // If dynamic programs are available from Payload, map them. Otherwise fallback to static pamerans.
@@ -46,7 +47,7 @@ export default function PameranProgramClient({ posts }: Props) {
         }));
 
   return (
-    <section className="mx-auto mt-16 max-w-7xl px-4 sm:px-6">
+    <section className="mx-auto mt-14 max-w-7xl px-4 sm:px-6">
       <div className="rounded-xl bg-cream p-5 shadow-sm sm:p-7">
         <SectionHeading
           title="Pameran & Program Aktif"
@@ -70,13 +71,14 @@ export default function PameranProgramClient({ posts }: Props) {
                     <ImageSlot
                       src={p.image}
                       alt={p.title}
+
                       label={p.category}
                       position="absolute"
                       className="inset-0 h-full w-full"
                       sizes="275px"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                    <span className="absolute bottom-2 left-2 rounded-sm bg-maroon px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-cream">
+                    <span className="absolute bottom-2 left-2 rounded-sm bg-maroon px-2.5 py-1 text-xs font-semibold text-cream">
                       {p.category}
                     </span>
                   </div>
@@ -86,8 +88,8 @@ export default function PameranProgramClient({ posts }: Props) {
                   <div className="mt-1 flex flex-col gap-0.5 text-xs text-cream-ink/70">
                     <p>{p.date}</p>
                     {p.location ? (
-                      <p className="flex items-center gap-1 text-[11px] text-maroon truncate">
-                        <MapPin className="h-3 w-3 shrink-0" />
+                      <p className="flex items-center gap-1 text-xs text-maroon truncate">
+                        <MapPin className="h-3 w-3 shrink-0" aria-hidden />
                         <span className="truncate">{p.location}</span>
                       </p>
                     ) : null}
@@ -97,7 +99,7 @@ export default function PameranProgramClient({ posts }: Props) {
                   href={p.cta.href}
                   target={p.cta.isExternal ? "_blank" : undefined}
                   rel={p.cta.isExternal ? "noopener noreferrer" : undefined}
-                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-maroon transition-colors hover:text-maroon-2"
+                  className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-maroon transition-colors hover:text-maroon-2"
                 >
                   {p.cta.label}
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -108,18 +110,20 @@ export default function PameranProgramClient({ posts }: Props) {
 
           {/* Arrows */}
           <button
+            type="button"
             aria-label="Sebelumnya"
             onClick={() => scroll(-1)}
             className="absolute -left-3 top-16 hidden h-9 w-9 items-center justify-center rounded-full bg-cream text-cream-ink shadow-md ring-1 ring-black/5 transition-colors hover:bg-white sm:flex"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-5 w-5" aria-hidden />
           </button>
           <button
+            type="button"
             aria-label="Berikutnya"
             onClick={() => scroll(1)}
             className="absolute -right-3 top-16 hidden h-9 w-9 items-center justify-center rounded-full bg-cream text-cream-ink shadow-md ring-1 ring-black/5 transition-colors hover:bg-white sm:flex"
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-5 w-5" aria-hidden />
           </button>
         </div>
       </div>

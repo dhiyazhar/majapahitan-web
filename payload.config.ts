@@ -1,6 +1,8 @@
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
+import { id as idLocale } from '@payloadcms/translations/languages/id'
+import { en as enLocale } from '@payloadcms/translations/languages/en'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
@@ -36,6 +38,35 @@ export default buildConfig({
     avatar: {
       Component: './components/admin/UserAvatar#UserAvatar',
     },
+    components: {
+      graphics: {
+        Icon: './components/admin/Icon#Icon',
+        Logo: './components/admin/Logo#Logo',
+      },
+    },
+    meta: {
+      titleSuffix: ' — Museum Virtual Majapahitan',
+    },
+    theme: 'dark',
+    dateFormat: 'd MMM yyyy, HH:mm',
+    dashboard: {
+      widgets: [
+        {
+          slug: 'overview',
+          Component: './components/admin/DashboardWidget#DashboardWidget',
+          minWidth: 'full',
+          maxWidth: 'full',
+        },
+      ],
+      defaultLayout: [
+        { widgetSlug: 'overview', width: 'full' },
+        { widgetSlug: 'collections', width: 'full' },
+      ],
+    },
+  },
+  i18n: {
+    supportedLanguages: { id: idLocale, en: enLocale },
+    fallbackLanguage: 'id',
   },
   collections: [
     // Warta, Agenda Program, & Publikasi Ilmiah
@@ -73,6 +104,7 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
+      connectionTimeoutMillis: 5000,
     },
   }),
   sharp,

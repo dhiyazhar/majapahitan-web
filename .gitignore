@@ -46,3 +46,7 @@ CLAUDE.md
 
 # placeholder assets doc
 /public/images/README.md
+
+# agent tooling artifacts (not for the repo)
+.impeccable/
+anti-slop/

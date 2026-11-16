@@ -1,52 +1,36 @@
 import Link from "next/link";
-import { Box, Images, Map, Newspaper, type LucideIcon } from "lucide-react";
-import { aksesCepat, type QuickAccess } from "@/lib/content";
-
-const icons: Record<QuickAccess["icon"], LucideIcon> = {
-  cube: Box,
-  images: Images,
-  newspaper: Newspaper,
-  map: Map,
-};
+import { ArrowRight } from "lucide-react";
+import { aksesCepat } from "@/lib/content";
 
 export default function AksesCepat() {
   return (
-    <section className="relative z-10 mx-auto -mt-10 max-w-7xl px-4 sm:px-6">
-      <div className="ring-gold-frame grid grid-cols-1 gap-y-6 rounded-lg bg-panel/95 p-6 backdrop-blur sm:grid-cols-2 lg:grid-cols-5 lg:gap-y-0 lg:p-4">
-        {/* Label */}
-        <div className="flex items-center gap-3 lg:border-r lg:border-hairline lg:pr-4">
-          <span className="font-display text-lg font-semibold uppercase leading-tight tracking-wide text-gold">
-            Akses
-            <br />
-            Cepat
-          </span>
-        </div>
-
-        {aksesCepat.map((item) => {
-          const Icon = icons[item.icon];
-          return (
+    <nav aria-label="Akses cepat" className="mx-auto mt-10 max-w-7xl px-4 sm:px-6">
+      <ul className="grid border-y border-hairline sm:grid-cols-2 lg:grid-cols-4">
+        {aksesCepat.map((item, i) => (
+          <li
+            key={item.id}
+            className={`border-hairline max-sm:[&:not(:last-child)]:border-b sm:max-lg:[&:nth-child(-n+2)]:border-b ${
+              i % 2 === 1 ? "sm:border-l" : ""
+            } ${i > 0 ? "lg:border-l" : ""}`}
+          >
             <Link
-              key={item.id}
               href={item.href}
-              className="group flex items-center gap-3 px-1 lg:px-4 lg:[&:not(:last-child)]:border-r lg:[&:not(:last-child)]:border-hairline"
+              className="group flex h-full items-start justify-between gap-4 px-1 py-5 sm:px-5"
             >
-              <Icon
-                className="h-8 w-8 shrink-0 text-gold/80 transition-colors group-hover:text-gold"
-                strokeWidth={1.25}
-                aria-hidden
-              />
-              <span className="leading-tight">
-                <span className="block text-sm font-semibold uppercase tracking-wide text-cream transition-colors group-hover:text-gold">
+              <span>
+                <span className="block text-base font-bold text-cream transition-colors group-hover:text-gold">
                   {item.title}
                 </span>
-                <span className="mt-0.5 block text-xs text-muted">
-                  {item.subtitle}
-                </span>
+                <span className="mt-1 block text-sm text-muted">{item.subtitle}</span>
               </span>
+              <ArrowRight
+                className="mt-1 h-4 w-4 shrink-0 text-gold/80 transition-transform group-hover:translate-x-1"
+                aria-hidden
+              />
             </Link>
-          );
-        })}
-      </div>
-    </section>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
