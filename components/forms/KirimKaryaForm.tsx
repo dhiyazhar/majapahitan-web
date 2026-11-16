@@ -12,6 +12,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { kirimKaryaPage } from "@/lib/content";
+import { submitKarya, type KirimKaryaState } from "@/app/(website)/partisipasi/kirim-karya/actions";
 
 export default function KirimKaryaForm() {
   const [formData, setFormData] = useState({
@@ -30,6 +31,7 @@ export default function KirimKaryaForm() {
   const [isDragging, setIsDragging] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitState, setSubmitState] = useState<KirimKaryaState | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -99,8 +101,9 @@ export default function KirimKaryaForm() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitState(null);
     if (!selectedFile) {
       setFileError("Silakan unggah foto/berkas visual karya Anda.");
       return;
@@ -109,13 +112,38 @@ export default function KirimKaryaForm() {
       return;
     }
 
-    setIsSubmitting(true);
+    const payload = new FormData();
+    payload.set("contributorName", formData.contributorName);
+    payload.set("contributorEmail", formData.contributorEmail);
+    payload.set("contributorAffiliation", formData.contributorAffiliation);
+    payload.set("title", formData.title);
+    payload.set("category", formData.category);
+    payload.set("description", formData.description);
+    payload.set("agreed", formData.agreed ? "true" : "");
+    payload.set("file", selectedFile);
 
-    // Client-side stub: In future phase (Target 1/3), this calls Payload Local API / Server Action
-    setTimeout(() => {
+    setIsSubmitting(true);
+    try {
+      const result = await submitKarya(payload);
+      if (result.ok) {
+        setIsSubmitted(true);
+      } else {
+        setSubmitState(result);
+        if (result.errors?.file) {
+          setFileError(result.errors.file);
+        }
+      }
+    } catch {
+      setSubmitState({
+        ok: false,
+        errors: {
+          _form:
+            "Gagal menghubungi server. Periksa koneksi Anda lalu coba lagi.",
+        },
+      });
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 1000);
+    }
   };
 
   const handleReset = () => {
@@ -129,8 +157,13 @@ export default function KirimKaryaForm() {
       agreed: false,
     });
     handleRemoveFile();
+    setSubmitState(null);
     setIsSubmitted(false);
   };
+
+  const fieldErrors = submitState?.errors ?? {};
+  const showFieldError = (field: keyof typeof fieldErrors) =>
+    submitState && !submitState.ok ? fieldErrors[field] : undefined;
 
   // SUCCESS STATE
   if (isSubmitted) {
@@ -207,6 +240,16 @@ export default function KirimKaryaForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+        {showFieldError("_form") && (
+          <div
+            role="alert"
+            className="flex items-start gap-2.5 rounded-sm border border-rose-300 bg-rose-50 px-4 py-3 text-xs leading-relaxed text-rose-800"
+          >
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{showFieldError("_form")}</span>
+          </div>
+        )}
+
         {/* Identitas Kontributor */}
         <div className="border-b border-cream-ink/15 pb-6">
           <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-maroon">
@@ -250,6 +293,12 @@ export default function KirimKaryaForm() {
                 placeholder="nama@institusi.ac.id"
                 className="mt-1.5 w-full rounded-sm border border-cream-ink/20 bg-cream-2/80 px-3.5 py-2.5 text-sm text-cream-ink placeholder:text-cream-ink/40 focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/20"
               />
+              {showFieldError("contributorEmail") && (
+                <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-rose-700">
+                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                  {showFieldError("contributorEmail")}
+                </p>
+              )}
             </div>
 
             <div className="sm:col-span-2">
@@ -324,6 +373,12 @@ export default function KirimKaryaForm() {
                     </option>
                   ))}
                 </select>
+                {showFieldError("category") && (
+                  <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-rose-700">
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                    {showFieldError("category")}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -347,6 +402,12 @@ export default function KirimKaryaForm() {
               <p className="mt-1 text-[11px] text-cream-ink/60">
                 Deskripsi ini akan digunakan oleh kurator dalam penulisan takarir (*curatorial caption*) saat karya dipamerkan.
               </p>
+              {showFieldError("description") && (
+                <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-rose-700">
+                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                  {showFieldError("description")}
+                </p>
+              )}
             </div>
           </div>
         </div>

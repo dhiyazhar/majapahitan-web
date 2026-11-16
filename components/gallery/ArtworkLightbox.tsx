@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
-import { X, ChevronLeft, ChevronRight, User, Landmark, Calendar, Palette, Maximize2 } from "lucide-react";
+import { useEffect, useCallback, useRef } from "react";
+import { X, ChevronLeft, ChevronRight, User, Landmark, Palette, Maximize2 } from "lucide-react";
 import ImageSlot from "@/components/ui/ImageSlot";
 import type { KaryaItem } from "@/lib/content";
 
@@ -22,6 +22,9 @@ export default function ArtworkLightbox({
   onClose,
   onSelectIndex,
 }: Props) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
   const handlePrev = useCallback(() => {
     if (currentIndex > 0) {
       onSelectIndex(currentIndex - 1);
@@ -62,10 +65,41 @@ export default function ArtworkLightbox({
     };
   }, [isOpen, onClose, handlePrev, handleNext]);
 
+  // Move focus into the dialog on open, keep Tab inside it, and give focus back to the opener on close.
+  useEffect(() => {
+    if (!isOpen) return;
+    const opener = document.activeElement as HTMLElement | null;
+    closeRef.current?.focus();
+
+    const trapTab = (e: KeyboardEvent) => {
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener("keydown", trapTab);
+    return () => {
+      window.removeEventListener("keydown", trapTab);
+      opener?.focus();
+    };
+  }, [isOpen]);
+
   if (!isOpen || !artwork) return null;
 
   return (
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-label={`Pratinjau karya: ${artwork.title}`}
@@ -73,17 +107,18 @@ export default function ArtworkLightbox({
     >
       {/* Top Controls Bar */}
       <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between text-cream sm:top-6 sm:left-6 sm:right-6">
-        <span className="rounded-full bg-ink/80 px-3.5 py-1 text-xs font-semibold text-gold shadow-md backdrop-blur">
+        <span aria-live="polite" className="rounded-full bg-ink/80 px-3.5 py-1 text-xs font-semibold text-gold shadow-md backdrop-blur">
           {currentIndex + 1} / {items.length}
         </span>
 
         <button
+          ref={closeRef}
           type="button"
           onClick={onClose}
           aria-label="Tutup pratinjau (Escape)"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-ink/80 text-cream transition-colors hover:bg-gold hover:text-ink focus:outline-none focus:ring-2 focus:ring-gold"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-ink/80 text-cream transition-colors hover:bg-gold hover:text-ink"
         >
-          <X className="h-5 w-5" />
+          <X className="h-5 w-5" aria-hidden />
         </button>
       </div>
 
@@ -94,7 +129,7 @@ export default function ArtworkLightbox({
         aria-label="Karya sebelumnya (Panah Kiri)"
         className="absolute left-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-ink/80 text-cream shadow-lg transition-colors hover:bg-gold hover:text-ink sm:left-6"
       >
-        <ChevronLeft className="h-6 w-6" />
+        <ChevronLeft className="h-6 w-6" aria-hidden />
       </button>
 
       {/* Next Navigation Button */}
@@ -104,17 +139,17 @@ export default function ArtworkLightbox({
         aria-label="Karya berikutnya (Panah Kanan)"
         className="absolute right-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-ink/80 text-cream shadow-lg transition-colors hover:bg-gold hover:text-ink sm:right-6"
       >
-        <ChevronRight className="h-6 w-6" />
+        <ChevronRight className="h-6 w-6" aria-hidden />
       </button>
 
       {/* Main Lightbox Content Box */}
-      <div className="relative z-10 flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-panel ring-gold-frame shadow-2xl lg:flex-row">
+      <div className="relative z-10 flex max-h-[90vh] w-full max-w-6xl flex-col overflow-y-auto rounded-xl bg-panel ring-1 ring-hairline shadow-2xl lg:flex-row lg:overflow-hidden">
         {/* Left Side: Image Viewport */}
         <div className="relative flex min-h-[300px] flex-1 items-center justify-center bg-black/60 p-4 sm:p-6 lg:min-h-[550px] lg:p-8">
           <div className="relative h-[280px] w-full sm:h-[400px] lg:h-[500px]">
             <ImageSlot
               src={artwork.image}
-              alt={artwork.title}
+              alt=""
               label={artwork.title}
               position="absolute"
               className="inset-0 h-full w-full object-contain"
@@ -129,7 +164,7 @@ export default function ArtworkLightbox({
             {/* Category Badge & Year */}
             <div className="flex items-center justify-between gap-2 border-b border-hairline pb-4">
               <span
-                className={`rounded-sm px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ${
+                className={`rounded-sm px-2.5 py-1 text-xs font-bold uppercase tracking-wider ${
                   artwork.category === "publik"
                     ? "bg-maroon text-cream"
                     : artwork.category === "otentik"
@@ -145,14 +180,14 @@ export default function ArtworkLightbox({
             </div>
 
             {/* Title */}
-            <h2 className="mt-4 font-sans text-xl font-bold leading-snug text-cream sm:text-2xl">
+            <h2 className="mt-4 font-display text-2xl font-semibold leading-snug text-gold sm:text-3xl">
               {artwork.title}
             </h2>
 
             {/* Metadata Fields */}
             <div className="mt-4 space-y-2.5 text-xs text-muted">
               <div className="flex items-start gap-2.5">
-                <User className="h-4 w-4 shrink-0 text-gold pt-0.5" />
+                <User className="h-4 w-4 shrink-0 text-gold pt-0.5" aria-hidden />
                 <div>
                   <span className="text-muted">Kreator / Seniman: </span>
                   <span className="font-semibold text-cream">{artwork.creator}</span>
@@ -161,7 +196,7 @@ export default function ArtworkLightbox({
 
               {artwork.institution ? (
                 <div className="flex items-start gap-2.5">
-                  <Landmark className="h-4 w-4 shrink-0 text-gold pt-0.5" />
+                  <Landmark className="h-4 w-4 shrink-0 text-gold pt-0.5" aria-hidden />
                   <div>
                     <span className="text-muted">Asal / Institusi: </span>
                     <span className="text-cream/90">{artwork.institution}</span>
@@ -171,7 +206,7 @@ export default function ArtworkLightbox({
 
               {artwork.material ? (
                 <div className="flex items-start gap-2.5">
-                  <Palette className="h-4 w-4 shrink-0 text-gold pt-0.5" />
+                  <Palette className="h-4 w-4 shrink-0 text-gold pt-0.5" aria-hidden />
                   <div>
                     <span className="text-muted">Media / Bahan: </span>
                     <span className="text-cream/90">{artwork.material}</span>
@@ -181,7 +216,7 @@ export default function ArtworkLightbox({
 
               {artwork.dimensions ? (
                 <div className="flex items-start gap-2.5">
-                  <Maximize2 className="h-4 w-4 shrink-0 text-gold pt-0.5" />
+                  <Maximize2 className="h-4 w-4 shrink-0 text-gold pt-0.5" aria-hidden />
                   <div>
                     <span className="text-muted">Dimensi Ukuran: </span>
                     <span className="text-cream/90">{artwork.dimensions}</span>
@@ -202,8 +237,8 @@ export default function ArtworkLightbox({
           </div>
 
           {/* Modal Footer Note */}
-          <div className="mt-8 border-t border-hairline/60 pt-4 text-center">
-            <p className="text-[11px] text-muted">
+          <div className="mt-8 hidden border-t border-hairline/60 pt-4 text-center lg:block">
+            <p className="text-xs text-muted">
               Gunakan tombol panah keyboard <kbd className="rounded bg-ink px-1.5 py-0.5 font-mono text-gold">←</kbd> <kbd className="rounded bg-ink px-1.5 py-0.5 font-mono text-gold">→</kbd> untuk menelusuri karya lain
             </p>
           </div>

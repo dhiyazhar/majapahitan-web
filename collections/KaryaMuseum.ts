@@ -9,7 +9,8 @@ export const KaryaMuseum: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'type', 'creator', 'status'],
+    defaultColumns: ['image', 'title', 'type', 'creator', 'status'],
+    listSearchableFields: ['title', 'creator', 'description', 'material'],
     group: 'Partisipasi & Galeri',
     description: 'Katalog pameran karya museum: koleksi otentik dan karya kontemporer.',
   },

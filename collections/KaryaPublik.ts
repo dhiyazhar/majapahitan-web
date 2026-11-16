@@ -9,7 +9,8 @@ export const KaryaPublik: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'contributorName', 'category', 'status'],
+    defaultColumns: ['image', 'title', 'contributorName', 'category', 'status'],
+    listSearchableFields: ['title', 'contributorName', 'contributorEmail', 'category'],
     group: 'Partisipasi & Galeri',
     description: 'Tinjau dan kurasi kiriman karya seni dari masyarakat dan sivitas akademika.',
   },
