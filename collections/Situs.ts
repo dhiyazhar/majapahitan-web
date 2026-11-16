@@ -9,7 +9,8 @@ export const Situs: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'location', 'era', 'status'],
+    defaultColumns: ['image', 'name', 'location', 'era', 'status'],
+    listSearchableFields: ['name', 'location', 'era'],
     group: 'Warisan & Konservasi',
     description: 'Pusat data dokumentasi situs dan arsitektur peninggalan era Majapahit.',
   },

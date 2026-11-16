@@ -9,7 +9,8 @@ export const Artefak: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'category', 'era', 'material'],
+    defaultColumns: ['image', 'name', 'category', 'era', 'material'],
+    listSearchableFields: ['name', 'category', 'era', 'material'],
     group: 'Warisan & Konservasi',
     description: 'Inventarisasi artefak, arca, tosan aji, dan benda cagar budaya.',
   },
