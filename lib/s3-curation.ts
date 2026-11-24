@@ -1,10 +1,17 @@
 import { S3Client, CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 
 const s3 = new S3Client({
-  region: process.env.S3_REGION || process.env.AWS_REGION || 'ap-southeast-2',
+  region: process.env.AWS_REGION || process.env.S3_REGION || 'ap-southeast-2',
   credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY || '',
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY || '',
+    accessKeyId:
+      process.env.AWS_ACCESS_KEY_ID ||
+      process.env.S3_ACCESS_KEY_ID ||
+      process.env.AWS_ACCESS_KEY ||
+      '',
+    secretAccessKey:
+      process.env.AWS_SECRET_ACCESS_KEY ||
+      process.env.S3_SECRET_ACCESS_KEY ||
+      '',
   },
 })
 
