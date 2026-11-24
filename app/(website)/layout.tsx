@@ -22,6 +22,8 @@ export const metadata: Metadata = {
     "Konservasi peninggalan sejarah & budaya dan ruang apresiasi karya kreatif kontemporer bertema Majapahitan.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: Readonly<{

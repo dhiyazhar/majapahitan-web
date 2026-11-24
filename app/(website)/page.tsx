@@ -10,6 +10,9 @@ import Berlangganan from "@/components/sections/Berlangganan";
 import Footer from "@/components/layout/Footer";
 import { getPageBerandaData, getPartnerLogos } from "@/lib/payload";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function Home() {
   const [berandaData, partnerLogos] = await Promise.all([
     getPageBerandaData(),

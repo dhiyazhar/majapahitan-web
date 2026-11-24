@@ -214,10 +214,13 @@ export function formatProgramEventDate(startDate?: string | null, endDate?: stri
 }
 
 export function resolveMediaUrl(
-  mediaField?: (number | null) | Media,
+  mediaField?: (number | null) | Media | string,
   fallback = '/images/berita/galeri-3d.jpg'
 ): string {
   if (!mediaField) return fallback
+  if (typeof mediaField === 'string' && mediaField.trim()) {
+    return mediaField.trim()
+  }
   if (typeof mediaField === 'object' && mediaField !== null && 'url' in mediaField && mediaField.url) {
     return mediaField.url
   }
@@ -1330,7 +1333,7 @@ export async function getPageTentangData(): Promise<PageTentangData> {
     const payload = await getPayloadClient()
     const doc = await payload.findGlobal({
       slug: 'page-tentang',
-      depth: 1,
+      depth: 2,
     })
 
     if (!doc) return fallback
@@ -1441,7 +1444,7 @@ export async function getPageBerandaData(): Promise<PageBerandaData> {
     const payload = await getPayloadClient()
     const doc = await payload.findGlobal({
       slug: 'page-beranda',
-      depth: 1,
+      depth: 2,
     })
 
     if (!doc) return fallback
@@ -1511,7 +1514,7 @@ export async function getPartnerLogos(): Promise<PartnerLogoItem[]> {
     const payload = await getPayloadClient()
     const doc = await payload.findGlobal({
       slug: 'page-tentang',
-      depth: 1,
+      depth: 2,
     })
 
     if (!doc || !Array.isArray(doc.mitraList) || doc.mitraList.length === 0) {
@@ -1548,7 +1551,7 @@ export async function getPageKonservasiData(): Promise<PageKonservasiData> {
     const payload = await getPayloadClient()
     const doc = await payload.findGlobal({
       slug: 'page-konservasi',
-      depth: 1,
+      depth: 2,
     })
 
     if (!doc) return fallback
