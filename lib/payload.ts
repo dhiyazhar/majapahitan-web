@@ -1747,7 +1747,7 @@ export async function getAllKaryaData(): Promise<KaryaItem[]> {
     const rawCdn = process.env.NEXT_PUBLIC_CDN_URL?.trim() || ''
     const cleanCdn = rawCdn.replace(/^https?:\/\//, '').replace(/\/$/, '')
     const publicBucket = process.env.S3_PUBLIC_BUCKET || process.env.S3_PENDING_BUCKET || ''
-    const region = process.env.S3_REGION || process.env.AWS_REGION || 'ap-southeast-2'
+    const region = process.env.AWS_REGION || 'ap-southeast-2'
 
     const publikItems: KaryaItem[] = (publikResult?.docs || []).map((doc: any, idx: number) => {
       const subFilename =

@@ -143,20 +143,16 @@ export default buildConfig({
         credentials: {
           accessKeyId:
             process.env.AWS_ACCESS_KEY_ID ||
-            process.env.S3_ACCESS_KEY_ID ||
             process.env.AWS_ACCESS_KEY ||
             '',
-          secretAccessKey:
-            process.env.AWS_SECRET_ACCESS_KEY ||
-            process.env.S3_SECRET_ACCESS_KEY ||
-            '',
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
         },
-        region: process.env.AWS_REGION || process.env.S3_REGION || 'ap-southeast-2',
+        region: process.env.AWS_REGION || 'ap-southeast-2',
       },
       enabled: Boolean(
         (process.env.S3_PUBLIC_BUCKET || process.env.S3_PENDING_BUCKET) &&
-        (process.env.AWS_ACCESS_KEY_ID || process.env.S3_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY) &&
-        (process.env.AWS_SECRET_ACCESS_KEY || process.env.S3_SECRET_ACCESS_KEY)
+        (process.env.AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY) &&
+        process.env.AWS_SECRET_ACCESS_KEY
       ),
     }),
     // 2. Bucket privat untuk kiriman karya publik (antrean kurasi, pre-signed download)
@@ -171,20 +167,16 @@ export default buildConfig({
         credentials: {
           accessKeyId:
             process.env.AWS_ACCESS_KEY_ID ||
-            process.env.S3_ACCESS_KEY_ID ||
             process.env.AWS_ACCESS_KEY ||
             '',
-          secretAccessKey:
-            process.env.AWS_SECRET_ACCESS_KEY ||
-            process.env.S3_SECRET_ACCESS_KEY ||
-            '',
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
         },
-        region: process.env.AWS_REGION || process.env.S3_REGION || 'ap-southeast-2',
+        region: process.env.AWS_REGION || 'ap-southeast-2',
       },
       enabled: Boolean(
         process.env.S3_SUBMISSION_BUCKET &&
-        (process.env.AWS_ACCESS_KEY_ID || process.env.S3_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY) &&
-        (process.env.AWS_SECRET_ACCESS_KEY || process.env.S3_SECRET_ACCESS_KEY)
+        (process.env.AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY) &&
+        process.env.AWS_SECRET_ACCESS_KEY
       ),
     }),
   ],
