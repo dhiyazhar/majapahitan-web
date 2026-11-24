@@ -8,22 +8,28 @@ import BeritaTerbaru from "@/components/sections/BeritaTerbaru";
 import PartisipasiPublik from "@/components/sections/PartisipasiPublik";
 import Berlangganan from "@/components/sections/Berlangganan";
 import Footer from "@/components/layout/Footer";
+import { getPageBerandaData, getPartnerLogos } from "@/lib/payload";
 
-export default function Home() {
+export default async function Home() {
+  const [berandaData, partnerLogos] = await Promise.all([
+    getPageBerandaData(),
+    getPartnerLogos(),
+  ]);
+
   return (
     <>
       <Navbar />
       <main className="flex-1">
-        <Hero />
+        <Hero slides={berandaData.heroSlides} />
         <AksesCepat />
         <PameranProgram />
         <KoleksiHighlight />
-        <TentangMuseum />
+        <TentangMuseum data={berandaData.tentang} />
         <BeritaTerbaru />
         <PartisipasiPublik />
         <Berlangganan />
       </main>
-      <Footer />
+      <Footer partnerLogos={partnerLogos} />
     </>
   );
 }

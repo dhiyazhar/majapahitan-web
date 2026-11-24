@@ -12,7 +12,7 @@ import PostFilterBar from "@/components/posts/PostFilterBar";
 import FeaturedProgramHero from "@/components/programs/FeaturedProgramHero";
 import ProgramCard from "@/components/programs/ProgramCard";
 import Berlangganan from "@/components/sections/Berlangganan";
-import type { ProgramItem } from "@/lib/payload";
+import type { ProgramItem, PartnerLogoItem } from "@/lib/payload";
 
 /** Must match the `programType` select values in collections/Programs.ts. */
 const PROGRAM_CATEGORIES = [
@@ -27,6 +27,7 @@ const PROGRAM_CATEGORIES = [
 
 type Props = {
   programs: ProgramItem[];
+  partnerLogos?: PartnerLogoItem[];
   /** Category from ?kategori=, filtered on the server. */
   activeType?: string;
   pagination?: {
@@ -45,6 +46,7 @@ type Props = {
 
 export default function ProgramListingTemplate({
   programs,
+  partnerLogos,
   activeType = "Semua",
   pagination,
   isFallback,
@@ -258,7 +260,7 @@ export default function ProgramListingTemplate({
 
         <Berlangganan />
       </main>
-      <Footer />
+      <Footer partnerLogos={partnerLogos} />
     </>
   );
 }

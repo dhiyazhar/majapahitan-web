@@ -4,9 +4,8 @@ import { ChevronRight, ArrowRight } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ImageSlot from "@/components/ui/ImageSlot";
-import Rail from "@/components/ui/Rail";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { situsList } from "@/lib/content";
+import { getSitusList, getPartnerLogos } from "@/lib/payload";
 
 export const metadata: Metadata = {
   title: "Situs & Arsitektur Majapahit — Museum Konservasi",
@@ -14,7 +13,12 @@ export const metadata: Metadata = {
     "Katalog dokumentasi candi, gapura, petirtaan, dan peninggalan arsitektur Kerajaan Majapahit di Jawa Timur oleh PUI Seni Budaya Majapahitan UNESA.",
 };
 
-export default function SitusKonservasiPage() {
+export default async function SitusKonservasiPage() {
+  const [situsList, partnerLogos] = await Promise.all([
+    getSitusList(),
+    getPartnerLogos(),
+  ]);
+
   return (
     <>
       <Navbar />
@@ -62,8 +66,6 @@ export default function SitusKonservasiPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           {/* =========================================================================
               2. KATALOG SITUS
-              Same treatment as the hub doors and home KoleksiHighlight: bare image, text on the page.
-              No hover effects: sites have no detail pages yet.
           ========================================================================= */}
           <section className="mt-12 sm:mt-16">
             <SectionHeading title="Daftar Situs Peninggalan" size="sm" />
@@ -96,23 +98,9 @@ export default function SitusKonservasiPage() {
           </section>
 
           {/* =========================================================================
-              3. PETA SEBARAN SITUS (no map yet, so no map image)
+              3. CROSS-LINK KE ARTEFAK & BENDA BUDAYA
           ========================================================================= */}
-          <div className="mt-16">
-            <Rail title="Sebaran Situs">
-              <div className="max-w-prose space-y-3 text-sm leading-relaxed text-cream/80 sm:text-base">
-                <p>
-                  Mayoritas peninggalan arsitektur monumental terkonsentrasi di kawasan Trowulan, Kabupaten Mojokerto — wilayah seluas ±100 km² yang diyakini sebagai bekas pusat ibukota Kemaharajaan Majapahit.
-                </p>
-                <p className="text-muted">Peta sebaran interaktif belum tersedia.</p>
-              </div>
-            </Rail>
-          </div>
-
-          {/* =========================================================================
-              4. CROSS-LINK KE ARTEFAK & BENDA BUDAYA (Seamless CTA Layout)
-          ========================================================================= */}
-          <section className="mt-2">
+          <section className="mt-16 sm:mt-20">
             <div className="rounded-xl bg-cream p-8 sm:p-10">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <div className="max-w-xl">
@@ -138,7 +126,7 @@ export default function SitusKonservasiPage() {
           </section>
         </div>
       </main>
-      <Footer />
+      <Footer partnerLogos={partnerLogos} />
     </>
   );
 }

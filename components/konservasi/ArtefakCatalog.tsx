@@ -3,18 +3,22 @@
 import { useState, useMemo } from "react";
 import ImageSlot from "@/components/ui/ImageSlot";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { artefakList, artefakCategories } from "@/lib/content";
+import { artefakList as defaultList, artefakCategories, type ArtefakItem } from "@/lib/content";
 
-export default function ArtefakCatalog() {
+type Props = {
+  items?: ArtefakItem[];
+};
+
+export default function ArtefakCatalog({ items = defaultList }: Props) {
   const [activeCategory, setActiveCategory] = useState<string>("Semua");
 
   const filteredItems = useMemo(() => {
-    if (activeCategory === "Semua") return artefakList;
-    return artefakList.filter((a) => a.category === activeCategory);
-  }, [activeCategory]);
+    if (activeCategory === "Semua") return items;
+    return items.filter((a) => a.category === activeCategory);
+  }, [activeCategory, items]);
 
   const countFor = (cat: string) =>
-    cat === "Semua" ? artefakList.length : artefakList.filter((a) => a.category === cat).length;
+    cat === "Semua" ? items.length : items.filter((a) => a.category === cat).length;
 
   return (
     <section className="mt-12 sm:mt-16">
@@ -44,7 +48,7 @@ export default function ArtefakCatalog() {
       </div>
 
       <p aria-live="polite" className="mt-4 text-sm text-muted">
-        Menampilkan {filteredItems.length} dari {artefakList.length} artefak.
+        Menampilkan {filteredItems.length} dari {items.length} artefak.
       </p>
 
       {filteredItems.length === 0 ? (
@@ -71,7 +75,7 @@ export default function ArtefakCatalog() {
                 {artefak.name}
               </h3>
               <p className="mt-1 text-sm text-muted">
-                {artefak.category} · {artefak.era} · {artefak.material}
+                {artefak.material} · {artefak.era}
               </p>
               <p className="mt-3 text-sm leading-relaxed text-cream/80">
                 {artefak.description}

@@ -35,6 +35,9 @@ export const PageBeranda: GlobalConfig = {
           type: 'upload',
           relationTo: 'media',
           label: 'Gambar Latar Banner',
+          admin: {
+            description: 'Resolusi optimal: 1920×1080 px (rasio 16:9/21:9). WebP/JPG, objek utama di tengah/kanan, maks 400 KB.',
+          },
         },
         {
           name: 'primaryLabel',
@@ -57,7 +60,7 @@ export const PageBeranda: GlobalConfig = {
         {
           name: 'secondaryHref',
           type: 'text',
-          defaultValue: '/koleksi',
+          defaultValue: '/konservasi',
           label: 'Tautan Tombol Sekunder',
         },
       ],
@@ -80,6 +83,15 @@ export const PageBeranda: GlobalConfig = {
       defaultValue:
         'Museum Virtual Majapahitan adalah inisiatif Pusat Unggulan IPTEK Seni Budaya Majapahitan (PUISBM) Universitas Negeri Surabaya untuk melestarikan, mendokumentasikan, dan mempublikasikan warisan budaya Majapahit dalam bentuk digital yang dapat diakses oleh seluruh dunia.',
       label: 'Isi Ringkasan Tentang',
+    },
+    {
+      name: 'tentangImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Foto Bagian Tentang (Arca/Pusaka)',
+      admin: {
+        description: 'Resolusi optimal: 1000×800 px (rasio 4:3/5:4). WebP/JPG, foto peninggalan budaya beranda, maks 300 KB.',
+      },
     },
   ],
 }

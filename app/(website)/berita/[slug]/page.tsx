@@ -5,6 +5,7 @@ import {
   getAllBeritaSlugs,
   getBeritaBySlug,
   getRelatedBerita,
+  getPartnerLogos,
 } from "@/lib/payload";
 
 type PageProps = {
@@ -42,12 +43,16 @@ export default async function BeritaDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const relatedBerita = await getRelatedBerita(slug, 3);
+  const [relatedBerita, partnerLogos] = await Promise.all([
+    getRelatedBerita(slug, 3),
+    getPartnerLogos(),
+  ]);
 
   return (
     <BeritaDetailTemplate
       berita={berita}
       relatedBerita={relatedBerita}
+      partnerLogos={partnerLogos}
     />
   );
 }

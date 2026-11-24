@@ -103,7 +103,7 @@ export const Users: CollectionConfig = {
       relationTo: 'media',
       label: 'Foto Profil / Avatar',
       admin: {
-        description: 'Foto identitas profil pengguna (disarankan foto portrait rasio 1:1).',
+        description: 'Resolusi optimal: 300×300 px (rasio 1:1 persegi). Format WebP/JPG/PNG, maks 100 KB.',
       },
     },
     {

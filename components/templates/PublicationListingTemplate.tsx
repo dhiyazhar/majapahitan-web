@@ -10,12 +10,14 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import PublicationCard from "@/components/posts/PublicationCard";
 import Berlangganan from "@/components/sections/Berlangganan";
 import type { PublikasiItem } from "@/lib/content";
+import type { FooterPartner } from "@/components/layout/Footer";
 
 type Props = {
   items: PublikasiItem[];
+  partnerLogos?: FooterPartner[];
 };
 
-export default function PublicationListingTemplate({ items }: Props) {
+export default function PublicationListingTemplate({ items, partnerLogos }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredItems = useMemo(() => {
@@ -144,7 +146,7 @@ export default function PublicationListingTemplate({ items }: Props) {
         ========================================================================= */}
         <Berlangganan />
       </main>
-      <Footer />
+      <Footer partnerLogos={partnerLogos} />
     </>
   );
 }

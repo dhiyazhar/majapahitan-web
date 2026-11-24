@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import MuseumGalleryTemplate, { type MuseumFilter } from "@/components/templates/MuseumGalleryTemplate";
-import { getMuseumKarya } from "@/lib/content";
+import { getMuseumKaryaData, getPartnerLogos } from "@/lib/payload";
 
 export const metadata: Metadata = {
   title: "Galeri Virtual Museum — Museum Virtual Majapahitan",
@@ -13,11 +13,20 @@ export default async function GaleriMuseumPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const items = getMuseumKarya();
-  // Replaces the old /galeri/museum/otentik and /galeri/museum/kontemporer routes.
+  const [items, partnerLogos] = await Promise.all([
+    getMuseumKaryaData(),
+    getPartnerLogos(),
+  ]);
+
   const { kategori } = await searchParams;
   const initialCategory: MuseumFilter =
     kategori === "otentik" || kategori === "kontemporer" ? kategori : "all";
 
-  return <MuseumGalleryTemplate items={items} initialCategory={initialCategory} />;
+  return (
+    <MuseumGalleryTemplate
+      items={items}
+      initialCategory={initialCategory}
+      partnerLogos={partnerLogos}
+    />
+  );
 }

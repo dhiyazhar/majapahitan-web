@@ -6,10 +6,12 @@ import { en as enLocale } from '@payloadcms/translations/languages/en'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
+import { s3Storage } from '@payloadcms/storage-s3'
 
 // Collections
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { SubmissionMedia } from './collections/SubmissionMedia'
 import { Berita } from './collections/Berita'
 import { Programs } from './collections/Programs'
 import { Publikasi } from './collections/Publikasi'
@@ -84,6 +86,7 @@ export default buildConfig({
     // Sistem & Akun
     Users,
     Media,
+    SubmissionMedia,
   ],
   globals: [
     // Pengaturan Situs & Menu
@@ -106,6 +109,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || '',
       connectionTimeoutMillis: 5000,
     },
+    push: false,
   }),
   sharp,
   localization: {
@@ -116,4 +120,58 @@ export default buildConfig({
     defaultLocale: 'id',
     fallback: true,
   },
+  plugins: [
+    // 1. Bucket publik untuk berkas media resmi dan tayang umum (CDN CloudFront)
+    s3Storage({
+      collections: {
+        media: {
+          generateFileURL: ({ filename, prefix }) => {
+            const rawCdn = process.env.NEXT_PUBLIC_CDN_URL?.trim() || ''
+            const cleanCdn = rawCdn.replace(/^https?:\/\//, '').replace(/\/$/, '')
+            const fileKey = prefix ? `${prefix}/${filename}` : filename
+            if (cleanCdn) {
+              return `https://${cleanCdn}/${fileKey}`
+            }
+            const bucket = process.env.S3_PUBLIC_BUCKET || process.env.S3_PENDING_BUCKET || ''
+            const region = process.env.AWS_REGION || 'ap-southeast-2'
+            return `https://${bucket}.s3.${region}.amazonaws.com/${fileKey}`
+          },
+        },
+      },
+      bucket: process.env.S3_PUBLIC_BUCKET || process.env.S3_PENDING_BUCKET || '',
+      config: {
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY || '',
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+        },
+        region: process.env.AWS_REGION || 'ap-southeast-2',
+      },
+      enabled: Boolean(
+        (process.env.S3_PUBLIC_BUCKET || process.env.S3_PENDING_BUCKET) &&
+        process.env.AWS_ACCESS_KEY &&
+        process.env.AWS_SECRET_ACCESS_KEY
+      ),
+    }),
+    // 2. Bucket privat untuk kiriman karya publik (antrean kurasi, pre-signed download)
+    s3Storage({
+      collections: {
+        'submission-media': {
+          signedDownloads: true,
+        },
+      },
+      bucket: process.env.S3_SUBMISSION_BUCKET || '',
+      config: {
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY || '',
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+        },
+        region: process.env.AWS_REGION || 'ap-southeast-2',
+      },
+      enabled: Boolean(
+        process.env.S3_SUBMISSION_BUCKET &&
+        process.env.AWS_ACCESS_KEY &&
+        process.env.AWS_SECRET_ACCESS_KEY
+      ),
+    }),
+  ],
 })

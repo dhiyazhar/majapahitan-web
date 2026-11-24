@@ -1,15 +1,9 @@
-import * as migration_20260909_050056 from './20260909_050056';
-import * as migration_20261006_041410_programs_schedule_registration from './20261006_041410_programs_schedule_registration';
+import * as migration_20261124_025307_initial from './20261124_025307_initial';
 
 export const migrations = [
   {
-    up: migration_20260909_050056.up,
-    down: migration_20260909_050056.down,
-    name: '20260909_050056',
-  },
-  {
-    up: migration_20261006_041410_programs_schedule_registration.up,
-    down: migration_20261006_041410_programs_schedule_registration.down,
-    name: '20261006_041410_programs_schedule_registration'
+    up: migration_20261124_025307_initial.up,
+    down: migration_20261124_025307_initial.down,
+    name: '20261124_025307_initial'
   },
 ];

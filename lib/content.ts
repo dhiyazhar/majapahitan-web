@@ -55,7 +55,7 @@ export const heroSlides: HeroSlide[] = [
       "Konservasi peninggalan sejarah & budaya. Ruang apresiasi karya kreatif kontemporer bertema Majapahitan.",
     image: "/images/hero/slide-1.jpg",
     primary: { label: "Mulai Jelajah Virtual", href: "/galeri/3d" },
-    secondary: { label: "Lihat Koleksi", href: "/koleksi" },
+    secondary: { label: "Lihat Koleksi", href: "/konservasi" },
   },
   {
     id: "koleksi",
@@ -63,7 +63,7 @@ export const heroSlides: HeroSlide[] = [
     subtitle:
       "Telusuri artefak, naskah kuno, dan situs bersejarah Kerajaan Majapahit dalam bentuk digital.",
     image: "/images/hero/slide-2.jpg",
-    primary: { label: "Telusuri Koleksi", href: "/koleksi" },
+    primary: { label: "Telusuri Koleksi", href: "/konservasi" },
     secondary: { label: "Peta Virtual", href: "/peta" },
   },
   {
@@ -95,7 +95,7 @@ export const aksesCepat: QuickAccess[] = [
     id: "digital",
     title: "Koleksi Digital",
     subtitle: "Telusuri ribuan koleksi Majapahit",
-    href: "/koleksi",
+    href: "/konservasi",
   },
   {
     id: "berita",
@@ -169,35 +169,35 @@ export const koleksis: Koleksi[] = [
     title: "Gapura Wringin Lawang",
     category: "Arsitektur & Situs",
     image: "/images/koleksi/gapura.jpg",
-    href: "/koleksi/gapura-wringin-lawang",
+    href: "/konservasi/situs",
   },
   {
     id: "prasasti",
     title: "Prasasti Canggu",
     category: "Artefak & Benda Budaya",
     image: "/images/koleksi/prasasti.jpg",
-    href: "/koleksi/prasasti-canggu",
+    href: "/konservasi/artefak",
   },
   {
     id: "kitab",
     title: "Kitab Negara Kertagama",
     category: "Naskah & Sastra Kuno",
     image: "/images/koleksi/kitab.jpg",
-    href: "/koleksi/negara-kertagama",
+    href: "/konservasi/artefak",
   },
   {
     id: "ganesha",
     title: "Patung Ganesha",
     category: "Seni Rupa & Estetika Klasik",
     image: "/images/koleksi/ganesha.jpg",
-    href: "/koleksi/patung-ganesha",
+    href: "/konservasi/artefak",
   },
   {
     id: "peta",
     title: "Peta Majapahit",
     category: "Peta Virtual",
     image: "/images/koleksi/peta.jpg",
-    href: "/koleksi/peta-majapahit",
+    href: "/peta",
   },
 ];
 

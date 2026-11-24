@@ -25,6 +25,7 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { UserAvatar as UserAvatar_0fe9729328d94a8188efc81e4bee3243 } from '../../../components/admin/UserAvatar'
 import { Icon as Icon_03ec9ad23b0bb66bfcac66241d9063eb } from '../../../components/admin/Icon'
 import { Logo as Logo_078be3ac59220a397a1074e5597d364f } from '../../../components/admin/Logo'
+import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { DashboardWidget as DashboardWidget_5abcffbfdffa4b36842729c03af4c67c } from '../../../components/admin/DashboardWidget'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -57,6 +58,7 @@ export const importMap = {
   "./components/admin/UserAvatar#UserAvatar": UserAvatar_0fe9729328d94a8188efc81e4bee3243,
   "./components/admin/Icon#Icon": Icon_03ec9ad23b0bb66bfcac66241d9063eb,
   "./components/admin/Logo#Logo": Logo_078be3ac59220a397a1074e5597d364f,
+  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "./components/admin/DashboardWidget#DashboardWidget": DashboardWidget_5abcffbfdffa4b36842729c03af4c67c,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

@@ -9,11 +9,12 @@ import ShareButtons from "@/components/posts/ShareButtons";
 import ProgramCard from "@/components/programs/ProgramCard";
 import { ProgramStatusBadge, programAction } from "@/components/programs/ProgramStatusBadge";
 import { formatProgramDateRange, formatProgramTime } from "@/lib/program-status";
-import type { ProgramItem } from "@/lib/payload";
+import type { ProgramItem, PartnerLogoItem } from "@/lib/payload";
 
 type Props = {
   program: ProgramItem;
   relatedPrograms: ProgramItem[];
+  partnerLogos?: PartnerLogoItem[];
 };
 
 /** "16 Oktober 2026, 23.59 WIB" */
@@ -23,7 +24,11 @@ function formatMoment(iso?: string) {
   return time ? `${formatProgramDateRange(iso)}, ${time}` : formatProgramDateRange(iso);
 }
 
-export default function ProgramDetailTemplate({ program, relatedPrograms }: Props) {
+export default function ProgramDetailTemplate({
+  program,
+  relatedPrograms,
+  partnerLogos,
+}: Props) {
   const action = programAction(program);
   // The button leads somewhere new only when it opens registration or an external link.
   const showAction = action.href !== `/program/${program.slug}`;
@@ -203,7 +208,7 @@ export default function ProgramDetailTemplate({ program, relatedPrograms }: Prop
           ) : null}
         </div>
       </main>
-      <Footer />
+      <Footer partnerLogos={partnerLogos} />
     </>
   );
 }

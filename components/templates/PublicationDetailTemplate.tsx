@@ -4,13 +4,15 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PublicationCard from "@/components/posts/PublicationCard";
 import type { PublikasiItem } from "@/lib/content";
+import type { FooterPartner } from "@/components/layout/Footer";
 
 type Props = {
   item: PublikasiItem;
   relatedItems: PublikasiItem[];
+  partnerLogos?: FooterPartner[];
 };
 
-export default function PublicationDetailTemplate({ item, relatedItems }: Props) {
+export default function PublicationDetailTemplate({ item, relatedItems, partnerLogos }: Props) {
 
   return (
     <>
@@ -205,7 +207,7 @@ export default function PublicationDetailTemplate({ item, relatedItems }: Props)
           </section>
         ) : null}
       </main>
-      <Footer />
+      <Footer partnerLogos={partnerLogos} />
     </>
   );
 }

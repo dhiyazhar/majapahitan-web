@@ -62,7 +62,7 @@ export const Programs: CollectionConfig = {
       relationTo: 'media',
       label: 'Poster / Sampul Program',
       admin: {
-        description: 'Poster atau foto representasi kegiatan beresolusi baik.',
+        description: 'Resolusi optimal: 1600×1000 px (rasio 16:10) atau 1200×900 px (4:3). Format WebP/JPG, maks 350 KB.',
       },
     },
     {

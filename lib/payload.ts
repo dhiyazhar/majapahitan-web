@@ -17,7 +17,19 @@ import {
   type PostContent,
   type PublikasiItem,
   type TeamMember,
+  heroSlides,
+  type HeroSlide,
+  tentang,
   tentangPage,
+  konservasiPage,
+  situsList,
+  type SitusItem,
+  artefakList,
+  type ArtefakItem,
+  karyaList,
+  type KaryaItem,
+  koleksis,
+  type Koleksi,
   kerjasamaLogos,
   contactInfo,
   getPostsByCategory,
@@ -1406,4 +1418,464 @@ export async function getPageTentangData(): Promise<PageTentangData> {
     return fallback
   }
 }
+
+export type PageBerandaData = {
+  heroSlides: HeroSlide[]
+  tentang: typeof tentang
+}
+
+/**
+ * Fetches dynamic content for Landing Page Beranda (/) with seamless mock fallback.
+ */
+export async function getPageBerandaData(): Promise<PageBerandaData> {
+  const fallback: PageBerandaData = {
+    heroSlides,
+    tentang,
+  }
+
+  if (process.env.CMS_FALLBACK_ACTIVE === 'true') {
+    return fallback
+  }
+
+  try {
+    const payload = await getPayloadClient()
+    const doc = await payload.findGlobal({
+      slug: 'page-beranda',
+      depth: 1,
+    })
+
+    if (!doc) return fallback
+
+    const mappedSlides: HeroSlide[] =
+      Array.isArray(doc.heroSlides) && doc.heroSlides.length > 0
+        ? doc.heroSlides.map((s: any, idx: number) => {
+            const fallbackSlide = heroSlides[idx] || heroSlides[0]
+            return {
+              id: s.id || `slide-${idx + 1}`,
+              title: s.title || fallbackSlide.title,
+              subtitle: s.subtitle || fallbackSlide.subtitle,
+              image: s.image
+                ? resolveMediaUrl(s.image, fallbackSlide.image)
+                : fallbackSlide.image,
+              primary: {
+                label: s.primaryLabel || fallbackSlide.primary.label,
+                href: s.primaryHref || fallbackSlide.primary.href,
+              },
+              secondary: {
+                label: s.secondaryLabel || fallbackSlide.secondary.label,
+                href: s.secondaryHref || fallbackSlide.secondary.href,
+              },
+            }
+          })
+        : fallback.heroSlides
+
+    const mappedTentang = {
+      eyebrow: doc.tentangEyebrow || fallback.tentang.eyebrow,
+      title: doc.tentangTitle || fallback.tentang.title,
+      body: doc.tentangBody || fallback.tentang.body,
+      cta: fallback.tentang.cta,
+      image: (doc as any).tentangImage
+        ? resolveMediaUrl((doc as any).tentangImage, fallback.tentang.image)
+        : fallback.tentang.image,
+    }
+
+    return {
+      heroSlides: mappedSlides,
+      tentang: mappedTentang,
+    }
+  } catch (err: any) {
+    console.warn(`[CMS_FALLBACK_ACTIVE] Global: PageBeranda | Error: ${err?.message || err}`)
+    return fallback
+  }
+}
+
+export type PartnerLogoItem = {
+  id: string
+  name: string
+  logo: string
+  url?: string
+}
+
+/**
+ * Fetches institutional partner logos from PageTentang global with fallback.
+ * Used across /tentang and site-wide Footer.
+ */
+export async function getPartnerLogos(): Promise<PartnerLogoItem[]> {
+  const fallback: PartnerLogoItem[] = kerjasamaLogos
+
+  if (process.env.CMS_FALLBACK_ACTIVE === 'true') {
+    return fallback
+  }
+
+  try {
+    const payload = await getPayloadClient()
+    const doc = await payload.findGlobal({
+      slug: 'page-tentang',
+      depth: 1,
+    })
+
+    if (!doc || !Array.isArray(doc.mitraList) || doc.mitraList.length === 0) {
+      return fallback
+    }
+
+    return doc.mitraList.map((m: any, idx: number) => ({
+      id: m.id || `partner-${idx}`,
+      name: m.name || '',
+      logo: m.logo
+        ? resolveMediaUrl(m.logo, fallback[idx]?.logo || '/images/logos/unesa.png')
+        : (fallback[idx]?.logo || '/images/logos/unesa.png'),
+      url: m.url || undefined,
+    }))
+  } catch (err: any) {
+    console.warn(`[CMS_FALLBACK_ACTIVE] Global: PageTentang (Mitra) | Error: ${err?.message || err}`)
+    return fallback
+  }
+}
+
+export type PageKonservasiData = typeof konservasiPage
+
+/**
+ * Fetches dynamic content for Museum Konservasi (/konservasi) with seamless mock fallback.
+ */
+export async function getPageKonservasiData(): Promise<PageKonservasiData> {
+  const fallback: PageKonservasiData = konservasiPage
+
+  if (process.env.CMS_FALLBACK_ACTIVE === 'true') {
+    return fallback
+  }
+
+  try {
+    const payload = await getPayloadClient()
+    const doc = await payload.findGlobal({
+      slug: 'page-konservasi',
+      depth: 1,
+    })
+
+    if (!doc) return fallback
+
+    const heroImage = (doc as any).heroImage
+      ? resolveMediaUrl((doc as any).heroImage, fallback.hero.image)
+      : fallback.hero.image
+
+    const situsImage = (doc as any).pilarSitusImage
+      ? resolveMediaUrl((doc as any).pilarSitusImage, fallback.pilar[0].image)
+      : fallback.pilar[0].image
+
+    const artefakImage = (doc as any).pilarArtefakImage
+      ? resolveMediaUrl((doc as any).pilarArtefakImage, fallback.pilar[1].image)
+      : fallback.pilar[1].image
+
+    const paragraphs =
+      Array.isArray(doc.pengantarParagraphs) && doc.pengantarParagraphs.length > 0
+        ? doc.pengantarParagraphs.map((p: any) => p.text).filter(Boolean)
+        : fallback.pengantar.paragraphs
+
+    return {
+      ...fallback,
+      hero: {
+        ...fallback.hero,
+        title: doc.heroTitle || fallback.hero.title,
+        subtitle: doc.heroSubtitle || fallback.hero.subtitle,
+        image: heroImage,
+      },
+      pengantar: {
+        ...fallback.pengantar,
+        paragraphs,
+      },
+      pilar: [
+        {
+          ...fallback.pilar[0],
+          image: situsImage,
+        },
+        {
+          ...fallback.pilar[1],
+          image: artefakImage,
+        },
+      ],
+    }
+  } catch (err: any) {
+    console.warn(`[CMS_FALLBACK_ACTIVE] Global: PageKonservasi | Error: ${err?.message || err}`)
+    return fallback
+  }
+}
+
+/**
+ * Fetches all Situs items from Payload CMS with fallback.
+ */
+export async function getSitusList(): Promise<SitusItem[]> {
+  const fallback = situsList
+
+  if (process.env.CMS_FALLBACK_ACTIVE === 'true') {
+    return fallback
+  }
+
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'situs',
+      limit: 100,
+      depth: 1,
+    })
+
+    if (!result || !Array.isArray(result.docs) || result.docs.length === 0) {
+      return fallback
+    }
+
+    return result.docs.map((doc: any, idx: number) => ({
+      id: doc.slug || String(doc.id) || `situs-${idx}`,
+      name: doc.name || 'Tanpa Nama',
+      location: doc.location || 'Jawa Timur',
+      era: doc.era || 'Abad ke-14 Masehi',
+      description: doc.description || '',
+      image: resolveMediaUrl(doc.image, fallback[idx % fallback.length]?.image || '/images/koleksi/gapura.jpg'),
+      status: (doc.status as any) || 'Terdokumentasi',
+    }))
+  } catch (err: any) {
+    console.warn(`[CMS_FALLBACK_ACTIVE] Collection: Situs | Error: ${err?.message || err}`)
+    return fallback
+  }
+}
+
+/**
+ * Fetches all Artefak items from Payload CMS with fallback.
+ */
+export async function getArtefakList(): Promise<ArtefakItem[]> {
+  const fallback = artefakList
+
+  if (process.env.CMS_FALLBACK_ACTIVE === 'true') {
+    return fallback
+  }
+
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'artefak',
+      limit: 100,
+      depth: 1,
+    })
+
+    if (!result || !Array.isArray(result.docs) || result.docs.length === 0) {
+      return fallback
+    }
+
+    return result.docs.map((doc: any, idx: number) => ({
+      id: doc.slug || String(doc.id) || `artefak-${idx}`,
+      name: doc.name || 'Tanpa Nama',
+      category: (doc.category as any) || 'Arca & Patung',
+      era: doc.era || 'Abad ke-14 Masehi',
+      material: doc.material || 'Batu Andesit',
+      description: doc.description || '',
+      image: resolveMediaUrl(doc.image, fallback[idx % fallback.length]?.image || '/images/koleksi/prasasti.jpg'),
+    }))
+  } catch (err: any) {
+    console.warn(`[CMS_FALLBACK_ACTIVE] Collection: Artefak | Error: ${err?.message || err}`)
+    return fallback
+  }
+}
+
+/**
+ * Maps KaryaPublik category select values to human readable subcategories.
+ */
+function mapPublikCategory(cat: string): string {
+  switch (cat) {
+    case 'seni-rupa':
+      return 'Lukisan & Gambar'
+    case 'fotografi':
+      return 'Fotografi Arsitektur'
+    case 'desain-ilustrasi':
+    case 'model-3d':
+    case 'riset-visual':
+      return 'Seni Digital & 3D'
+    case 'lainnya':
+    default:
+      return 'Patung & Seni Kriya'
+  }
+}
+
+/**
+ * Fetches all Karya (Museum & Publik) with fallback to mock karyaList.
+ */
+export async function getAllKaryaData(): Promise<KaryaItem[]> {
+  const fallback = karyaList
+
+  if (process.env.CMS_FALLBACK_ACTIVE === 'true') {
+    return fallback
+  }
+
+  try {
+    const payload = await getPayloadClient()
+    const [museumResult, publikResult] = await Promise.all([
+      payload.find({
+        collection: 'karya-museum',
+        where: { status: { equals: 'published' } },
+        limit: 100,
+        depth: 1,
+      }),
+      payload.find({
+        collection: 'karya-publik',
+        where: { status: { equals: 'published' } },
+        limit: 100,
+        depth: 1,
+      }),
+    ])
+
+    const hasMuseum = Array.isArray(museumResult?.docs) && museumResult.docs.length > 0
+    const hasPublik = Array.isArray(publikResult?.docs) && publikResult.docs.length > 0
+
+    if (!hasMuseum && !hasPublik) {
+      return fallback
+    }
+
+    const museumItems: KaryaItem[] = (museumResult?.docs || []).map((doc: any, idx: number) => {
+      const cat = doc.type === 'kontemporer' ? 'kontemporer' : 'otentik'
+      return {
+        id: doc.slug || String(doc.id) || `karya-museum-${idx}`,
+        slug: doc.slug || String(doc.id) || `karya-museum-${idx}`,
+        title: doc.title || 'Tanpa Judul',
+        category: cat,
+        categoryLabel: cat === 'kontemporer' ? 'Seni Kontemporer' : 'Koleksi Otentik',
+        subcategory: cat === 'kontemporer' ? 'Lukisan & Gambar' : 'Patung & Seni Kriya',
+        creator: doc.creator || 'Koleksi Museum',
+        institution: 'PUI Seni Budaya Majapahitan UNESA',
+        year: doc.era || 'Abad ke-14 Masehi',
+        material: doc.material || '',
+        image: resolveMediaUrl(doc.image, fallback[idx % fallback.length]?.image || '/images/koleksi/gapura.jpg'),
+        description: doc.description || '',
+      }
+    })
+
+    const rawCdn = process.env.NEXT_PUBLIC_CDN_URL?.trim() || ''
+    const cleanCdn = rawCdn.replace(/^https?:\/\//, '').replace(/\/$/, '')
+    const publicBucket = process.env.S3_PUBLIC_BUCKET || process.env.S3_PENDING_BUCKET || ''
+    const region = process.env.AWS_REGION || 'ap-southeast-2'
+
+    const publikItems: KaryaItem[] = (publikResult?.docs || []).map((doc: any, idx: number) => {
+      const subFilename =
+        typeof doc.submissionMedia === 'object' && doc.submissionMedia !== null
+          ? doc.submissionMedia.filename
+          : null
+
+      let resolvedImage = resolveMediaUrl(doc.image, '')
+      if (!resolvedImage && subFilename) {
+        resolvedImage = cleanCdn
+          ? `https://${cleanCdn}/${subFilename}`
+          : `https://${publicBucket}.s3.${region}.amazonaws.com/${subFilename}`
+      }
+      if (!resolvedImage) {
+        resolvedImage = fallback[idx % fallback.length]?.image || '/images/pameran/tari.jpg'
+      }
+
+      return {
+        id: String(doc.id) || `karya-publik-${idx}`,
+        slug: String(doc.id) || `karya-publik-${idx}`,
+        title: doc.title || 'Tanpa Judul',
+        category: 'publik',
+        categoryLabel: 'Karya Publik',
+        subcategory: mapPublikCategory(doc.category),
+        creator: doc.contributorName || 'Kontributor Publik',
+        institution: doc.contributorAffiliation || 'Masyarakat Umum',
+        year: new Date(doc.createdAt || Date.now()).getFullYear().toString(),
+        image: resolvedImage,
+        description: doc.description || '',
+      }
+    })
+
+    const combined = [...museumItems, ...publikItems]
+    return combined.length > 0 ? combined : fallback
+  } catch (err: any) {
+    console.warn(`[CMS_FALLBACK_ACTIVE] Collections: Karya | Error: ${err?.message || err}`)
+    return fallback
+  }
+}
+
+/**
+ * Fetches Museum Karya items (otentik & kontemporer).
+ */
+export async function getMuseumKaryaData(): Promise<KaryaItem[]> {
+  const all = await getAllKaryaData()
+  return all.filter((k) => k.category === 'otentik' || k.category === 'kontemporer')
+}
+
+/**
+ * Fetches Public Karya items.
+ */
+export async function getPublicKaryaData(): Promise<KaryaItem[]> {
+  const all = await getAllKaryaData()
+  return all.filter((k) => k.category === 'publik')
+}
+
+/**
+ * Fetches highlight items for Beranda Koleksi Highlight section.
+ * Queries up to 2 items from Situs and 3 items from Artefak.
+ * Falls back gracefully to curated Koleksi items if collections have 0 items.
+ */
+export async function getKoleksiHighlights(): Promise<Koleksi[]> {
+  const fallback = koleksis
+
+  if (process.env.CMS_FALLBACK_ACTIVE === 'true') {
+    return fallback
+  }
+
+  try {
+    const payload = await getPayloadClient()
+    const [situsResult, artefakResult] = await Promise.all([
+      payload.find({
+        collection: 'situs',
+        limit: 2,
+        depth: 1,
+      }),
+      payload.find({
+        collection: 'artefak',
+        limit: 3,
+        depth: 1,
+      }),
+    ])
+
+    const items: Koleksi[] = []
+
+    if (situsResult && Array.isArray(situsResult.docs)) {
+      for (const doc of situsResult.docs as any[]) {
+        items.push({
+          id: doc.slug || String(doc.id),
+          title: doc.name || 'Situs Sejarah',
+          category: 'Arsitektur & Situs',
+          image: resolveMediaUrl(doc.image, '/images/koleksi/gapura.jpg'),
+          href: '/konservasi/situs',
+        })
+      }
+    }
+
+    if (artefakResult && Array.isArray(artefakResult.docs)) {
+      for (const doc of artefakResult.docs as any[]) {
+        items.push({
+          id: doc.slug || String(doc.id),
+          title: doc.name || 'Artefak Budaya',
+          category: (doc.category as string) || 'Artefak & Benda Budaya',
+          image: resolveMediaUrl(doc.image, '/images/koleksi/prasasti.jpg'),
+          href: '/konservasi/artefak',
+        })
+      }
+    }
+
+    if (items.length === 0) {
+      return fallback
+    }
+
+    if (items.length < 5) {
+      const remaining = fallback.slice(items.length)
+      return [...items, ...remaining]
+    }
+
+    return items.slice(0, 5)
+  } catch (err: any) {
+    console.warn(`[CMS_FALLBACK_ACTIVE] Module: KoleksiHighlight | Error: ${err?.message || err}`)
+    return fallback
+  }
+}
+
+
+
+
+
+
 

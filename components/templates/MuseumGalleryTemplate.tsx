@@ -11,6 +11,7 @@ import ArtworkCard from "@/components/gallery/ArtworkCard";
 import ArtworkLightbox from "@/components/gallery/ArtworkLightbox";
 import Berlangganan from "@/components/sections/Berlangganan";
 import type { KaryaItem } from "@/lib/content";
+import type { FooterPartner } from "@/components/layout/Footer";
 
 export type MuseumFilter = "all" | "otentik" | "kontemporer";
 
@@ -18,6 +19,7 @@ type Props = {
   items: KaryaItem[];
   /** From ?kategori= so links like /galeri/museum?kategori=otentik open pre-filtered. */
   initialCategory?: MuseumFilter;
+  partnerLogos?: FooterPartner[];
 };
 
 const FILTERS: { key: MuseumFilter; label: string }[] = [
@@ -26,7 +28,7 @@ const FILTERS: { key: MuseumFilter; label: string }[] = [
   { key: "kontemporer", label: "Seni Kontemporer" },
 ];
 
-export default function MuseumGalleryTemplate({ items, initialCategory = "all" }: Props) {
+export default function MuseumGalleryTemplate({ items, initialCategory = "all", partnerLogos }: Props) {
   const [activeTab, setActiveTab] = useState<MuseumFilter>(initialCategory);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArtworkIndex, setSelectedArtworkIndex] = useState<number | null>(null);
@@ -247,7 +249,7 @@ export default function MuseumGalleryTemplate({ items, initialCategory = "all" }
         {/* Berlangganan carries its own mx-auto max-w-7xl px-4 sm:px-6 and top margin, as on the hub. */}
         <Berlangganan />
       </main>
-      <Footer />
+      <Footer partnerLogos={partnerLogos} />
 
       <ArtworkLightbox
         artwork={activeArtwork}

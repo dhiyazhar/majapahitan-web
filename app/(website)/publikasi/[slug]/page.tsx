@@ -5,6 +5,7 @@ import {
   getAllPublikasiSlugs,
   getPublikasiBySlug,
   getRelatedPublikasi,
+  getPartnerLogos,
 } from "@/lib/payload";
 
 type PageProps = {
@@ -42,7 +43,16 @@ export default async function PublikasiDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const relatedItems = await getRelatedPublikasi(slug, 2);
+  const [relatedItems, partnerLogos] = await Promise.all([
+    getRelatedPublikasi(slug, 2),
+    getPartnerLogos(),
+  ]);
 
-  return <PublicationDetailTemplate item={item} relatedItems={relatedItems} />;
+  return (
+    <PublicationDetailTemplate
+      item={item}
+      relatedItems={relatedItems}
+      partnerLogos={partnerLogos}
+    />
+  );
 }

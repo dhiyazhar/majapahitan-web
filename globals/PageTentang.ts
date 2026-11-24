@@ -38,6 +38,9 @@ export const PageTentang: GlobalConfig = {
               type: 'upload',
               relationTo: 'media',
               label: 'Gambar Latar Banner Hero',
+              admin: {
+                description: 'Resolusi optimal: 1920×800 px (ultrawide 21:9). WebP/JPG, maks 350 KB.',
+              },
             },
             {
               name: 'sejarahTitle',
@@ -50,6 +53,9 @@ export const PageTentang: GlobalConfig = {
               type: 'upload',
               relationTo: 'media',
               label: 'Foto Dokumentasi Sejarah',
+              admin: {
+                description: 'Resolusi optimal: 1200×800 px (rasio 3:2/4:3). WebP/JPG, naskah/arsip sejarah, maks 300 KB.',
+              },
             },
             {
               name: 'sejarahCaption',
@@ -147,6 +153,9 @@ export const PageTentang: GlobalConfig = {
                   type: 'upload',
                   relationTo: 'media',
                   label: 'Foto Profil',
+                  admin: {
+                    description: 'Pasfoto formal tim/kurator: 400×500 px (rasio 4:5 vertikal). WebP/JPG, maks 120 KB.',
+                  },
                 },
               ],
             },
@@ -189,6 +198,9 @@ export const PageTentang: GlobalConfig = {
                   type: 'upload',
                   relationTo: 'media',
                   label: 'Logo Institusi',
+                  admin: {
+                    description: 'Logo lembaga mitra: 400×400 px (1:1 persegi). Format SVG atau PNG transparan, maks 80 KB.',
+                  },
                 },
                 {
                   name: 'url',

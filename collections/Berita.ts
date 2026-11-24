@@ -70,7 +70,7 @@ export const Berita: CollectionConfig = {
       relationTo: 'media',
       label: 'Foto Sampul Utama',
       admin: {
-        description: 'Disarankan foto landscape beresolusi baik dengan rasio 16:9.',
+        description: 'Resolusi optimal: 1600×900 px atau 1920×1080 px (rasio 16:9). Format WebP/JPG, maks 350 KB.',
       },
     },
     {

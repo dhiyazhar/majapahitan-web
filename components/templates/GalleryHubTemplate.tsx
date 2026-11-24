@@ -11,9 +11,11 @@ import ArtworkCard from "@/components/gallery/ArtworkCard";
 import ArtworkLightbox from "@/components/gallery/ArtworkLightbox";
 import Berlangganan from "@/components/sections/Berlangganan";
 import type { KaryaItem, KaryaCategory } from "@/lib/content";
+import type { FooterPartner } from "@/components/layout/Footer";
 
 type Props = {
   items: KaryaItem[];
+  partnerLogos?: FooterPartner[];
 };
 
 const GATEWAYS = [
@@ -50,7 +52,7 @@ const FILTERS: { key: "all" | KaryaCategory; label: string }[] = [
   { key: "kontemporer", label: "Seni Kontemporer" },
 ];
 
-export default function GalleryHubTemplate({ items }: Props) {
+export default function GalleryHubTemplate({ items, partnerLogos }: Props) {
   const [activeCategory, setActiveCategory] = useState<"all" | KaryaCategory>("all");
   const [selectedArtworkIndex, setSelectedArtworkIndex] = useState<number | null>(null);
 
@@ -252,7 +254,7 @@ export default function GalleryHubTemplate({ items }: Props) {
         ========================================================================= */}
         <Berlangganan />
       </main>
-      <Footer />
+      <Footer partnerLogos={partnerLogos} />
 
       {/* =========================================================================
           INTERACTIVE LIGHTBOX MODAL

@@ -278,7 +278,7 @@ export default async function TentangPage() {
 
         </div>
       </main>
-      <Footer />
+      <Footer partnerLogos={mitra.items} />
     </>
   );
 }

@@ -19,7 +19,17 @@ const socialIcons: Record<string, BrandIcon> = {
   youtube: Youtube,
 };
 
-export default function Footer() {
+export type FooterPartner = {
+  id: string;
+  name: string;
+  logo: string;
+};
+
+type FooterProps = {
+  partnerLogos?: FooterPartner[];
+};
+
+export default function Footer({ partnerLogos = kerjasamaLogos }: FooterProps) {
   return (
     <footer className="mt-16 border-t border-hairline bg-ink-2">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-3">
@@ -86,7 +96,7 @@ export default function Footer() {
             Kerja Sama
           </h3>
           <div className="mt-4 grid max-w-[220px] grid-cols-2 gap-4">
-            {kerjasamaLogos.map((p) => (
+            {partnerLogos.map((p) => (
               <ImageSlot
                 key={p.id}
                 src={p.logo}

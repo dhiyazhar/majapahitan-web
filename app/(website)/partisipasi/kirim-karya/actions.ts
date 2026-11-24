@@ -158,20 +158,32 @@ export async function submitKarya(
   try {
     const payload = await getPayloadClient();
 
-    const media = await payload.create({
-      collection: "media",
-      data: { alt: `Karya publik: ${title}` },
+    // Sanitize file name to UUID with extension
+    const ext =
+      detectedMime === "image/png"
+        ? ".png"
+        : detectedMime === "image/webp"
+        ? ".webp"
+        : ".jpg";
+    const sanitizedFilename = `${crypto.randomUUID()}${ext}`;
+
+    // Upload to isolated private submission S3 collection
+    const submissionMedia = await payload.create({
+      collection: "submission-media",
+      data: {
+        alt: `Kiriman: ${title} - ${contributorName}`,
+      },
       file: {
         data: buffer,
         mimetype: detectedMime,
-        name: imageFile.name || `karya-${Date.now()}.jpg`,
+        name: sanitizedFilename,
         size: buffer.length,
       },
-      // Trusted server-side write on behalf of an anonymous visitor. The visitor
-      // never gets Media.create; all inputs above are validated or hardcoded.
+      // Trusted server-side write on behalf of an anonymous visitor
       overrideAccess: true,
     });
 
+    // Create pending Karya Publik curation record
     await payload.create({
       collection: "karya-publik",
       data: {
@@ -181,7 +193,7 @@ export async function submitKarya(
         contributorAffiliation,
         category: category as KaryaPublik["category"],
         description,
-        image: media.id,
+        submissionMedia: submissionMedia.id,
         // Forced server-side: a submitter can never self-approve.
         status: "pending",
       },

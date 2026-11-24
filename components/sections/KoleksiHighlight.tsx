@@ -1,22 +1,24 @@
 import Link from "next/link";
 import { HandHeart } from "lucide-react";
-import { koleksis } from "@/lib/content";
+import { getKoleksiHighlights } from "@/lib/payload";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ImageSlot from "@/components/ui/ImageSlot";
 
-export default function KoleksiHighlight() {
+export default async function KoleksiHighlight() {
+  const items = await getKoleksiHighlights();
+
   return (
     <section className="mx-auto mt-20 max-w-7xl px-4 sm:px-6">
       <SectionHeading
         title="Koleksi Highlight"
-        seeAllHref="/koleksi"
+        seeAllHref="/konservasi"
         tone="gold"
         size="lg"
       />
 
       {/* One even row: five objects, then the donation tile at the same size. */}
       <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 xl:grid-cols-6 xl:gap-x-5">
-        {koleksis.map((k, i) => (
+        {items.map((k, i) => (
           <Link
             key={k.id}
             href={k.href}

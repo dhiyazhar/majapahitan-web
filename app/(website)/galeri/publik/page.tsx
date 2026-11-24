@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import PublicGalleryTemplate from "@/components/templates/PublicGalleryTemplate";
-import { getKaryaByCategory } from "@/lib/content";
+import { getPublicKaryaData, getPartnerLogos } from "@/lib/payload";
 
 export const metadata: Metadata = {
   title: "Galeri Karya Publik — Museum Virtual Majapahitan",
@@ -8,8 +8,11 @@ export const metadata: Metadata = {
     "Ruang pameran dan apresiasi bagi karya seni rupa, lukisan, patung, seni kriya, dan karya digital bertema Majapahit kiriman seniman dan masyarakat luas yang telah lolos kurasi resmi PUI Seni Budaya Majapahitan UNESA.",
 };
 
-export default function GaleriPublikPage() {
-  const items = getKaryaByCategory("publik");
+export default async function GaleriPublikPage() {
+  const [items, partnerLogos] = await Promise.all([
+    getPublicKaryaData(),
+    getPartnerLogos(),
+  ]);
 
-  return <PublicGalleryTemplate items={items} />;
+  return <PublicGalleryTemplate items={items} partnerLogos={partnerLogos} />;
 }

@@ -14,9 +14,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TYPE "public"."enum_karya_museum_type" AS ENUM('otentik', 'kontemporer');
   CREATE TYPE "public"."enum_karya_museum_status" AS ENUM('draft', 'published');
   CREATE TYPE "public"."enum_karya_publik_category" AS ENUM('seni-rupa', 'desain-ilustrasi', 'fotografi', 'model-3d', 'riset-visual', 'lainnya');
-  CREATE TYPE "public"."enum_karya_publik_status" AS ENUM('pending', 'published', 'rejected');
+  CREATE TYPE "public"."enum_karya_publik_status" AS ENUM('pending', 'published', 'rejected', 'takedown');
   CREATE TYPE "public"."enum_pages_status" AS ENUM('draft', 'published');
   CREATE TYPE "public"."enum_users_role" AS ENUM('admin', 'staff');
+  CREATE TYPE "public"."enum_media_category" AS ENUM('banner', 'koleksi', 'konten');
   CREATE TYPE "public"."enum_site_settings_socials_icon" AS ENUM('instagram', 'youtube', 'twitter', 'facebook');
   CREATE TABLE "berita" (
   	"id" serial PRIMARY KEY NOT NULL,
@@ -43,7 +44,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"event_date" timestamp(3) with time zone,
   	"event_end_date" timestamp(3) with time zone,
   	"location" varchar DEFAULT 'Museum Virtual (Daring)',
-  	"cta_label" varchar DEFAULT 'Masuk Galeri',
+  	"registration_url" varchar,
+  	"registration_deadline" timestamp(3) with time zone,
+  	"cta_label" varchar,
   	"cta_url" varchar,
   	"published_at" timestamp(3) with time zone,
   	"slug" varchar NOT NULL,
@@ -137,7 +140,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"contributor_affiliation" varchar,
   	"category" "enum_karya_publik_category" NOT NULL,
   	"description" varchar NOT NULL,
-  	"image_id" integer NOT NULL,
+  	"submission_media_id" integer,
+  	"image_id" integer,
   	"status" "enum_karya_publik_status" DEFAULT 'pending',
   	"moderation_notes" varchar,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -182,6 +186,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   
   CREATE TABLE "media" (
   	"id" serial PRIMARY KEY NOT NULL,
+  	"category" "enum_media_category",
   	"alt" varchar NOT NULL,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -214,6 +219,22 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"sizes_hero_filename" varchar
   );
   
+  CREATE TABLE "submission_media" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"alt" varchar,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"url" varchar,
+  	"thumbnail_u_r_l" varchar,
+  	"filename" varchar,
+  	"mime_type" varchar,
+  	"filesize" numeric,
+  	"width" numeric,
+  	"height" numeric,
+  	"focal_x" numeric,
+  	"focal_y" numeric
+  );
+  
   CREATE TABLE "payload_kv" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"key" varchar NOT NULL,
@@ -241,7 +262,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"karya_publik_id" integer,
   	"pages_id" integer,
   	"users_id" integer,
-  	"media_id" integer
+  	"media_id" integer,
+  	"submission_media_id" integer
   );
   
   CREATE TABLE "payload_preferences" (
@@ -322,7 +344,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"primary_label" varchar DEFAULT 'Mulai Jelajah Virtual',
   	"primary_href" varchar DEFAULT '/galeri/3d',
   	"secondary_label" varchar DEFAULT 'Lihat Koleksi',
-  	"secondary_href" varchar DEFAULT '/koleksi'
+  	"secondary_href" varchar DEFAULT '/konservasi'
   );
   
   CREATE TABLE "page_beranda" (
@@ -330,15 +352,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"tentang_eyebrow" varchar DEFAULT 'Tentang Museum',
   	"tentang_title" varchar DEFAULT 'Mengenal Museum Virtual Majapahitan',
   	"tentang_body" varchar DEFAULT 'Museum Virtual Majapahitan adalah inisiatif Pusat Unggulan IPTEK Seni Budaya Majapahitan (PUISBM) Universitas Negeri Surabaya untuk melestarikan, mendokumentasikan, dan mempublikasikan warisan budaya Majapahit dalam bentuk digital yang dapat diakses oleh seluruh dunia.',
+  	"tentang_image_id" integer,
   	"updated_at" timestamp(3) with time zone,
   	"created_at" timestamp(3) with time zone
-  );
-  
-  CREATE TABLE "page_tentang_misi" (
-  	"_order" integer NOT NULL,
-  	"_parent_id" integer NOT NULL,
-  	"id" varchar PRIMARY KEY NOT NULL,
-  	"point" varchar NOT NULL
   );
   
   CREATE TABLE "page_tentang_sejarah_paragraphs" (
@@ -348,11 +364,52 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"text" varchar NOT NULL
   );
   
+  CREATE TABLE "page_tentang_misi" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"point" varchar NOT NULL
+  );
+  
+  CREATE TABLE "page_tentang_tim_members" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"name" varchar NOT NULL,
+  	"role" varchar NOT NULL,
+  	"photo_id" integer
+  );
+  
+  CREATE TABLE "page_tentang_mitra_list" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"name" varchar NOT NULL,
+  	"logo_id" integer,
+  	"url" varchar
+  );
+  
   CREATE TABLE "page_tentang" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"hero_title" varchar DEFAULT 'Mengenal Museum Virtual Majapahitan',
   	"hero_subtitle" varchar DEFAULT 'Pusat konservasi digital dan ruang apresiasi warisan kebudayaan Kerajaan Majapahit dalam kemasan teknologi modern.',
+  	"hero_image_id" integer,
+  	"sejarah_title" varchar DEFAULT 'Latar Belakang & Pendirian',
+  	"sejarah_image_id" integer,
+  	"sejarah_caption" varchar DEFAULT 'Artefak Koleksi PUI Seni Budaya Majapahitan',
+  	"visi_title" varchar DEFAULT 'Arah & Dedikasi Kami',
   	"visi" varchar DEFAULT 'Menjadi pusat konservasi digital dan rujukan utama pelestarian seni budaya Majapahit berkelas dunia yang memadukan keilmuan akademis dengan apresiasi publik.',
+  	"tim_title" varchar DEFAULT 'Pengelola & Tim Ahli',
+  	"tim_subtitle" varchar DEFAULT 'Didukung oleh para akademisi, kurator seni, peneliti sejarah, dan pengembang teknologi.',
+  	"mitra_title" varchar DEFAULT 'Partner & Kolaborasi Institusi',
+  	"mitra_subtitle" varchar DEFAULT 'Bekerja sama dengan berbagai institusi pendidikan, balai pelestarian kebudayaan, dan komunitas seni.',
+  	"kontak_title" varchar DEFAULT 'Hubungi & Kunjungi Kami',
+  	"kontak_description" varchar DEFAULT 'Kami terbuka untuk kolaborasi penelitian, kunjungan edukasi, serta partisipasi aktif dalam pelestarian seni budaya Majapahitan.',
+  	"kontak_address" varchar DEFAULT 'Gedung Laboratorium Anti Doping Lt. 4, UNESA Kampus Lidah Wetan',
+  	"kontak_operating_hours" varchar DEFAULT 'Senin – Jumat, 08.00 – 16.00 WIB',
+  	"kontak_email" varchar DEFAULT 'puisbm@unesa.ac.id',
+  	"kontak_maps_url" varchar DEFAULT 'https://maps.google.com/?q=Universitas+Negeri+Surabaya+Lidah+Wetan',
+  	"kontak_maps_embed_url" varchar DEFAULT 'https://maps.google.com/maps?q=Gedung+Laboratorium+Anti+Doping+Universitas+Negeri+Surabaya&t=&z=16&ie=UTF8&iwloc=&output=embed',
   	"updated_at" timestamp(3) with time zone,
   	"created_at" timestamp(3) with time zone
   );
@@ -368,6 +425,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"id" serial PRIMARY KEY NOT NULL,
   	"hero_title" varchar DEFAULT 'Melestarikan Warisan Peradaban Majapahit',
   	"hero_subtitle" varchar DEFAULT 'Dokumentasi, konservasi, dan digitalisasi situs bersejarah serta artefak peninggalan Kerajaan Majapahit oleh PUI Seni Budaya Majapahitan, Universitas Negeri Surabaya.',
+  	"hero_image_id" integer,
+  	"pilar_situs_image_id" integer,
+  	"pilar_artefak_image_id" integer,
   	"updated_at" timestamp(3) with time zone,
   	"created_at" timestamp(3) with time zone
   );
@@ -379,6 +439,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "situs" ADD CONSTRAINT "situs_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "artefak" ADD CONSTRAINT "artefak_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "karya_museum" ADD CONSTRAINT "karya_museum_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "karya_publik" ADD CONSTRAINT "karya_publik_submission_media_id_submission_media_id_fk" FOREIGN KEY ("submission_media_id") REFERENCES "public"."submission_media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "karya_publik" ADD CONSTRAINT "karya_publik_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "users_sessions" ADD CONSTRAINT "users_sessions_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "users" ADD CONSTRAINT "users_avatar_id_media_id_fk" FOREIGN KEY ("avatar_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
@@ -393,6 +454,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_pages_fk" FOREIGN KEY ("pages_id") REFERENCES "public"."pages"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_users_fk" FOREIGN KEY ("users_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_media_fk" FOREIGN KEY ("media_id") REFERENCES "public"."media"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_submission_media_fk" FOREIGN KEY ("submission_media_id") REFERENCES "public"."submission_media"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_preferences_rels" ADD CONSTRAINT "payload_preferences_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."payload_preferences"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_preferences_rels" ADD CONSTRAINT "payload_preferences_rels_users_fk" FOREIGN KEY ("users_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "navigation_items_children" ADD CONSTRAINT "navigation_items_children_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."navigation_items"("id") ON DELETE cascade ON UPDATE no action;
@@ -400,9 +462,19 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "site_settings_socials" ADD CONSTRAINT "site_settings_socials_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."site_settings"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "page_beranda_hero_slides" ADD CONSTRAINT "page_beranda_hero_slides_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "page_beranda_hero_slides" ADD CONSTRAINT "page_beranda_hero_slides_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."page_beranda"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "page_tentang_misi" ADD CONSTRAINT "page_tentang_misi_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."page_tentang"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "page_beranda" ADD CONSTRAINT "page_beranda_tentang_image_id_media_id_fk" FOREIGN KEY ("tentang_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "page_tentang_sejarah_paragraphs" ADD CONSTRAINT "page_tentang_sejarah_paragraphs_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."page_tentang"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "page_tentang_misi" ADD CONSTRAINT "page_tentang_misi_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."page_tentang"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "page_tentang_tim_members" ADD CONSTRAINT "page_tentang_tim_members_photo_id_media_id_fk" FOREIGN KEY ("photo_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "page_tentang_tim_members" ADD CONSTRAINT "page_tentang_tim_members_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."page_tentang"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "page_tentang_mitra_list" ADD CONSTRAINT "page_tentang_mitra_list_logo_id_media_id_fk" FOREIGN KEY ("logo_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "page_tentang_mitra_list" ADD CONSTRAINT "page_tentang_mitra_list_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."page_tentang"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "page_tentang" ADD CONSTRAINT "page_tentang_hero_image_id_media_id_fk" FOREIGN KEY ("hero_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "page_tentang" ADD CONSTRAINT "page_tentang_sejarah_image_id_media_id_fk" FOREIGN KEY ("sejarah_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "page_konservasi_pengantar_paragraphs" ADD CONSTRAINT "page_konservasi_pengantar_paragraphs_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."page_konservasi"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "page_konservasi" ADD CONSTRAINT "page_konservasi_hero_image_id_media_id_fk" FOREIGN KEY ("hero_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "page_konservasi" ADD CONSTRAINT "page_konservasi_pilar_situs_image_id_media_id_fk" FOREIGN KEY ("pilar_situs_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "page_konservasi" ADD CONSTRAINT "page_konservasi_pilar_artefak_image_id_media_id_fk" FOREIGN KEY ("pilar_artefak_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   CREATE INDEX "berita_cover_image_idx" ON "berita" USING btree ("cover_image_id");
   CREATE UNIQUE INDEX "berita_slug_idx" ON "berita" USING btree ("slug");
   CREATE INDEX "berita_updated_at_idx" ON "berita" USING btree ("updated_at");
@@ -430,6 +502,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "karya_museum_image_idx" ON "karya_museum" USING btree ("image_id");
   CREATE INDEX "karya_museum_updated_at_idx" ON "karya_museum" USING btree ("updated_at");
   CREATE INDEX "karya_museum_created_at_idx" ON "karya_museum" USING btree ("created_at");
+  CREATE INDEX "karya_publik_submission_media_idx" ON "karya_publik" USING btree ("submission_media_id");
   CREATE INDEX "karya_publik_image_idx" ON "karya_publik" USING btree ("image_id");
   CREATE INDEX "karya_publik_updated_at_idx" ON "karya_publik" USING btree ("updated_at");
   CREATE INDEX "karya_publik_created_at_idx" ON "karya_publik" USING btree ("created_at");
@@ -442,12 +515,16 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "users_updated_at_idx" ON "users" USING btree ("updated_at");
   CREATE INDEX "users_created_at_idx" ON "users" USING btree ("created_at");
   CREATE UNIQUE INDEX "users_email_idx" ON "users" USING btree ("email");
+  CREATE INDEX "media_category_idx" ON "media" USING btree ("category");
   CREATE INDEX "media_updated_at_idx" ON "media" USING btree ("updated_at");
   CREATE INDEX "media_created_at_idx" ON "media" USING btree ("created_at");
   CREATE UNIQUE INDEX "media_filename_idx" ON "media" USING btree ("filename");
   CREATE INDEX "media_sizes_thumbnail_sizes_thumbnail_filename_idx" ON "media" USING btree ("sizes_thumbnail_filename");
   CREATE INDEX "media_sizes_card_sizes_card_filename_idx" ON "media" USING btree ("sizes_card_filename");
   CREATE INDEX "media_sizes_hero_sizes_hero_filename_idx" ON "media" USING btree ("sizes_hero_filename");
+  CREATE INDEX "submission_media_updated_at_idx" ON "submission_media" USING btree ("updated_at");
+  CREATE INDEX "submission_media_created_at_idx" ON "submission_media" USING btree ("created_at");
+  CREATE UNIQUE INDEX "submission_media_filename_idx" ON "submission_media" USING btree ("filename");
   CREATE UNIQUE INDEX "payload_kv_key_idx" ON "payload_kv" USING btree ("key");
   CREATE INDEX "payload_locked_documents_global_slug_idx" ON "payload_locked_documents" USING btree ("global_slug");
   CREATE INDEX "payload_locked_documents_updated_at_idx" ON "payload_locked_documents" USING btree ("updated_at");
@@ -465,6 +542,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "payload_locked_documents_rels_pages_id_idx" ON "payload_locked_documents_rels" USING btree ("pages_id");
   CREATE INDEX "payload_locked_documents_rels_users_id_idx" ON "payload_locked_documents_rels" USING btree ("users_id");
   CREATE INDEX "payload_locked_documents_rels_media_id_idx" ON "payload_locked_documents_rels" USING btree ("media_id");
+  CREATE INDEX "payload_locked_documents_rels_submission_media_id_idx" ON "payload_locked_documents_rels" USING btree ("submission_media_id");
   CREATE INDEX "payload_preferences_key_idx" ON "payload_preferences" USING btree ("key");
   CREATE INDEX "payload_preferences_updated_at_idx" ON "payload_preferences" USING btree ("updated_at");
   CREATE INDEX "payload_preferences_created_at_idx" ON "payload_preferences" USING btree ("created_at");
@@ -483,12 +561,24 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "page_beranda_hero_slides_order_idx" ON "page_beranda_hero_slides" USING btree ("_order");
   CREATE INDEX "page_beranda_hero_slides_parent_id_idx" ON "page_beranda_hero_slides" USING btree ("_parent_id");
   CREATE INDEX "page_beranda_hero_slides_image_idx" ON "page_beranda_hero_slides" USING btree ("image_id");
-  CREATE INDEX "page_tentang_misi_order_idx" ON "page_tentang_misi" USING btree ("_order");
-  CREATE INDEX "page_tentang_misi_parent_id_idx" ON "page_tentang_misi" USING btree ("_parent_id");
+  CREATE INDEX "page_beranda_tentang_image_idx" ON "page_beranda" USING btree ("tentang_image_id");
   CREATE INDEX "page_tentang_sejarah_paragraphs_order_idx" ON "page_tentang_sejarah_paragraphs" USING btree ("_order");
   CREATE INDEX "page_tentang_sejarah_paragraphs_parent_id_idx" ON "page_tentang_sejarah_paragraphs" USING btree ("_parent_id");
+  CREATE INDEX "page_tentang_misi_order_idx" ON "page_tentang_misi" USING btree ("_order");
+  CREATE INDEX "page_tentang_misi_parent_id_idx" ON "page_tentang_misi" USING btree ("_parent_id");
+  CREATE INDEX "page_tentang_tim_members_order_idx" ON "page_tentang_tim_members" USING btree ("_order");
+  CREATE INDEX "page_tentang_tim_members_parent_id_idx" ON "page_tentang_tim_members" USING btree ("_parent_id");
+  CREATE INDEX "page_tentang_tim_members_photo_idx" ON "page_tentang_tim_members" USING btree ("photo_id");
+  CREATE INDEX "page_tentang_mitra_list_order_idx" ON "page_tentang_mitra_list" USING btree ("_order");
+  CREATE INDEX "page_tentang_mitra_list_parent_id_idx" ON "page_tentang_mitra_list" USING btree ("_parent_id");
+  CREATE INDEX "page_tentang_mitra_list_logo_idx" ON "page_tentang_mitra_list" USING btree ("logo_id");
+  CREATE INDEX "page_tentang_hero_image_idx" ON "page_tentang" USING btree ("hero_image_id");
+  CREATE INDEX "page_tentang_sejarah_image_idx" ON "page_tentang" USING btree ("sejarah_image_id");
   CREATE INDEX "page_konservasi_pengantar_paragraphs_order_idx" ON "page_konservasi_pengantar_paragraphs" USING btree ("_order");
-  CREATE INDEX "page_konservasi_pengantar_paragraphs_parent_id_idx" ON "page_konservasi_pengantar_paragraphs" USING btree ("_parent_id");`)
+  CREATE INDEX "page_konservasi_pengantar_paragraphs_parent_id_idx" ON "page_konservasi_pengantar_paragraphs" USING btree ("_parent_id");
+  CREATE INDEX "page_konservasi_hero_image_idx" ON "page_konservasi" USING btree ("hero_image_id");
+  CREATE INDEX "page_konservasi_pilar_situs_image_idx" ON "page_konservasi" USING btree ("pilar_situs_image_id");
+  CREATE INDEX "page_konservasi_pilar_artefak_image_idx" ON "page_konservasi" USING btree ("pilar_artefak_image_id");`)
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
@@ -506,6 +596,7 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "users_sessions" CASCADE;
   DROP TABLE "users" CASCADE;
   DROP TABLE "media" CASCADE;
+  DROP TABLE "submission_media" CASCADE;
   DROP TABLE "payload_kv" CASCADE;
   DROP TABLE "payload_locked_documents" CASCADE;
   DROP TABLE "payload_locked_documents_rels" CASCADE;
@@ -519,8 +610,10 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "site_settings" CASCADE;
   DROP TABLE "page_beranda_hero_slides" CASCADE;
   DROP TABLE "page_beranda" CASCADE;
-  DROP TABLE "page_tentang_misi" CASCADE;
   DROP TABLE "page_tentang_sejarah_paragraphs" CASCADE;
+  DROP TABLE "page_tentang_misi" CASCADE;
+  DROP TABLE "page_tentang_tim_members" CASCADE;
+  DROP TABLE "page_tentang_mitra_list" CASCADE;
   DROP TABLE "page_tentang" CASCADE;
   DROP TABLE "page_konservasi_pengantar_paragraphs" CASCADE;
   DROP TABLE "page_konservasi" CASCADE;
@@ -539,5 +632,6 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TYPE "public"."enum_karya_publik_status";
   DROP TYPE "public"."enum_pages_status";
   DROP TYPE "public"."enum_users_role";
+  DROP TYPE "public"."enum_media_category";
   DROP TYPE "public"."enum_site_settings_socials_icon";`)
 }

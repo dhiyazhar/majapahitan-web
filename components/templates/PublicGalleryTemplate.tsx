@@ -11,9 +11,11 @@ import ArtworkCard from "@/components/gallery/ArtworkCard";
 import ArtworkLightbox from "@/components/gallery/ArtworkLightbox";
 import Berlangganan from "@/components/sections/Berlangganan";
 import type { KaryaItem } from "@/lib/content";
+import type { FooterPartner } from "@/components/layout/Footer";
 
 type Props = {
   items: KaryaItem[];
+  partnerLogos?: FooterPartner[];
 };
 
 const subcategories = [
@@ -24,7 +26,7 @@ const subcategories = [
   "Fotografi Arsitektur",
 ];
 
-export default function PublicGalleryTemplate({ items }: Props) {
+export default function PublicGalleryTemplate({ items, partnerLogos }: Props) {
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArtworkIndex, setSelectedArtworkIndex] = useState<number | null>(null);
@@ -237,7 +239,7 @@ export default function PublicGalleryTemplate({ items }: Props) {
         {/* Berlangganan carries its own mx-auto max-w-7xl px-4 sm:px-6 and top margin, as on the hub. */}
         <Berlangganan />
       </main>
-      <Footer />
+      <Footer partnerLogos={partnerLogos} />
 
       <ArtworkLightbox
         artwork={activeArtwork}

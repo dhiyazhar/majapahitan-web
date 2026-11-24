@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ProgramListingTemplate from "@/components/templates/ProgramListingTemplate";
-import { getProgramPosts } from "@/lib/payload";
+import { getProgramPosts, getPartnerLogos } from "@/lib/payload";
 
 export const metadata: Metadata = {
   title: "Program & Kegiatan — Museum Virtual Majapahitan",
@@ -20,16 +20,20 @@ export default async function ProgramPage({ searchParams }: Props) {
   const { q, page, kategori } = await searchParams;
   const currentPage = Math.max(1, parseInt(page || "1", 10) || 1);
 
-  const paginatedResult = await getProgramPosts({
-    q,
-    type: kategori || undefined,
-    page: currentPage,
-    limit: 9,
-  });
+  const [paginatedResult, partnerLogos] = await Promise.all([
+    getProgramPosts({
+      q,
+      type: kategori || undefined,
+      page: currentPage,
+      limit: 9,
+    }),
+    getPartnerLogos(),
+  ]);
 
   return (
     <ProgramListingTemplate
       programs={paginatedResult.docs}
+      partnerLogos={partnerLogos}
       activeType={kategori || "Semua"}
       pagination={{
         totalDocs: paginatedResult.totalDocs,

@@ -12,6 +12,7 @@ import PostFilterBar from "@/components/posts/PostFilterBar";
 import BeritaCard from "@/components/berita/BeritaCard";
 import Berlangganan from "@/components/sections/Berlangganan";
 import type { BeritaItem } from "@/lib/payload";
+import type { FooterPartner } from "@/components/layout/Footer";
 
 
 type Props = {
@@ -26,6 +27,7 @@ type Props = {
     prevPage: number | null;
     nextPage: number | null;
   };
+  partnerLogos?: FooterPartner[];
   isFallback?: boolean;
   fallbackReason?: string;
 };
@@ -33,6 +35,7 @@ type Props = {
 export default function BeritaListingTemplate({
   beritaList,
   pagination,
+  partnerLogos,
   isFallback,
   fallbackReason,
 }: Props) {
@@ -264,7 +267,7 @@ export default function BeritaListingTemplate({
         ========================================================================= */}
         <Berlangganan />
       </main>
-      <Footer />
+      <Footer partnerLogos={partnerLogos} />
     </>
   );
 }

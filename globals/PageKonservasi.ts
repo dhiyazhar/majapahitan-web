@@ -27,6 +27,42 @@ export const PageKonservasi: GlobalConfig = {
       label: 'Subjudul Hero',
     },
     {
+      name: 'heroImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Gambar Latar Banner Hero',
+      filterOptions: {
+        category: { equals: 'halaman' },
+      },
+      admin: {
+        description: 'Resolusi optimal: 1920×800 px (ultrawide 21:9). WebP/JPG monokrom/gelap, maks 350 KB.',
+      },
+    },
+    {
+      name: 'pilarSitusImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Foto Kartu Pilar: Situs & Arsitektur',
+      filterOptions: {
+        category: { equals: 'halaman' },
+      },
+      admin: {
+        description: 'Resolusi optimal: 1200×600 px (rasio panorama 2:1). Foto situs candi, WebP/JPG, maks 250 KB.',
+      },
+    },
+    {
+      name: 'pilarArtefakImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Foto Kartu Pilar: Artefak & Benda Budaya',
+      filterOptions: {
+        category: { equals: 'halaman' },
+      },
+      admin: {
+        description: 'Resolusi optimal: 1200×600 px (rasio panorama 2:1). Foto benda artefak, WebP/JPG, maks 250 KB.',
+      },
+    },
+    {
       name: 'pengantarParagraphs',
       type: 'array',
       label: 'Paragraf Narasi Pengantar Konservasi',

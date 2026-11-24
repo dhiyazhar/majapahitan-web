@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import BeritaListingTemplate from "@/components/templates/BeritaListingTemplate";
-import { getBeritaPosts } from "@/lib/payload";
+import { getBeritaPosts, getPartnerLogos } from "@/lib/payload";
 
 export const metadata: Metadata = {
   title: "Warta & Berita — Museum Virtual Majapahitan",
@@ -19,15 +19,19 @@ export default async function BeritaPage({ searchParams }: Props) {
   const { q, page } = await searchParams;
   const currentPage = Math.max(1, parseInt(page || "1", 10) || 1);
 
-  const paginatedResult = await getBeritaPosts({
-    q,
-    page: currentPage,
-    limit: 9,
-  });
+  const [paginatedResult, partnerLogos] = await Promise.all([
+    getBeritaPosts({
+      q,
+      page: currentPage,
+      limit: 9,
+    }),
+    getPartnerLogos(),
+  ]);
 
   return (
     <BeritaListingTemplate
       beritaList={paginatedResult.docs}
+      partnerLogos={partnerLogos}
       pagination={{
         totalDocs: paginatedResult.totalDocs,
         totalPages: paginatedResult.totalPages,

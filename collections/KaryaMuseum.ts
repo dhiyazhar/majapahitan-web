@@ -1,6 +1,14 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin, isAdminOrStaff } from '../access'
 
+const formatSlug = (val: string): string =>
+  val
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
 export const KaryaMuseum: CollectionConfig = {
   slug: 'karya-museum',
   labels: {
@@ -20,6 +28,18 @@ export const KaryaMuseum: CollectionConfig = {
     update: isAdminOrStaff,
     delete: isAdmin,
   },
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (data && data.title && (!data.slug || data.slug.trim() === '')) {
+          data.slug = formatSlug(data.title) || `karya-${Date.now()}`
+        } else if (data && data.slug) {
+          data.slug = formatSlug(data.slug)
+        }
+        return data
+      },
+    ],
+  },
   fields: [
     {
       name: 'title',
@@ -33,6 +53,10 @@ export const KaryaMuseum: CollectionConfig = {
       required: true,
       unique: true,
       index: true,
+      admin: {
+        position: 'sidebar',
+        description: 'URL slug (otomatis dibuat dari judul karya jika dikosongkan).',
+      },
     },
     {
       name: 'type',
@@ -50,6 +74,9 @@ export const KaryaMuseum: CollectionConfig = {
       relationTo: 'media',
       required: true,
       label: 'Foto / Visual Karya',
+      admin: {
+        description: 'Resolusi optimal: 1200×900 px (4:3) s/d 1600×1200 px (zoom modal). Format WebP/PNG/JPG, maks 500 KB.',
+      },
     },
     {
       name: 'creator',

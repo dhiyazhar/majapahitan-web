@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
-import { heroSlides } from "@/lib/content";
+import { heroSlides as fallbackSlides, type HeroSlide } from "@/lib/content";
 import ImageSlot from "@/components/ui/ImageSlot";
 
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
@@ -14,13 +14,17 @@ function subscribeReducedMotion(onChange: () => void) {
   return () => mq.removeEventListener("change", onChange);
 }
 
-export default function Hero() {
+type HeroProps = {
+  slides?: HeroSlide[];
+};
+
+export default function Hero({ slides = fallbackSlides }: HeroProps) {
   const [index, setIndex] = useState(0);
   // `choice` is the visitor's explicit play/pause (null until they press it);
   // `held` is a temporary hover/focus pause.
   const [choice, setChoice] = useState<boolean | null>(null);
   const [held, setHeld] = useState(false);
-  const count = heroSlides.length;
+  const count = slides.length;
 
   const go = useCallback(
     (dir: number) => setIndex((i) => (i + dir + count) % count),
@@ -61,7 +65,7 @@ export default function Hero() {
         className="flex h-full transition-transform duration-700 ease-out motion-reduce:transition-none"
         style={{ transform: `translateX(-${index * 100}%)` }}
       >
-        {heroSlides.map((slide, i) => {
+        {slides.map((slide, i) => {
           const active = i === index;
           return (
             <div
@@ -126,7 +130,7 @@ export default function Hero() {
         >
           <ChevronLeft className="h-5 w-5" aria-hidden />
         </button>
-        {heroSlides.map((slide, i) => (
+        {slides.map((slide, i) => (
           <button
             key={slide.id}
             type="button"

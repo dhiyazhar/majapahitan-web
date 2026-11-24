@@ -77,6 +77,7 @@ export interface Config {
     pages: Page;
     users: User;
     media: Media;
+    'submission-media': SubmissionMedia;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -94,6 +95,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    'submission-media': SubmissionMediaSelect<false> | SubmissionMediaSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -156,7 +158,7 @@ export interface Berita {
   id: number;
   title: string;
   /**
-   * Disarankan foto landscape beresolusi baik dengan rasio 16:9.
+   * Resolusi optimal: 1600×900 px atau 1920×1080 px (rasio 16:9). Format WebP/JPG, maks 350 KB.
    */
   coverImage?: (number | null) | Media;
   /**
@@ -189,13 +191,17 @@ export interface Berita {
   createdAt: string;
 }
 /**
- * Pusat penyimpanan foto, gambar koleksi, dan aset visual situs.
+ * Pusat penyimpanan aset visual situs. Panduan resolusi: Hero 1920×1080 (16:9), Koleksi & Galeri 1200×900 (4:3), Pilar 1200×600 (2:1), Logo 400×400 (1:1). Format: WebP/SVG.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
   id: number;
+  /**
+   * Kelompok aset media untuk memudahkan penyaringan di Pustaka Media.
+   */
+  category?: ('banner' | 'koleksi' | 'konten') | null;
   /**
    * Deskripsi gambar untuk aksesibilitas pembaca layar dan optimasi SEO.
    */
@@ -248,7 +254,7 @@ export interface Program {
   id: number;
   title: string;
   /**
-   * Poster atau foto representasi kegiatan beresolusi baik.
+   * Resolusi optimal: 1600×1000 px (rasio 16:10) atau 1200×900 px (4:3). Format WebP/JPG, maks 350 KB.
    */
   coverImage?: (number | null) | Media;
   /**
@@ -364,10 +370,16 @@ export interface Publikasi {
 export interface Situs {
   id: number;
   name: string;
+  /**
+   * URL slug (otomatis dibuat dari nama jika dikosongkan).
+   */
   slug: string;
   location: string;
   era: string;
   status?: ('Terdokumentasi' | 'Pemindaian 3D' | 'Dalam Proses') | null;
+  /**
+   * Resolusi optimal: 1200×900 px (rasio 4:3). Format WebP/JPG, maks 350 KB.
+   */
   image?: (number | null) | Media;
   description: string;
   content?: {
@@ -397,10 +409,16 @@ export interface Situs {
 export interface Artefak {
   id: number;
   name: string;
+  /**
+   * URL slug (otomatis dibuat dari nama jika dikosongkan).
+   */
   slug: string;
   category: 'Prasasti & Inskripsi' | 'Arca & Patung' | 'Keramik & Gerabah' | 'Perhiasan & Logam' | 'Naskah & Sastra';
   era: string;
   material: string;
+  /**
+   * Resolusi optimal: 1200×900 px (rasio 4:3). Format WebP/JPG, latar studio netral, maks 350 KB.
+   */
   image?: (number | null) | Media;
   description: string;
   content?: {
@@ -430,8 +448,14 @@ export interface Artefak {
 export interface KaryaMuseum {
   id: number;
   title: string;
+  /**
+   * URL slug (otomatis dibuat dari judul karya jika dikosongkan).
+   */
   slug: string;
   type: 'otentik' | 'kontemporer';
+  /**
+   * Resolusi optimal: 1200×900 px (4:3) s/d 1600×1200 px (zoom modal). Format WebP/PNG/JPG, maks 500 KB.
+   */
   image: number | Media;
   creator?: string | null;
   era?: string | null;
@@ -455,14 +479,36 @@ export interface KaryaPublik {
   contributorAffiliation?: string | null;
   category: 'seni-rupa' | 'desain-ilustrasi' | 'fotografi' | 'model-3d' | 'riset-visual' | 'lainnya';
   description: string;
-  image: number | Media;
-  status?: ('pending' | 'published' | 'rejected') | null;
+  submissionMedia?: (number | null) | SubmissionMedia;
+  image?: (number | null) | Media;
+  status?: ('pending' | 'published' | 'rejected' | 'takedown') | null;
   /**
    * Hanya dapat dilihat oleh pengelola / tim kurator PUI
    */
   moderationNotes?: string | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * Penyimpanan terisolasi (private S3) untuk berkas kiriman publik yang belum/sedang dikurasi.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "submission-media".
+ */
+export interface SubmissionMedia {
+  id: number;
+  alt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * Kelola konten halaman khusus dan laman statis tambahan.
@@ -514,7 +560,7 @@ export interface User {
    */
   title?: string | null;
   /**
-   * Foto identitas profil pengguna (disarankan foto portrait rasio 1:1).
+   * Resolusi optimal: 300×300 px (rasio 1:1 persegi). Format WebP/JPG/PNG, maks 100 KB.
    */
   avatar?: (number | null) | Media;
   /**
@@ -603,6 +649,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'submission-media';
+        value: number | SubmissionMedia;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -780,6 +830,7 @@ export interface KaryaPublikSelect<T extends boolean = true> {
   contributorAffiliation?: T;
   category?: T;
   description?: T;
+  submissionMedia?: T;
   image?: T;
   status?: T;
   moderationNotes?: T;
@@ -830,6 +881,7 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  category?: T;
   alt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -876,6 +928,24 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "submission-media_select".
+ */
+export interface SubmissionMediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -980,6 +1050,9 @@ export interface PageBeranda {
     | {
         title: string;
         subtitle: string;
+        /**
+         * Resolusi optimal: 1920×1080 px (rasio 16:9/21:9). WebP/JPG, objek utama di tengah/kanan, maks 400 KB.
+         */
         image?: (number | null) | Media;
         primaryLabel?: string | null;
         primaryHref?: string | null;
@@ -991,6 +1064,10 @@ export interface PageBeranda {
   tentangEyebrow?: string | null;
   tentangTitle?: string | null;
   tentangBody?: string | null;
+  /**
+   * Resolusi optimal: 1000×800 px (rasio 4:3/5:4). WebP/JPG, foto peninggalan budaya beranda, maks 300 KB.
+   */
+  tentangImage?: (number | null) | Media;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1004,8 +1081,14 @@ export interface PageTentang {
   id: number;
   heroTitle?: string | null;
   heroSubtitle?: string | null;
+  /**
+   * Resolusi optimal: 1920×800 px (ultrawide 21:9). WebP/JPG, maks 350 KB.
+   */
   heroImage?: (number | null) | Media;
   sejarahTitle?: string | null;
+  /**
+   * Resolusi optimal: 1200×800 px (rasio 3:2/4:3). WebP/JPG, naskah/arsip sejarah, maks 300 KB.
+   */
   sejarahImage?: (number | null) | Media;
   sejarahCaption?: string | null;
   sejarahParagraphs?:
@@ -1028,6 +1111,9 @@ export interface PageTentang {
     | {
         name: string;
         role: string;
+        /**
+         * Pasfoto formal tim/kurator: 400×500 px (rasio 4:5 vertikal). WebP/JPG, maks 120 KB.
+         */
         photo?: (number | null) | Media;
         id?: string | null;
       }[]
@@ -1037,6 +1123,9 @@ export interface PageTentang {
   mitraList?:
     | {
         name: string;
+        /**
+         * Logo lembaga mitra: 400×400 px (1:1 persegi). Format SVG atau PNG transparan, maks 80 KB.
+         */
         logo?: (number | null) | Media;
         url?: string | null;
         id?: string | null;
@@ -1062,6 +1151,18 @@ export interface PageKonservasi {
   id: number;
   heroTitle?: string | null;
   heroSubtitle?: string | null;
+  /**
+   * Resolusi optimal: 1920×800 px (ultrawide 21:9). WebP/JPG monokrom/gelap, maks 350 KB.
+   */
+  heroImage?: (number | null) | Media;
+  /**
+   * Resolusi optimal: 1200×600 px (rasio panorama 2:1). Foto situs candi, WebP/JPG, maks 250 KB.
+   */
+  pilarSitusImage?: (number | null) | Media;
+  /**
+   * Resolusi optimal: 1200×600 px (rasio panorama 2:1). Foto benda artefak, WebP/JPG, maks 250 KB.
+   */
+  pilarArtefakImage?: (number | null) | Media;
   pengantarParagraphs?:
     | {
         text: string;
@@ -1138,6 +1239,7 @@ export interface PageBerandaSelect<T extends boolean = true> {
   tentangEyebrow?: T;
   tentangTitle?: T;
   tentangBody?: T;
+  tentangImage?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1205,6 +1307,9 @@ export interface PageTentangSelect<T extends boolean = true> {
 export interface PageKonservasiSelect<T extends boolean = true> {
   heroTitle?: T;
   heroSubtitle?: T;
+  heroImage?: T;
+  pilarSitusImage?: T;
+  pilarArtefakImage?: T;
   pengantarParagraphs?:
     | T
     | {

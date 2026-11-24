@@ -1,6 +1,14 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin, isAdminOrStaff } from '../access'
 
+const formatSlug = (val: string): string =>
+  val
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
 export const Situs: CollectionConfig = {
   slug: 'situs',
   labels: {
@@ -20,6 +28,18 @@ export const Situs: CollectionConfig = {
     update: isAdminOrStaff,
     delete: isAdmin,
   },
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (data && data.name && (!data.slug || data.slug.trim() === '')) {
+          data.slug = formatSlug(data.name) || `situs-${Date.now()}`
+        } else if (data && data.slug) {
+          data.slug = formatSlug(data.slug)
+        }
+        return data
+      },
+    ],
+  },
   fields: [
     {
       name: 'name',
@@ -33,6 +53,10 @@ export const Situs: CollectionConfig = {
       required: true,
       unique: true,
       index: true,
+      admin: {
+        position: 'sidebar',
+        description: 'URL slug (otomatis dibuat dari nama jika dikosongkan).',
+      },
     },
     {
       name: 'location',
@@ -63,6 +87,9 @@ export const Situs: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       label: 'Foto Dokumentasi',
+      admin: {
+        description: 'Resolusi optimal: 1200×900 px (rasio 4:3). Format WebP/JPG, maks 350 KB.',
+      },
     },
     {
       name: 'description',

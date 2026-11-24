@@ -7,15 +7,18 @@ import ArticleContent from "@/components/posts/ArticleContent";
 import ShareButtons from "@/components/posts/ShareButtons";
 import BeritaCard from "@/components/berita/BeritaCard";
 import type { BeritaItem } from "@/lib/payload";
+import type { FooterPartner } from "@/components/layout/Footer";
 
 type Props = {
   berita: BeritaItem;
   relatedBerita: BeritaItem[];
+  partnerLogos?: FooterPartner[];
 };
 
 export default function BeritaDetailTemplate({
   berita,
   relatedBerita,
+  partnerLogos,
 }: Props) {
   return (
     <>
@@ -173,7 +176,7 @@ export default function BeritaDetailTemplate({
           ) : null}
         </div>
       </main>
-      <Footer />
+      <Footer partnerLogos={partnerLogos} />
     </>
   );
 }

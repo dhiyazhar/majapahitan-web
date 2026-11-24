@@ -5,6 +5,7 @@ import {
   getAllProgramSlugs,
   getProgramBySlug,
   getRelatedProgram,
+  getPartnerLogos,
 } from "@/lib/payload";
 
 type PageProps = {
@@ -36,7 +37,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProgramDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const program = await getProgramBySlug(slug);
+  const [program, partnerLogos] = await Promise.all([
+    getProgramBySlug(slug),
+    getPartnerLogos(),
+  ]);
 
   if (!program) {
     notFound();
@@ -48,6 +52,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
     <ProgramDetailTemplate
       program={program}
       relatedPrograms={relatedPrograms}
+      partnerLogos={partnerLogos}
     />
   );
 }

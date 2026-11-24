@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import PublicationListingTemplate from "@/components/templates/PublicationListingTemplate";
-import { getAllPublikasiPosts } from "@/lib/payload";
+import { getAllPublikasiPosts, getPartnerLogos } from "@/lib/payload";
 
 export const metadata: Metadata = {
   title: "Publikasi & Hasil Penelitian — Museum Virtual Majapahitan",
@@ -9,7 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default async function PublikasiPage() {
-  const items = await getAllPublikasiPosts();
+  const [items, partnerLogos] = await Promise.all([
+    getAllPublikasiPosts(),
+    getPartnerLogos(),
+  ]);
 
-  return <PublicationListingTemplate items={items} />;
+  return <PublicationListingTemplate items={items} partnerLogos={partnerLogos} />;
 }

@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ImageSlot from "@/components/ui/ImageSlot";
 import ArtefakCatalog from "@/components/konservasi/ArtefakCatalog";
+import { getArtefakList, getPartnerLogos } from "@/lib/payload";
 
 export const metadata: Metadata = {
   title: "Artefak & Benda Budaya Majapahit — Museum Konservasi",
@@ -12,7 +13,12 @@ export const metadata: Metadata = {
     "Katalog digital prasasti, arca, keramik, perhiasan, dan naskah kuno peninggalan masa Kerajaan Majapahit yang dikonservasi oleh PUI Seni Budaya Majapahitan UNESA.",
 };
 
-export default function ArtefakKonservasiPage() {
+export default async function ArtefakKonservasiPage() {
+  const [artefakItems, partnerLogos] = await Promise.all([
+    getArtefakList(),
+    getPartnerLogos(),
+  ]);
+
   return (
     <>
       <Navbar />
@@ -58,7 +64,7 @@ export default function ArtefakKonservasiPage() {
         </section>
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <ArtefakCatalog />
+          <ArtefakCatalog items={artefakItems} />
 
           {/* =========================================================================
               4. CROSS-LINK KE SITUS & ARSITEKTUR (Seamless CTA Layout)
@@ -89,7 +95,7 @@ export default function ArtefakKonservasiPage() {
           </section>
         </div>
       </main>
-      <Footer />
+      <Footer partnerLogos={partnerLogos} />
     </>
   );
 }
